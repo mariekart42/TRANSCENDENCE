@@ -4,7 +4,9 @@
 
 **Install** npm:
 - ```npm i -g @nestjs/cli```
-	- [[Problem to install npm?]]
+
+	--> [Problem to install npm?](Problem%20to%20install%20npm%3F.md)
+
 Create new project:
 - ```nest new <project-name>```
 
