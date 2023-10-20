@@ -15,10 +15,12 @@
 - **Code stuff:**
 	- export class:
 		-  class that is available in the whole program
+    
 
 	- Constructor:
 		- ```constructor(private name_of_Instance: AuthService) { }```
 		- constructor inits and creates Instance of AuthService
+
 
 	- ???:
 		- await
@@ -26,6 +28,7 @@
 		- Promise
 		- interface (something like struct?)
 		- class name **implements** name
+    
 
 - **Setting up Database:**
 	- Docker set-up:
@@ -45,6 +48,7 @@
 		- run ```docker ps``` again and copy the ```CONTAINER ID```
 		- then run ```docker logs <CONTAINER ID>```
 			- it should show: ```database system is ready to accept connections```
+     
 	- Prisma:
 		- *connection between TypeScript code and Database*
 		- **Set up:**
@@ -81,12 +85,20 @@
 				- place data from ```docker-compose.yml``` file in there
 				- --> prisma is now able to access out local Database (docker instance)
 			- run ```npx prisma --help``` for any help
+     
 		- **Migrate:**
 			- run ```npx prisma migrate dev```
+   
 				- generated sql in new folder migrations
+			  	```
 				- migrations/
-				  └─ 20231020154424_init_new_lol/
-					    └─ migration.sql
+      
+				  	└─ 20231020154424_init_new_lol/
+    
+				  		└─ migration.sql
+				```
+
+ 
 				- database now knows about tables we created as models in ```schema.prisma```
 			- run ```npx prisma generate``` to automatically add model content into program
 			- run ```npx prisma studio``` to open prisma interface in browser
