@@ -14,7 +14,7 @@ export class AuthController {
     //     console.log(req.body);
 
     @Post('signup')
-    signup(@Body() dto: AuthDto) {
+    signup(@Body() dto: AuthDto ) {
         console.log({
             // dto: dto; // creating object to print it | not sure why lol
             // shorter:
