@@ -1,6 +1,5 @@
 import {Global, Module} from "@nestjs/common";
 import {PrismaService} from "./prisma.service";
-import {ConfigService} from "@nestjs/config";
 
 @Global() // dis allows to access prismaService from everywhere without exporting it to each Module
 // make sure PrismaModule is imported in root module (app.module)
