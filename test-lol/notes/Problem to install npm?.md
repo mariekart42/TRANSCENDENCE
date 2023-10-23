@@ -9,4 +9,3 @@ If you don't have Permissions to install npm on school macs, you need to change 
 	 source ~/.zshrc```
 	 
 Npm data is now stored in:   */Users/mmensing/.npm/*
-
