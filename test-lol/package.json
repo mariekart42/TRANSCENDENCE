@@ -8,8 +8,10 @@
   "scripts": {
     "db:dev:rm": "docker compose rm marieee -f -s -v",
     "db:dev:up": "docker compose up marieee -d",
+
     "db:rm:up": "npm run db:dev:rm && npm run db:dev:up",
     "prisma:dev:deploy": "prisma migrate deploy",
+
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 15 && npm run prisma:dev:deploy",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

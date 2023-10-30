@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ping Pong Game and Chat</title>
+  <style>
+    /* Add your CSS styles here */
+    #ping-pong-game {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 1px solid black;
+    }
+
+    #ping-pong-ball {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+    }
+
+    #left-paddle, #right-paddle {
+      position: absolute;
+      width: 20px;
+      height: 100px;
+      background-color: blue;
+    }
+
+    #left-paddle {
+      left: 10px;
+    }
+
+    #right-paddle {
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+<div id="ping-pong-game">
+  <div id="ping-pong-ball"></div>
+  <div id="left-paddle"></div>
+  <div id="right-paddle"></div>
+</div>
+
+<div id="chat-box">
+  <div id="chat-messages"></div>
+  <input type="text" id="message-input" placeholder="Type your message...">
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script src="example-website-script.js"></script>
+</body>
+</html>

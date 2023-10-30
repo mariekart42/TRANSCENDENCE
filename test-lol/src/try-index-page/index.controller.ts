@@ -1,39 +1,108 @@
-import {Controller, Get, Res, Post, UploadedFile, UseInterceptors, Param} from "@nestjs/common";
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
-import * as fs from 'fs';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { MulterFile } from 'multer';
-import {BookmarkModule} from "../bookmark/bookmark.module";
-import {UserModule} from "../User/user.module";
-import {UserController} from "../User/user.controller";
-import {PrismaModule} from "../prisma/prisma.module";
+import {Controller, Get, Res, Param} from "@nestjs/common";
+import {Response} from 'express';
 import {PrismaService} from "../prisma/prisma.service";
-import * as path from "path";
+import * as fs from 'fs';
+import * as path from 'path';
 
-@Controller('index')
-export class IndexController {
-constructor(private prisma: PrismaService) {
+
+
+@Controller('scripts')
+export class ScriptController {
+
+    constructor(private prisma: PrismaService) {
+    }
+
+    @Get(':id(*)')
+    getScript(@Res() res: Response, @Param() params: any) {
+        console.log('In Script Controller');
+
+        const filePath = 'root/' + params.id;
+        // check if file exists:
+        fs.access(filePath, fs.constants.F_OK, (err) => {
+            if (err) {
+                const fileContent = fs.readFileSync('root/html/404.html');
+                res.setHeader('Content-Type', 'text/html');
+                res.send(fileContent)
+            }
+            else
+            {
+                // file does exist
+                const fileContent = fs.readFileSync(filePath);
+                res.setHeader('Content-Type', 'text/javascript');
+                res.send(fileContent);
+            }
+        });
+    }
 }
 
-    @Get(':id')
-    getUserById(@Param() params: any): string {
-        const fileContent = fs.readFileSync('root/images/test.jpeg');
-        console.log(params.id);
-        return `<!DOCTYPE html>
-                <html>
-                <head>
-                    <title>My Web Page</title>
-                </head>
-                <body>
-                    <h1>ID: ${params.id}</h1>
-                </body>
-                </html>`;
+@Controller() // Controller for root
+export class IndexController {
+    constructor(private prisma: PrismaService) {
+        console.log('In constructor of root Controller');
+}
+
+
+    @Get(':id(*)') // (*) allows urls with multiple slashes :))
+    getUserById(@Param('id') id: string, @Res() res: Response): void {
+
+        console.log('In root Controller');
+        const filePath = path.join('root', id);
+
+
+        // Check if the path points to a directory
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+            // Handle directory access, for example, respond with an error page
+            // const errorContent = fs.readFileSync('root/html/404.html');
+            res.setHeader('Content-Type', 'text/html');
+            res.status(404).send('File is a Directory');
+        }
+        else
+        {
+            // Check if the file exists
+            if (fs.existsSync(filePath)) {
+                const fileContent = fs.readFileSync(filePath);
+                res.setHeader('Content-Type', 'text/html');
+                res.send(fileContent);
+            }
+            else
+            {
+                // Handle non-existent file, for example, respond with a 404 error page
+                const errorContent = fs.readFileSync('root/html/404.html');
+                res.setHeader('Content-Type', 'text/html');
+                res.status(404).send(errorContent);
+            }
+        }
+
+
+        // // check if file exists:
+        // fs.access(filePath, fs.constants.F_OK, (err) => {
+        //     if (err) {
+        //         const fileContent = fs.readFileSync('root/html/404.html');
+        //         res.setHeader('Content-Type', 'text/html');
+        //         res.send(fileContent)
+        //     }
+        //     else
+        //     {   // file exists
+        //         const fileContent = fs.readFileSync(filePath);
+        //         res.setHeader('Content-Type', 'text/html');
+        //         res.send(fileContent);
+        //     }
+        // });
     }
-    //
-    //
-    //
+
+
+    requestedRoot(@Res() res: Response): void {
+        console.log('Requested Root');
+        const fileContent = fs.readFileSync('root/html/404.html');
+        res.setHeader('Content-Type', 'text/html');
+        res.send(fileContent)
+        // const fileContent = fs.readFileSync('root/html/home/example-website.html');
+        // res.setHeader('Content-Type', 'text/html');
+        // res.send(fileContent);
+    }
+
+
+
     // @Get()
     // @Get('images/test.jpeg')
     // sendBackground(@Res() res: Response): void {
@@ -67,7 +136,9 @@ constructor(private prisma: PrismaService) {
     // }
     // @Get()
     // sendIndexPage(@Res() res: Response): void {
-    //     const fileContent = fs.readFileSync('root/index.html');
+    //     console.log('In empty Get');
+    //
+    //     const fileContent = fs.readFileSync('root/html/home/example-website.html');
     //     res.setHeader('Content-Type', 'text/html');
     //     res.send(fileContent);
     // }
@@ -82,4 +153,7 @@ constructor(private prisma: PrismaService) {
     //     // Send the HTML content as the response
     //     res.send(fileContent);
     // }
+
+
 }
+

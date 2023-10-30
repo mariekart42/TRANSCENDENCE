@@ -1,14 +1,16 @@
 import {MiddlewareConsumer, Module, NestModule} from "@nestjs/common";
 import {IndexController} from "./index.controller";
-import * as express from 'express';
+import {LoggerMiddleware} from "./logger.middleware";
+import {AuthController} from "../auth/auth.controller";
 
 @Module({
     controllers: [IndexController],
 })
 export class IndexModule implements NestModule {
-    configure(consumer: MiddlewareConsumer): void {
+    configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(express.static('root'))
-            .forRoutes('root');
+            .apply(LoggerMiddleware)
+            .forRoutes(IndexController, AuthController) // the order is important!!!
+        console.log('After configure');
     }
 }
