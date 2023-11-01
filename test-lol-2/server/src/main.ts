@@ -14,6 +14,6 @@ async function bootstrap() {
     // app.useGlobalPipes(new ValidationPipe({
     //     whitelist: true // will only parse the fields initted from us, no extra values that are not in our dto
     // })) // makes us use Pipe globally
-    await app.listen(3000);
+    await app.listen(port);
 }
 bootstrap();
