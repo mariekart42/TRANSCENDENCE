@@ -6,7 +6,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
     const port = configService.get('PORT');
-    const clientPort = configService.get('CLIENT_PORT');
+    const clientPort = configService.get('CLIENT_PORT'); // both defined in .env
 
     console.log('PORT: ' + port);
     console.log('CLIENT_PORT: ' + clientPort);
