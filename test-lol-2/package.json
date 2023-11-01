@@ -6,7 +6,6 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-
     "docker:compose": "docker-compose up -d",
     "client:dev": "npm run dev --workspace=client",
     "server:dev": "wait-on tcp:6379 && npm run start:dev --workspace=server",
@@ -14,10 +13,6 @@
     "storybook": "npm run storybook --workspace=client",
     "stop": "docker-compose down",
     "test": "echo \"Error: no test specified\" && exit 1",
-
-
-
-
     "db:dev:rm": "docker compose rm marieee -f -s -v",
     "db:dev:up": "docker compose up marieee -d",
     "db:rm:up": "npm run db:dev:rm && npm run db:dev:up",
@@ -48,6 +43,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "multer": "^1.4.5-lts.1",
+    "nanoid": "^3.3.6",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
