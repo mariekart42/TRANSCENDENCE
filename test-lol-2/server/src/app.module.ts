@@ -3,7 +3,7 @@ import {IndexModule} from "./index/index.module";
 import {NotYetModule} from "./notYet/notYet.module";
 import {PrismaModule} from "./prisma/prisma.module";
 import {ConfigModule} from "@nestjs/config";
-import { PrismaClient } from '@prisma/client'
+import {PollsModule} from "./polls/polls.module";
 
 @Module({
     imports: [
@@ -12,6 +12,7 @@ import { PrismaClient } from '@prisma/client'
         }),
         IndexModule,
         NotYetModule,
-        PrismaModule],
-})
+        PrismaModule,
+        PollsModule],
+ })
 export class AppModule {}

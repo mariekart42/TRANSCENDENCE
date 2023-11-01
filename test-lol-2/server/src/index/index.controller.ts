@@ -1,16 +1,14 @@
 import {Controller, Get, Param, Res} from "@nestjs/common";
 import * as fs from "fs";
 import {Response} from 'express'; // for setHeader/send
-import * as path from 'path';
 
 @Controller('images')
 export class IndexController {
     @Get(':path')
-    getLol(@Res() res: Response, @Param('path') url: string) {
+    getImage(@Res() res: Response, @Param('path') url: string) {
 
 
-        console.log('In IndexController getLol');
-        console.log(url);
+        console.log('IMAGES Controller GET; URL: images/' + url);
 
         const filePath = 'root/images/' + url;
 
@@ -43,9 +41,9 @@ export class IndexController {
     }
 
     @Get()
-    elseResponse1(@Res() res: Response, @Param('path') url: string) {
+    elseResponse1(@Res() res: Response, @Param('id') url: string) {
         console.log('In IndexController elseResponse1');
-
+        console.log('PATH: ' + url);
 
         const filePath = 'root/images/' + url;
 

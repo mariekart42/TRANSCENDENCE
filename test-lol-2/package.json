@@ -6,19 +6,29 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+
+    "docker:compose": "docker-compose up -d",
+    "client:dev": "npm run dev --workspace=client",
+    "server:dev": "wait-on tcp:6379 && npm run start:dev --workspace=server",
+    "start": "npm run docker:compose && npm run start:dev",
+    "storybook": "npm run storybook --workspace=client",
+    "stop": "docker-compose down",
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+
+
+
     "db:dev:rm": "docker compose rm marieee -f -s -v",
     "db:dev:up": "docker compose up marieee -d",
     "db:rm:up": "npm run db:dev:rm && npm run db:dev:up",
     "prisma:dev:deploy": "prisma migrate deploy",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 15 && npm run prisma:dev:deploy",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "format": "prettier --write \\\"server/src/**/*.ts\\\" \\\"test/**/*.ts\\\"",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
