@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update
-RUN #apt-get install -y postgresql-client  # installed to support PostgreSQL database connections
+#RUN apt-get install -y postgresql-client  # installed to support PostgreSQL database connections
 #RUN apt-get clean
 #RUN rm -rf /var/lib/apt/lists/*
 
@@ -19,7 +19,7 @@ RUN #apt-get install -y postgresql-client  # installed to support PostgreSQL dat
 COPY backend/requirements.txt /app/
 RUN python3.9 -m pip install --upgrade pip
 RUN python3.9 -m pip install -r requirements.txt
-RUN #python3.9 -m pip install psycopg2-binary # for PostgreSQL database
+RUN python3.9 -m pip install psycopg2-binary # for PostgreSQL database
 
 
 # Copy the Django project files into the container at /app/

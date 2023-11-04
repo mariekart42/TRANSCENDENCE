@@ -1,30 +1,38 @@
 version: '3'
 
 services:
-#  postgres:
-#    image: postgres:latest
-#    environment:
-#      POSTGRES_DB: mmensing
-#      POSTGRES_USER: mmensing
-#      POSTGRES_PASSWORD: '0000'
-#    ports:
-#      - "5432:5432"
-#    networks:
-#      - your_network_name
-##    healthcheck:
-##      test: [ "CMD-SHELL", "pg_isready -U mmensing -d mmensing -h localhost -p 5432" ]
-
   django:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    container_name: django_backend_container
     ports:
       - "8000:8000"
-#    depends_on:
-#      - postgres
-#    networks:
-#      - your_network_name
+    networks:
+      - our_network
+    depends_on:
+      - postgres   # This ensures the Django container starts after the PostgreSQL container
 
-#networks:
-#  your_network_name:
-#    driver: bridge
+
+  postgres:
+    image: postgres
+    container_name: postgres_db_container
+    environment:
+      POSTGRES_DB: mmensing
+      POSTGRES_USER: mmensing
+      POSTGRES_PASSWORD: '0000'
+    networks:
+      - our_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+##    healthcheck:
+##      test: [ "CMD-SHELL", "pg_isready -U mmensing -d mmensing -h localhost -p 5432" ]
+
+
+networks:
+  our_network:
+volumes:
+  postgres_data:
