@@ -74,27 +74,27 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-
-        # Data from docker-compose file:
-        'NAME': 'mmensing',
-        'USER': 'mmensing',
-        'PASSWORD': '0000',
-
-        # Service name of the PostgreSQL container in the Docker network:
-        'HOST': 'postgres',
-        'PORT': '5432',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
-#         'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
+#         'ENGINE': 'django.db.backends.postgresql',
+#
+#         # Data from docker-compose file:
+#         'NAME': 'postgres',
+#         'USER': 'mmensing',
+#         'PASSWORD': '0000',
+#
+#         # Service name of the PostgreSQL container in the Docker network:
+#         'HOST': 'postgres',
+#         'PORT': '5432',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
+        'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
+    }
+}
 
 
 # Password validation
