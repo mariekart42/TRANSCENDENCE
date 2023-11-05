@@ -6,7 +6,6 @@ Project Setup:
 ```
 TRANSCENDENCE/
 │
-│ 
 ├── backend/
 │   │ 
 │   ├── manage.py
@@ -16,20 +15,36 @@ TRANSCENDENCE/
 │   ├── backend/
 │   │   ├── __init__.py
 │   │   ├── settings.py
-│   │   └── urls.py
+│   │   ├── urls.py
+│   │   └── ...
+│   │ 
+│   ├── backend_app/
+│   │   │
+│   │   ├── migrations/
+│   │   │   ├── __init__.py
+│   │   │   └── ...
+│   │   │ 
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── modules.py
+│   │   └── ...
 │   │ 
 │   └── ...
-│ 
+│
+│
 │ 
 ├── frontend/
 │   │ 
 │   ├── index.html
 │   │ 
 │   ├── styles/
-│   │   └── styles.css
+│   │   ├── styles.css
+│   │   └── ...
 │   │ 
 │   ├── scripts/
-│   │   └── app.js
+│   │   ├── app.js
+│   │   └── ...
 │   │ 
 │   └── ...
 │
