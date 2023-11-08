@@ -28,7 +28,24 @@ TEST_ENVIRONMENT/
 │   └── manage.py
 │
 │
+├── frontMock/
+│   │ 
+│   └── frontTest/
+│       │
+│       ├── public/
+│       │   └── vite.svg
+│       │
+│       ├── src/
+│       │   ├── *.jsx
+│       │   └── *.css
+│       │ 
+│       ├── index.html
+│       ├── *.json
+│       └── vite.config.js
+│
+│
 ├── virtualEnvironment/
+│   └── ...
 │ 
 └── testing_stage.sh
 ```
