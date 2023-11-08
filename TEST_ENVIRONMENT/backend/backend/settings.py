@@ -43,12 +43,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # my created apps:
-    'backend_app'
+    'backend_app',
+    
+    'corsheaders',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
 
 # those are applied to all requests:
 MIDDLEWARE = [
+
+    'corsheaders.middleware.CorsMiddleware',
+
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

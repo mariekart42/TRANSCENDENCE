@@ -40,6 +40,7 @@ def getMessages(request, room):
     #  value, date, user and room
 
     return JsonResponse({"messages": list(all_messages.values())})
+    # return JsonResponse({"messages": 'lolol'})
 
 
 
