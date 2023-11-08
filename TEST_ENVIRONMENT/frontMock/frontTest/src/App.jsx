@@ -32,7 +32,9 @@
 //   )
 // }
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import logo from '/lol.png';
+import doggo from '/good_boi.jpeg';
+
 
 const App = () => {
 
@@ -92,6 +94,13 @@ const App = () => {
   return (
       <div className="chat-container">
         <h1>Chat Application</h1>
+
+      {/*<div>*/}
+      {/*  <img src={logo} alt="architecture" />*/}
+      {/*</div>*/}
+      <div>
+        <img src={doggo} alt="doggo"/>
+      </div>
 
         <div className="chat-messages">
           {/* Render chat messages */}
