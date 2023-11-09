@@ -32,6 +32,11 @@ def send(request):
     return HttpResponse('New message send :)')
 
 
+def goToFrontend(request):
+    return render(request, 'goToFrontend.html')
+
+
+
 def getMessages(request, room):
     current_room = Room.objects.get(name=room)
 
