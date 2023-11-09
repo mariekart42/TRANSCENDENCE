@@ -1,4 +1,4 @@
-# TEST_ENVIRONMENT - BACKEND
+# TEST_ENVIRONMENT
 <br></br>
 Project Setup:
 
