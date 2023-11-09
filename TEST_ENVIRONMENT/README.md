@@ -49,3 +49,8 @@ TEST_ENVIRONMENT/
 │ 
 └── testing_stage.sh
 ```
+
+<br></br>
+
+![ARCHITECTURE](frontMock/frontTest/public/lol.png)
+<br></br>
