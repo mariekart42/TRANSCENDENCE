@@ -12,7 +12,10 @@ TEST_ENVIRONMENT/
 │   │   │
 │   │   ├── migrations/
 │   │   │   └── __init__.py
-│   │   │ 
+│   │   │
+│   │   ├── middleware/
+│   │   │   └── cors.py
+│   │   │
 │   │   ├── __init__.py
 │   │   ├── admin.py
 │   │   ├── apps.py
@@ -33,6 +36,7 @@ TEST_ENVIRONMENT/
 │   └── frontTest/
 │       │
 │       ├── public/
+│       │   ├── *.png/jpeg
 │       │   └── vite.svg
 │       │
 │       ├── src/
