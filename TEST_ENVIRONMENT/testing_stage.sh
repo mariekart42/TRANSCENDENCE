@@ -20,9 +20,6 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
     echo -e " 🗿  ${BLUE}Installing Django...${RESET}"
     python3.9 -m pip install Django
 
-    echo -e " 🗿  ${BLUE}Installing Cors Header...${RESET}"
-    python3.9 -m pip install django-cors-headers
-
 
         # Prompt the user to run migrations
 #    echo -e " 🔔  ${YEL}DO YOU WANT TO MIGRATE CHANGES TO DATABASE?${RESET} (optional but recommended)"

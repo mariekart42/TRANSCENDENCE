@@ -43,18 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # my created apps:
-    'backend_app',
-    
-    'corsheaders',
-]
+    'backend_app'
+    ]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
 # those are applied to all requests:
 MIDDLEWARE = [
 
-    'corsheaders.middleware.CorsMiddleware',
-
+    'backend_app.middleware.cors.CorsMiddleware',  # custom middleware to enable cors policy
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -62,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 
