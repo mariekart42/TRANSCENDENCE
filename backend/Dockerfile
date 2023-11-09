@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update
-RUN python3.9 -m pip install --upgrade pip
+RUN python3 -m pip install --upgrade pip
 RUN apt-get install -y postgresql-client  # installed to support PostgreSQL database connections
 #RUN apt-get clean
 #RUN rm -rf /var/lib/apt/lists/*
@@ -22,8 +22,8 @@ COPY backend/ /app/
 
 # Install project dependencies
 COPY backend/requirements.txt /app/
-RUN python3.9 -m pip install -r requirements.txt
-RUN python3.9 -m pip install psycopg2-binary # for PostgreSQL database
+RUN python3 -m pip install -r requirements.txt
+RUN python3 -m pip install psycopg2-binary # for PostgreSQL database
 
 #RUN python3.9 manage.py makemigrations # ? but should be here
 #RUN python3.9 manage.py migrate

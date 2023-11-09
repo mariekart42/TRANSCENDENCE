@@ -15,11 +15,12 @@ read -p "     [Y|N|?]: " response
 if [[ "$response" == "y" || "$response" == "Y" ]]; then
 
     echo -e " 🗿  ${BLUE}Upgrading pip...${RESET}"
-    python3.9 -m pip install --upgrade pip
+    python3 -m pip install --upgrade pip
 
     echo -e " 🗿  ${BLUE}Installing Django...${RESET}"
-    python3.9 -m pip install Django
+    python3 -m pip install Django
 
+    echo -e " 🗿  ${BLUE}Installing npm...${RESET}"
 
         # Prompt the user to run migrations
 #    echo -e " 🔔  ${YEL}DO YOU WANT TO MIGRATE CHANGES TO DATABASE?${RESET} (optional but recommended)"
@@ -28,8 +29,8 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
 #    if [[ "$migrate_response" == "y" || "$migrate_response" == "Y" ]]; then
         echo -e " 🗿  ${BLUE}Applying migrations...${RESET}"
 
-        python3.9 backend/manage.py makemigrations
-        python3.9 backend/manage.py migrate
+        python3 backend/manage.py makemigrations
+        python3 backend/manage.py migrate
 
 #    else
 #        echo -e " ⚠️  ${YEL}Migrations skipped${RESET}"
