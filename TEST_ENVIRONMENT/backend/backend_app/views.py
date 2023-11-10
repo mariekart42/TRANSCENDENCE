@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import User
 from django.http import JsonResponse
 import json  # build in python module
+from django.views.decorators.http import require_GET
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -16,22 +18,25 @@ def getUserList(request):
     user_list = [{'id': user.id, 'name': user.name} for user in users]
     return JsonResponse(user_list, safe=False)
 
-
+@require_GET
 def getUserData(request, username):
     print('BACKEND USERNAME: ')
     print(username)
-    user_data = User.objects.filter(name=username)
-    user_data_list = [{
-        'id': data.id,
-        'name': data.name,
-        'password': data.password,
-        'age': data.age
-        } for data in user_data]
+    try:
+        user = get_object_or_404(User, name=username)
+        user_data = {
+            'id': user.id,
+            'name': user.name,
+            'password': user.password,
+            'age': user.age,
+        }
+        return JsonResponse({'user_data': user_data}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': 'User not found'}, status=404)
 
-    print('USER LIST: ')
-    print(user_data_list)
 
-    return JsonResponse(user_data_list, safe=False)
+
+    # return JsonResponse(user_data_list, safe=False)
 
 
 

@@ -25,112 +25,82 @@
       <h1>Find User</h1>
     <label for="username">Enter your name:</label>
     <input type="text" id="username" v-model="name" />
-    <button @click="fetchUserData2(name)">Get Data</button>
+    <button @click="fetchUserData2">Get Data</button>
 
-    <!-- Display user-specific data here -->
-    <div v-if="userData[0]">
-      <h2>Welcome, {{ userData[0].name }}!</h2>
-      <ul>
-        NAME &nbsp;: {{ userData[0].name }}<br>
-        PAWO &nbsp;&nbsp;: {{ userData[0].password }}<br>
-        AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData[0].age }}<br>
-      </ul>
+    <div v-if="!errorMessage">
+      <div v-if="userData && userData.user_data">
+        <h2>Welcome, {{ userData.user_data.name }}!</h2>
+<!--        <p>User data: {{ userData.user_data.password }} </p>-->
+<!--        <p>{{ userData.user_data.age }}</p>-->
+
+        NAME &nbsp;: {{ userData.user_data.name }}<br>
+        PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
+        AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
+      </div>
+      <div v-else>
+        <p>No user data available.</p>
+      </div>
+    </div>
+
+    <!-- Display error message -->
+    <div v-else>
+      <p>{{ errorMessage }}</p>
     </div>
   </div>
-
-
 </template>
 
 <script>
 export default {
   data() {
     return {
-      users: [],         // List of available users
-      selectedUser: null, // Currently selected user ID
-      userData: [],       // Data for the selected user
+      name: "",  // Make sure to initialize the name property
+      userData: null,
+      errorMessage: null, // New variable to track error messages
     };
   },
   mounted() {
-    // Fetch the list of users
-    // this.fetchUsers();
-    // this.fetchUsers2();
+
     this.fetchUserData2();
   },
   methods: {
-    // fetchUsers() {
-    //   // Fetch the list of users from the backend API
-    //   // Replace 'https://your-backend-api/users' with the actual endpoint
-    //   fetch('http://localhost:6969/user')
-    //     .then(response => response.json())
-    //     .then(users => {
-    //       this.users = users;
-    //       // Set the default selected user (you can choose the first user, for example)
-    //       this.selectedUser = users.length > 0 ? users[0].id : null;
-    //       // Fetch data for the default selected user
-    //       this.fetchUserData();
-    //     })
-    //     .catch(error => {
-    //       console.error('Error fetching users:', error);
-    //     });
-    // },
-    // fetchUserData() {
-    //   if (this.selectedUser) {
-    //     // Fetch data for the selected user
-    //     fetch(`http://localhost:6969/user/data/${this.selectedUser}`)
-    //       .then(response => response.json())
-    //       .then(userData => {
-    //         this.userData = userData;
-    //       })
-    //       .catch(error => {
-    //         console.error('Error fetching user data:', error);
-    //       });
-    //   } else {
-    //     // Clear data if no user is selected
-    //     this.userData = [];
-    //   }
-    // },
 
+    async fetchUserData2()
+    {
+      try
+      {
+        // Check if the name input is empty
+        if (!this.name.trim())
+        {
+          console.error('Please enter a name before fetching user data.');
+          this.errorMessage = 'Please enter ur username!';
+          return;  // Do not proceed with the API request if the input is empty
+        }
 
-    // fetchUsers2() {
-    //   // Fetch the list of users from the backend API
-    //   // Replace 'https://your-backend-api/users' with the actual endpoint
-    //   fetch('http://localhost:6969/user')
-    //     .then(response => response.json())
-    //     .then(users => {
-    //       this.users = users;
-    //       // Set the default selected user (you can choose the first user, for example)
-    //       this.selectedUser = 'lol';
-    //
-    //       // Fetch data for the default selected user
-    //       this.fetchUserData2();
-    //       console.log('SELECTED USER: ')
-    //       console.log(this.selectedUser)
-    //     })
-    //     .catch(error => {
-    //       console.error('Error fetching users:', error);
-    //     });
-    // },
-    async fetchUserData2(name) {
-      try {
         // Make an API request to your Django backend
-        const response = await fetch(`http://localhost:6969/user/data/${name}`);
+        const response = await fetch(`http://localhost:6969/user/data/${this.name}`);
         console.log('RESPONSE: ')
         console.log(response)
         const data = await response.json();
-        console.log('DATA: ')
-        console.log(data)
-        // print(data)
 
-        if (response.ok) {
+        // print(data)
+        if (response.ok)
+        {
           // Update the userData in the component with the received data
+          console.log('RESPONSE OK: ', data)
+          this.errorMessage = null;
           this.userData = data;
         }
         else
         {
-          console.error('Error fetching user data:', data.error);
+          console.log('RESPONSE NOT OK')
+          // console.error('Error fetching user data:', data.error);
+          this.errorMessage = 'Username does not exist in DB';
         }
-      } catch (error) {
+      }
+      catch (error)
+      {
         console.error('Error fetching user data:', error);
+        this.errorMessage = 'Error fetching user data';
       }
     },
   },
