@@ -31,7 +31,30 @@ TEST_ENVIRONMENT/
 │   └── manage.py
 │
 │
-├── frontMock/
+├── frontMockVue/
+│   │ 
+│   └── frontTest/
+│       │
+│       ├── public/
+│       │   ├── *.html
+│       │   └── *.ico
+│       │
+│       ├── src/
+│       │   ├── assets/
+│       │   │   └── *.png
+│       │   │
+│       │   ├── components/
+│       │   │   └── MyComponent.vue [main FE file rn]
+│       │   │
+│       │   ├── App.vue
+│       │   └── main.js
+│       │ 
+│       ├── babel.config.js
+│       ├── *.json
+│       └── vue.config.js
+│
+│
+├── frontMock/ [OLD]
 │   │ 
 │   └── frontTest/
 │       │
