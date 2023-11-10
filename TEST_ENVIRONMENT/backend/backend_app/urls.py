@@ -5,6 +5,8 @@ urlpatterns = [
     # will search function 'home' in views.py file
     path('', views.goToFrontend),  # happens when user enters backend port
 
-    path('user/', views.signup, name='signup_api'),
+    path('user/', views.getUserList, name='signup_api'),
+    path('user/data/<int:user_id>/', views.getUserData, name='userData')
+    # path('user/<>', views.signup, name='signup_api'),
     # path('sinin', views.signin)
 ]

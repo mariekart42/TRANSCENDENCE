@@ -223,9 +223,17 @@ import doggo from '/good_boi.jpeg';
 // }
 
 
-
+// GOD SHIT HERE:
 function UserList() {
+
+    // app.get('/api/users', (req, res) => {
+    //
+    //     // Handle GET request for users
     const [users, setUsers] = useState([]);
+    // });
+    //   app.get('/api/lol', (req, res) => {
+    //
+    //   });
 
     useEffect(() => {
         fetch('http://localhost:6969/user/')  // Replace with your Django API endpoint URL
@@ -254,3 +262,67 @@ function UserList() {
 
 
 export default UserList;
+
+//
+// function UserForm() {
+//     const [formData, setFormData] = useState({
+//         name: '',
+//         password: '',
+//         age: ''
+//     });
+//
+//     const handleInputChange = (e) => {
+//         const { name, value } = e.target;
+//         setFormData({
+//             ...formData,
+//             [name]: value
+//         });
+//     };
+//
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
+//         // Add your form submission logic here (e.g., send data to the backend)
+//         console.log('Form submitted:', formData);
+//     };
+//
+//     return (
+//         <div>
+//             <h1>User Form</h1>
+//             <form onSubmit={handleSubmit}>
+//                 <label>
+//                     Name:
+//                     <input
+//                         type="text"
+//                         name="name"
+//                         value={formData.name}
+//                         onChange={handleInputChange}
+//                     />
+//                 </label>
+//                 <br />
+//                 <label>
+//                     Password:
+//                     <input
+//                         type="password"
+//                         name="password"
+//                         value={formData.password}
+//                         onChange={handleInputChange}
+//                     />
+//                 </label>
+//                 <br />
+//                 <label>
+//                     Age:
+//                     <input
+//                         type="number"
+//                         name="age"
+//                         value={formData.age}
+//                         onChange={handleInputChange}
+//                     />
+//                 </label>
+//                 <br />
+//                 <button type="submit">Submit</button>
+//             </form>
+//         </div>
+//     );
+// }
+//
+// export default UserForm;
