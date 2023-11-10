@@ -17,14 +17,20 @@ def getUserList(request):
     return JsonResponse(user_list, safe=False)
 
 
-def getUserData(request, user_id):
-    user_data = User.objects.filter(id=user_id)
+def getUserData(request, username):
+    print('BACKEND USERNAME: ')
+    print(username)
+    user_data = User.objects.filter(name=username)
     user_data_list = [{
         'id': data.id,
         'name': data.name,
         'password': data.password,
         'age': data.age
         } for data in user_data]
+
+    print('USER LIST: ')
+    print(user_data_list)
+
     return JsonResponse(user_data_list, safe=False)
 
 
