@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1>Find User</h1>
+      <h1>Login Page</h1>
     <label for="username">Enter your name:</label><br>
     <input type="text" id="username" v-model="name" /><br><br>
     <label for="password">Enter your password:</label><br>
