@@ -39,8 +39,18 @@
       <h2>Welcome, {{ userData.user_data.name }}!</h2>
       NAME &nbsp;: {{ userData.user_data.name }}<br>
       PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
-      AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
+      AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br><br>
+
       <button @click="logout">Logout</button>
+
+      <div v-if="showImageFlag">
+        <button @click="hideImage">hide Image</button><br><br><br>
+      </div>
+      <div v-else>
+        <button @click="showImage">show Image</button><br><br><br>
+      </div>
+      <!-- Only shows image if showImageFlag is set to true -->
+      <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
     </div>
 
     <!-- Content for logged-out state -->
@@ -72,6 +82,8 @@ export default {
       loginColor: 'green',
       errorColor: 'red',
       isLoggedIn: false,
+      showImageFlag: false,
+      imageUrl: "images/moon_dog.jpg",
     };
   },
   mounted() {
@@ -137,7 +149,14 @@ export default {
       }
     },
 
-      logout() {
+    showImage() {
+      this.showImageFlag = true;
+    },
+    hideImage() {
+      this.showImageFlag = false;
+    },
+
+    logout() {
       // Perform logout logic here
       this.isLoggedIn = false;
       // Additional logic like clearing tokens, redirecting, etc.
