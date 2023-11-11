@@ -19,9 +19,6 @@
 <!--      &lt;!&ndash; Input for selecting a new avatar &ndash;&gt;-->
 <!--      <input type="file" id="avatarInput" @change="handleAvatarChange" accept="image/*">-->
 
-
-
-
       <button @click="logout">Logout</button>
 
       <div v-if="showImageFlag">
@@ -34,14 +31,28 @@
       <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
     </div>
 
-    <!-- Content for logged-out state -->
-    <div v-else>
-      <h1>Login Page</h1>
-      <label for="username">Enter your name:</label><br>
-      <input type="text" id="username" v-model="name" /><br><br>
-      <label for="password">Enter your password:</label><br>
-      <input type="text" id="password" v-model="password" /><br><br>
-      <button @click="fetchUserData">Submit</button>
+      <!-- Content for logged-out state -->
+      <div v-else>
+        <div v-if="showPage === 'login'">
+          <h1>Login Page</h1>
+          <label for="username">Enter your name:</label><br>
+          <input type="text" id="username" v-model="name" /><br><br>
+          <label for="password">Enter your password:</label><br>
+          <input type="text" id="password" v-model="password" /><br><br>
+          <button @click="fetchUserData">Submit</button><br><br>
+          <button @click="changeToRegisterPage">No Account yet?</button><br><br>
+        </div>
+        <div v-else>
+          <h1>Register Page</h1>
+          <label for="username">Enter your name:</label><br>
+          <input type="text" id="username" v-model="new_name" /><br><br>
+          <label for="age">Enter your Age:</label><br>
+          <input type="text" id="age" v-model="new_age" />not using yet<br><br>
+          <label for="password">Enter your password:</label><br>
+          <input type="text" id="password" v-model="new_password" /><br><br>
+          <button @click="createAccount">Submit</button><br><br>
+          <button @click="changeToLoginPage">Have an Account?</button><br><br>
+        </div>
 
       <!-- Display error message -->
       <div v-if="errorMessage" :style="{ color: errorColor }">
@@ -58,6 +69,10 @@ export default {
     return {
       name: "",  // Make sure to initialize the name property
       password: "",
+
+      new_name: "",
+      new_age: "",
+      new_password: "",
       userData: null,
       errorMessage: null, // New variable to track error messages
       loginColor: 'green',
@@ -65,6 +80,7 @@ export default {
       isLoggedIn: false,
       showImageFlag: false,
       imageUrl: "images/moon_dog.jpg",
+      showPage: 'login'
     };
   },
   mounted() {
@@ -132,20 +148,18 @@ export default {
 
 
     async updateUserAge() {
-      try {
+      try
+      {
         const myInit = {
           method: "POST",
           body: JSON.stringify({
             newAge: this.userData.user_data.age + 1,
           }),
         };
+
         // Make an API request to update the age
         const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
-        const response = await fetch(apiUrl, myInit
-        );
-
-        console.log('RESPONSE: ')
-        console.log(response)
+        const response = await fetch(apiUrl, myInit);
 
         if (response.ok)
         {
@@ -169,6 +183,37 @@ export default {
       this.isLoggedIn = false;
       // Additional logic like clearing tokens, redirecting, etc.
     },
+
+    changeToRegisterPage() {
+      this.showPage = 'register'
+    },
+    changeToLoginPage() {
+      this.showPage = 'login'
+    },
+
+
+    async createAccount() {
+      try
+      {
+        const apiUrl = `http://localhost:6969/user/createAccount/${this.new_name}/${this.new_password}/${this.new_age}/`;
+        const response = await fetch(apiUrl);
+        if (response.ok)
+        {
+          console.log('creating new account successfully');
+          // Fetch user data again to get the updated information
+          this.fetchUserData();
+        }
+        else
+        {
+          console.error('Failed to creating new account:', response.statusText);
+        }
+      }
+      catch (error) {
+        console.error('Error creating new account:', error);
+      }
+    }
+
+
   },
 };
 </script>

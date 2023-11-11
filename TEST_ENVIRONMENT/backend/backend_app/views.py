@@ -61,6 +61,27 @@ def updateUserAge(request, user_id):
         return JsonResponse({'error': 'something big'}, status=500)
 
 
+
+def createAccount(request, username, password, age):
+    # Assuming you receive user data in the request, e.g., through a form or API request
+    user_data = {
+        "name": username,
+        "password": password,
+        "age": age,
+    }
+
+    new_user = MyUser(**user_data)
+
+    # Save the new user to the database
+    new_user.save()
+
+    # Respond with a success message or appropriate data
+    return JsonResponse({"message": "User created successfully"})
+
+
+
+
+
 @require_POST
 def updateAvatar(request, id):
     print('IN UPDATE AVATAR:))')
