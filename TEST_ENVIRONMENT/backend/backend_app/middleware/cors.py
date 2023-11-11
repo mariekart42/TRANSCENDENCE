@@ -3,8 +3,21 @@ class CorsMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # Log incoming Origin header
+        origin = request.META.get('HTTP_ORIGIN', '')
+        print('Incoming Origin:', origin)
+
         response = self.get_response(request)
-        response["Access-Control-Allow-Origin"] = "http://localhost:4242"  # FRONTEND DOMAIN
-        response["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-        response["Access-Control-Allow-Headers"] = "Content-Type"
+
+        # Allow all origins for simplicity; adjust as needed
+        response["Access-Control-Allow-Origin"] = "*"
+
+        # Handle OPTIONS requests
+        if request.method == "OPTIONS":
+            print(response)
+            print('IN OPTIONS THINGY')
+            # Include any specific headers needed for the OPTIONS request
+            response["Access-Control-Allow-Origin"] = "*"
+            print(response)
+
         return response

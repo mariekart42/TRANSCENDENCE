@@ -10,6 +10,18 @@
       PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
       AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br><br>
 
+      <button @click="updateUserAge">Update Age</button>
+
+            <!-- Display current user avatar -->
+<!--      <img v-if="userData.user_data.avatar" :src="userData.user_data.avatar" alt="User Avatar" />-->
+
+<!--      <label for="avatarInput">Update Avatar:</label>-->
+<!--      &lt;!&ndash; Input for selecting a new avatar &ndash;&gt;-->
+<!--      <input type="file" id="avatarInput" @change="handleAvatarChange" accept="image/*">-->
+
+
+
+
       <button @click="logout">Logout</button>
 
       <div v-if="showImageFlag">
@@ -91,9 +103,7 @@ export default {
           this.errorMessage = 'Please enter ur password!';
           return;  // Do not proceed with the API request if the input is empty
         }
-
-        // Make an API request to your Django backend
-        const response = await fetch(`http://localhost:6969/user/data/${this.name}/${this.password}`);
+        const response = await fetch(`http://127.0.0.1:6969/user/data/${this.name}/${this.password}/`);
         console.log('RESPONSE: ')
         console.log(response)
         const data = await response.json();
@@ -118,6 +128,40 @@ export default {
 
     flipImageFlag() {
       this.showImageFlag = !this.showImageFlag;
+    },
+
+
+    async updateUserAge() {
+      try {
+        const myInit = {
+          method: "POST",
+          body: JSON.stringify({
+            newAge: this.userData.user_data.age + 1,
+          }),
+        };
+        // Make an API request to update the age
+        const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
+        const response = await fetch(apiUrl, myInit
+        );
+
+        console.log('RESPONSE: ')
+        console.log(response)
+
+        if (response.ok)
+        {
+          console.log('Age updated successfully');
+          // Fetch user data again to get the updated information
+          this.fetchUserData();
+        }
+        else
+        {
+          console.error('Failed to update age:', response.statusText);
+        }
+      }
+      catch (error)
+      {
+        console.error('Error updating age:', error);
+      }
     },
 
     logout() {
