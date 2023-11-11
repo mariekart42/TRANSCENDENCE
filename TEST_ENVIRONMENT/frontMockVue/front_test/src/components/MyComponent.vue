@@ -1,34 +1,3 @@
-<!--<template>-->
-<!--    <div>-->
-<!--      <h1>Login Page</h1>-->
-<!--    <label for="username">Enter your name:</label><br>-->
-<!--    <input type="text" id="username" v-model="name" /><br><br>-->
-<!--    <label for="password">Enter your password:</label><br>-->
-<!--    <input type="text" id="password" v-model="password" /><br><br>-->
-<!--    <button @click="fetchUserData">Submit</button>-->
-
-<!--    <div v-if="!errorMessage">-->
-<!--      <div v-if="userData && userData.user_data">-->
-<!--        <p :style="{ color: loginColor }">Login successful</p>-->
-<!--        <h2>Welcome, {{ userData.user_data.name }}!</h2>-->
-<!--        NAME &nbsp;: {{ userData.user_data.name }}<br>-->
-<!--        PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>-->
-<!--        AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>-->
-<!--      </div>-->
-<!--      <div v-else>-->
-<!--        <p>No user data available.</p>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Display error message &ndash;&gt;-->
-<!--    <div v-else :style="{ color: errorColor }">-->
-<!--      <p>{{ errorMessage }}</p>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</template>-->
-
-
-
 
 <template>
   <div>
@@ -44,10 +13,10 @@
       <button @click="logout">Logout</button>
 
       <div v-if="showImageFlag">
-        <button @click="hideImage">hide Image</button><br><br><br>
+        <button @click="flipImageFlag">hide Image</button><br><br><br>
       </div>
       <div v-else>
-        <button @click="showImage">show Image</button><br><br><br>
+        <button @click="flipImageFlag">show Image</button><br><br><br>
       </div>
       <!-- Only shows image if showImageFlag is set to true -->
       <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
@@ -90,7 +59,9 @@ export default {
     this.checkAuthentication();
   },
   methods: {
-    async checkAuthentication() {
+
+    async checkAuthentication()
+    {
       // You would typically perform an API request or check a stored token here
       // For simplicity, I'll use a timeout to simulate an asynchronous check
       setTimeout(() => {
@@ -104,7 +75,6 @@ export default {
       }, 1000);  // Simulating a delay for the authentication check
     },
 
-
     async fetchUserData()
     {
       try
@@ -112,14 +82,12 @@ export default {
         // Check if the name input is empty
         if (!this.name.trim())
         {
-          console.error('Please enter a name before fetching user data.');
           this.errorMessage = 'Please enter ur username!';
           return;  // Do not proceed with the API request if the input is empty
         }
         // Check if the password input is empty
         if (!this.password.trim())
         {
-          console.error('Please enter a password before fetching user data.');
           this.errorMessage = 'Please enter ur password!';
           return;  // Do not proceed with the API request if the input is empty
         }
@@ -132,7 +100,6 @@ export default {
 
         if (response.ok)
         {
-          console.log('RESPONSE OK: ', data)
           this.errorMessage = null;
           this.isLoggedIn = true;
           this.userData = data;
@@ -149,11 +116,8 @@ export default {
       }
     },
 
-    showImage() {
-      this.showImageFlag = true;
-    },
-    hideImage() {
-      this.showImageFlag = false;
+    flipImageFlag() {
+      this.showImageFlag = !this.showImageFlag;
     },
 
     logout() {
@@ -161,8 +125,6 @@ export default {
       this.isLoggedIn = false;
       // Additional logic like clearing tokens, redirecting, etc.
     },
-
-
   },
 };
 </script>
