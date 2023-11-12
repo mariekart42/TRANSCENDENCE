@@ -64,6 +64,9 @@ def updateUserAge(request, user_id):
 
 def createAccount(request, username, password, age):
     # Assuming you receive user data in the request, e.g., through a form or API request
+    user = MyUser.objects.filter(name=username).exists()
+    if user:
+        return JsonResponse({'error': 'Username already exist'}, status=409)
     user_data = {
         "name": username,
         "password": password,

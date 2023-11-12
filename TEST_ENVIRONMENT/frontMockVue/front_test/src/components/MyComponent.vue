@@ -51,6 +51,9 @@
           <label for="password">Enter your password:</label><br>
           <input type="text" id="password" v-model="new_password" /><br><br>
           <button @click="createAccount">Submit</button><br><br>
+            <div v-if="isLoggedIn">
+
+            </div>
           <button @click="changeToLoginPage">Have an Account?</button><br><br>
         </div>
 
@@ -164,6 +167,7 @@ export default {
         if (response.ok)
         {
           console.log('Age updated successfully');
+          this.isLoggedIn = true
           // Fetch user data again to get the updated information
           this.fetchUserData();
         }
@@ -181,14 +185,21 @@ export default {
     logout() {
       // Perform logout logic here
       this.isLoggedIn = false;
+      this.name = ""
+      this.password = ""
       // Additional logic like clearing tokens, redirecting, etc.
     },
 
     changeToRegisterPage() {
       this.showPage = 'register'
+      this.name = ""
+      this.password = ""
     },
     changeToLoginPage() {
       this.showPage = 'login'
+      this.new_name = ""
+      this.new_password = ""
+      this.new_age = ""
     },
 
 
@@ -197,19 +208,28 @@ export default {
       {
         const apiUrl = `http://localhost:6969/user/createAccount/${this.new_name}/${this.new_password}/${this.new_age}/`;
         const response = await fetch(apiUrl);
+        const data = await response.json();
         if (response.ok)
         {
           console.log('creating new account successfully');
+          // this.name = this.new_name
+          // this.age = this.new_age
+          // this.password = this.new_password
+          this.new_name = ""
+          this.new_password = ""
+          this.new_age = ""
           // Fetch user data again to get the updated information
-          this.fetchUserData();
+          // this.fetchUserData();
         }
         else
         {
           console.error('Failed to creating new account:', response.statusText);
+          this.errorMessage = data.error;
         }
       }
       catch (error) {
         console.error('Error creating new account:', error);
+        this.errorMessage = "lol some big error am been";
       }
     }
 
