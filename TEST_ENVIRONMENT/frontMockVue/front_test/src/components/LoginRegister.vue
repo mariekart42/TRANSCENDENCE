@@ -15,24 +15,17 @@
     <div v-else>
       <button @click="flipImageFlag">show Image</button><br><br>
     </div>
-
-    <!-- Connection to Chat component -->
     <button @click="flipChatFlag">Show Chat</button>
-
     <button @click="logout">Logout</button><br><br>
     <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
   </div>
 
-  <!--SHOW CHAT-->
-  <div v-else-if="showChatFlag">
-
-    <!-- Chat component will be rendered if showChatFlag is true -->
+  <!--USER CLICKED SHOW CHAT AND IS LOGGED IN-->
+  <div v-else-if="showChatFlag && isLoggedIn">
     <ChatComponent v-if="showChatFlag" />
-
-    <!-- Connection to Chat component -->
     <button @click="flipChatFlag">Hide Chat</button>
-
   </div>
+
 
   <!--USER IS NOT LOGGED IN-->
   <div v-else>
@@ -47,7 +40,7 @@
       <button @click="fetchUserData">Submit</button><br><br>
       <button @click="changeToRegisterPage">No Account yet?</button><br><br>
 
-      <!--ERROR-->
+      <!--DISPLAY ERROR-->
       <div v-if="errorMessage" :style="{ color: errorColor }">
         <p>{{ errorMessage }}</p>
       </div>
@@ -65,7 +58,7 @@
       <button @click="createAccount">Submit</button><br><br>
       <button @click="changeToLoginPage">Have an Account?</button><br><br>
 
-      <!--ERROR-->
+      <!--DISPLAY ERROR-->
       <div v-if="errorMessage" :style="{ color: errorColor }">
         <p>{{ errorMessage }}</p>
       </div>
