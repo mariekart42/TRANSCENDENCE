@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <h3>Chat Component</h3>
+    <h2>Chat Component</h2>
 
   </div>
 </template>

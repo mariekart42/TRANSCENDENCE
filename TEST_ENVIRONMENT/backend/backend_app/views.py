@@ -40,18 +40,70 @@ def updateUserAge(request, user_id):
         user_exists = MyUser.objects.filter(id=user_id).exists()
         if not user_exists:
             return JsonResponse({'error': 'User not found'}, status=404)
-        user2 = MyUser.objects.get(id=user_id)
+        user = MyUser.objects.get(id=user_id)
 
         # Extract the new age from the request body
         data = json.loads(request.body.decode('utf-8'))
         new_age = data.get('newAge')
-        user2.age = new_age
-        user2.save()
+        user.age = new_age
+        user.save()
 
         return JsonResponse({'message': 'Age updated successfully'}, status=200)
 
     except Exception as e:
         return JsonResponse({'error': 'something big in updateUserAge'}, status=500)
+
+
+@require_POST
+def updateUserName(request, user_id):
+    try:
+        # should technically never happen but just in case lol:
+        user_exists = MyUser.objects.filter(id=user_id).exists()
+        if not user_exists:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        user = MyUser.objects.get(id=user_id)
+
+        # Extract the new username from the request body
+        data = json.loads(request.body.decode('utf-8'))
+        new_name = data.get('newName')
+
+        chek_name_duplicate = MyUser.objects.filter(name=new_name).exists()
+        if chek_name_duplicate:
+            return JsonResponse({'error': 'Username already exists!'}, status=409)
+
+        user.name = new_name
+
+        user.save()
+
+        return JsonResponse({'message': 'Username updated successfully'}, status=200)
+
+    except Exception as e:
+        return JsonResponse({'error': 'something big in updateUserName'}, status=500)
+
+
+@require_POST
+def updateUserPassword(request, user_id):
+    try:
+        # should technically never happen but just in case lol:
+        user_exists = MyUser.objects.filter(id=user_id).exists()
+        if not user_exists:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        user = MyUser.objects.get(id=user_id)
+
+        # Extract the new username from the request body
+        data = json.loads(request.body.decode('utf-8'))
+        new_password = data.get('newPassword')
+
+        user.password = new_password
+
+        user.save()
+
+        return JsonResponse({'message': 'password updated successfully'}, status=200)
+
+    except Exception as e:
+        return JsonResponse({'error': 'something big in updateUserPassword'}, status=500)
 
 
 def createAccount(request, username, password, age):

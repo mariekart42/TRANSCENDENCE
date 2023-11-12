@@ -1,29 +1,38 @@
 
 <template>
   <!--USER IS LOGGED IN-->
-  <div v-if="!showChatFlag && isLoggedIn && userData && userData.user_data">
+  <div v-if="!showChatFlag && !updateUserDataFlag && isLoggedIn && userData && userData.user_data">
     <h2>Welcome, {{ userData.user_data.name }}!</h2>
-    NAME &nbsp;: {{ userData.user_data.name }}<br>
-    PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
-    AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br>
-    make me:
-    <button @click="updateUserAge(-1)">younger</button>&nbsp;
-    <button @click="updateUserAge(+1)">older</button><br>
+<!--    NAME &nbsp;: {{ userData.user_data.name }}<br>-->
+<!--    PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>-->
+<!--    AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br>-->
+
     <div v-if="showImageFlag">
       <button @click="flipImageFlag">hide Image</button><br><br>
     </div>
     <div v-else>
       <button @click="flipImageFlag">show Image</button><br><br>
     </div>
+    <button @click="flipUpdateUserFlag">Change User Data</button><br>
     <button @click="flipChatFlag">Show Chat</button>
     <button @click="logout">Logout</button><br><br>
     <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
   </div>
 
-  <!--USER CLICKED SHOW CHAT AND IS LOGGED IN-->
-  <div v-else-if="showChatFlag && isLoggedIn">
+  <!--USER CLICKED UPDATE USER DATA-->
+  <div v-else-if="updateUserDataFlag">
+    <UpdateUserData
+        :userDataObject="userData"
+        :fetchUserDataFunc="fetchUserData"
+        @update-user-name="updateUserNameInParent"
+        @update-user-password="updateUserPasswordInParent"/>
+    <button @click="flipUpdateUserFlag">Go Back</button>
+  </div>
+
+  <!--USER CLICKED SHOW CHAT-->
+  <div v-else-if="showChatFlag">
     <ChatComponent v-if="showChatFlag" />
-    <button @click="flipChatFlag">Hide Chat</button>
+    <button @click="flipChatFlag">Go Back</button>
   </div>
 
 
@@ -69,13 +78,16 @@
 <script>
 
 import ChatComponent from "./ChatComponent.vue";
+import UpdateUserData from "./UpdateUserData.vue";
 
 export default {
   components: {
     ChatComponent,
+    UpdateUserData
   },
   data() {
     return {
+      updateUserDataFlag: false,
       showChatFlag: false,
 
       name: "",  // Make sure to initialize the name property
@@ -98,8 +110,31 @@ export default {
     this.checkAuthentication();
   },
   methods: {
+
+    updateUserNameInParent(newUserName) {
+      try {
+        this.userData.user_data.name = newUserName;
+        this.name = newUserName
+      } catch (error) {
+        console.error('Error updating username in parent:', error);
+      }
+    },
+    updateUserPasswordInParent(newUserPassword) {
+      try {
+        this.userData.user_data.password = newUserPassword;
+        this.password = newUserPassword
+      } catch (error) {
+        console.error('Error updating password in parent:', error);
+      }
+    },
+
+
+    flipUpdateUserFlag() {
+      this.updateUserDataFlag = !this.updateUserDataFlag
+    },
+
     flipChatFlag() {
-      this.showChatFlag = !this.showChatFlag;
+      this.showChatFlag = !this.showChatFlag
     },
 
     async checkAuthentication()
@@ -157,32 +192,32 @@ export default {
       this.showImageFlag = !this.showImageFlag;
     },
 
-    async updateUserAge(operation) {
-      try
-      {
-        const myInit = {
-          method: "POST",
-          body: JSON.stringify({
-            newAge: this.userData.user_data.age + operation,
-          }),
-        };
-        const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
-        const response = await fetch(apiUrl, myInit);
-        if (response.ok)
-        {
-          console.log('Age updated successfully');
-          this.isLoggedIn = true
-          // Fetch user data again to get the updated information
-          this.fetchUserData();
-        }
-        else {
-          console.error('Failed to update age:', response.statusText);
-        }
-      }
-      catch (error) {
-        console.error('Error updating age:', error);
-      }
-    },
+    // async updateUserAge(operation) {
+    //   try
+    //   {
+    //     const myInit = {
+    //       method: "POST",
+    //       body: JSON.stringify({
+    //         newAge: this.userData.user_data.age + operation,
+    //       }),
+    //     };
+    //     const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
+    //     const response = await fetch(apiUrl, myInit);
+    //     if (response.ok)
+    //     {
+    //       console.log('Age updated successfully');
+    //       this.isLoggedIn = true
+    //       // Fetch user data again to get the updated information
+    //       this.fetchUserData();
+    //     }
+    //     else {
+    //       console.error('Failed to update age:', response.statusText);
+    //     }
+    //   }
+    //   catch (error) {
+    //     console.error('Error updating age:', error);
+    //   }
+    // },
 
     logout() {
       this.isLoggedIn = false;
