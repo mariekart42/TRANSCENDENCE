@@ -1,12 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from .models import MyUser
 from django.http import JsonResponse
-from django.contrib.auth import authenticate
 import json  # build in python module
 from django.views.decorators.http import require_GET, require_POST
-from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth.hashers import check_password
-from django.shortcuts import get_object_or_404
 
 
 def goToFrontend(request):
@@ -22,7 +18,6 @@ def getUserData(request, username, provided_password):
 
         user = MyUser.objects.get(name=username)
 
-        # Compare the provided password with the stored password
         if provided_password == user.password:
             user_data = {
                 'id': user.id,
@@ -34,18 +29,16 @@ def getUserData(request, username, provided_password):
         else:
             return JsonResponse({'error': 'Password is wrong'}, status=401)
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return JsonResponse({'error': 'something big'}, status=500)
+        print(f"An error occurred: { str(e) }")
+        return JsonResponse({'error': 'something big in getUserData'}, status=500)
 
 
 @require_POST
 def updateUserAge(request, user_id):
     try:
-        print('IN UPDATE AGE SHIT')
-
-        # should never happen lol
-        user1 = MyUser.objects.filter(id=user_id).exists()
-        if not user1:
+        # should technically never happen but just in case lol:
+        user_exists = MyUser.objects.filter(id=user_id).exists()
+        if not user_exists:
             return JsonResponse({'error': 'User not found'}, status=404)
         user2 = MyUser.objects.get(id=user_id)
 
@@ -58,33 +51,34 @@ def updateUserAge(request, user_id):
         return JsonResponse({'message': 'Age updated successfully'}, status=200)
 
     except Exception as e:
-        return JsonResponse({'error': 'something big'}, status=500)
-
+        return JsonResponse({'error': 'something big in updateUserAge'}, status=500)
 
 
 def createAccount(request, username, password, age):
-    # Assuming you receive user data in the request, e.g., through a form or API request
-    user = MyUser.objects.filter(name=username).exists()
-    if user:
-        return JsonResponse({'error': 'Username already exist'}, status=409)
-    user_data = {
-        "name": username,
-        "password": password,
-        "age": age,
-    }
+    try:
+        user = MyUser.objects.filter(name=username).exists()
+        if user:
+            return JsonResponse({'error': 'Username already exist'}, status=409)
+        if age is not None and (age < 0 or age > 200):
+            return JsonResponse({"error": "Dude, there is no way you're " + str(age)}, status=409)
+        user_data = {
+            "name": username,
+            "password": password,
+            "age": age,
+        }
+        new_user = MyUser(**user_data)
+        new_user.save()
 
-    new_user = MyUser(**user_data)
-
-    # Save the new user to the database
-    new_user.save()
-
-    # Respond with a success message or appropriate data
-    return JsonResponse({"message": "User created successfully"})
-
-
+        return JsonResponse({"message": "User created successfully"})
+    except Exception as e:
+        return JsonResponse({'error': 'something big in createAccount'}, status=500)
 
 
 
+
+
+
+# not using dis yet/maybe never lol:
 @require_POST
 def updateAvatar(request, id):
     print('IN UPDATE AVATAR:))')

@@ -34,7 +34,7 @@
           <label for="username">Enter your name:</label><br>
           <input type="text" id="username" v-model="new_name" /><br><br>
           <label for="age">Enter your Age:</label><br>
-          <input type="text" id="age" v-model="new_age" />not using yet<br><br>
+          <input type="text" id="age" v-model="new_age" /><br><br>
           <label for="password">Enter your password:</label><br>
           <input type="text" id="password" v-model="new_password" /><br><br>
           <button @click="createAccount">Submit</button><br><br>
