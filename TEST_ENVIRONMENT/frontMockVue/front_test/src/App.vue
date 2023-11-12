@@ -6,11 +6,11 @@
 </template>
 
 <script>
-import MyComponent from './components/MyComponent.vue';
+import LoginRegister from "@/components/LoginRegister.vue";
 
 export default {
   components: {
-    'my-component': MyComponent,
+    'my-component': LoginRegister,
   },
 };
 </script>

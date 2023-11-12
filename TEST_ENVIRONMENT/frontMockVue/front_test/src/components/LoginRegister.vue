@@ -1,66 +1,56 @@
 
 <template>
-  <div>
-    <div v-if="isLoggedIn && userData && userData.user_data">
-<!--      <p :style="{ color: loginColor }">Login successful</p>-->
-      <h2>Welcome, {{ userData.user_data.name }}!</h2>
-          NAME &nbsp;: {{ userData.user_data.name }}<br>
-          PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
-          AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
-        <br>
-      make me:
-      <button @click="updateUserAge(-1)">younger</button>&nbsp;
-      <button @click="updateUserAge(+1)">older</button><br>
-      <div v-if="showImageFlag">
-        <button @click="flipImageFlag">hide Image</button><br><br>
-      </div>
-      <div v-else>
-        <button @click="flipImageFlag">show Image</button><br><br>
-      </div>
-      <button @click="logout">Logout</button><br><br>
-      <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
+  <!--USER IS LOGGED IN-->
+  <div v-if="isLoggedIn && userData && userData.user_data">
+    <h2>Welcome, {{ userData.user_data.name }}!</h2>
+    NAME &nbsp;: {{ userData.user_data.name }}<br>
+    PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
+    AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br>
+    make me:
+    <button @click="updateUserAge(-1)">younger</button>&nbsp;
+    <button @click="updateUserAge(+1)">older</button><br>
+    <div v-if="showImageFlag">
+      <button @click="flipImageFlag">hide Image</button><br><br>
     </div>
-      <!-- Content for logged-out state -->
-      <div v-else>
-        <div v-if="showPage === 'login'">
-          <h1>Login Page</h1>
-          <label for="username">Enter your name:</label><br>
-          <input type="text" id="username" v-model="name" /><br><br>
-          <label for="password">Enter your password:</label><br>
-          <input type="text" id="password" v-model="password" /><br><br>
-          <button @click="fetchUserData">Submit</button><br><br>
-          <button @click="changeToRegisterPage">No Account yet?</button><br><br>
-        </div>
-        <div v-else>
-          <h1>Register Page</h1>
-          <label for="username">Enter your name:</label><br>
-          <input type="text" id="username" v-model="new_name" /><br><br>
-          <label for="age">Enter your Age:</label><br>
-          <input type="text" id="age" v-model="new_age" /><br><br>
-          <label for="password">Enter your password:</label><br>
-          <input type="text" id="password" v-model="new_password" /><br><br>
-          <button @click="createAccount">Submit</button><br><br>
-            <div v-if="isLoggedIn && userData && userData.user_data">
-<!--              <p :style="{ color: loginColor }">Login successful</p>-->
-              <h2>Welcome, {{ userData.user_data.name }}!</h2>
-                  NAME &nbsp;: {{ userData.user_data.name }}<br>
-                  PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
-                  AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
-                <br>
-              make me:
-              <button @click="updateUserAge(-1)">younger</button>&nbsp;
-              <button @click="updateUserAge(+1)">older</button><br>
-              <div v-if="showImageFlag">
-                <button @click="flipImageFlag">hide Image</button><br><br>
-              </div>
-              <div v-else>
-                <button @click="flipImageFlag">show Image</button><br><br>
-              </div>
-              <button @click="logout">Logout</button><br><br>
-              <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
-            </div>
-          <button @click="changeToLoginPage">Have an Account?</button><br><br>
-        </div>
+    <div v-else>
+      <button @click="flipImageFlag">show Image</button><br><br>
+    </div>
+    <button @click="logout">Logout</button><br><br>
+    <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
+  </div>
+
+  <!--USER IS NOT LOGGED IN-->
+  <div v-else>
+
+    <!--LOGIN PAGE-->
+    <div v-if="showPage === 'login'">
+      <h1>Login Page</h1>
+      <label for="username">Enter your name:</label><br>
+      <input type="text" id="username" v-model="name" /><br><br>
+      <label for="password">Enter your password:</label><br>
+      <input type="text" id="password" v-model="password" /><br><br>
+      <button @click="fetchUserData">Submit</button><br><br>
+      <button @click="changeToRegisterPage">No Account yet?</button><br><br>
+
+      <!--ERROR-->
+      <div v-if="errorMessage" :style="{ color: errorColor }">
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
+
+    <!--REGISTER PAGE-->
+    <div v-else>
+      <h1>Register Page</h1>
+      <label for="username">Enter your name:</label><br>
+      <input type="text" id="username" v-model="new_name" /><br><br>
+      <label for="age">Enter your Age:</label><br>
+      <input type="text" id="age" v-model="new_age" /><br><br>
+      <label for="password">Enter your password:</label><br>
+      <input type="text" id="password" v-model="new_password" /><br><br>
+      <button @click="createAccount">Submit</button><br><br>
+      <button @click="changeToLoginPage">Have an Account?</button><br><br>
+
+      <!--ERROR-->
       <div v-if="errorMessage" :style="{ color: errorColor }">
         <p>{{ errorMessage }}</p>
       </div>
@@ -68,11 +58,18 @@
   </div>
 </template>
 
-
 <script>
+
+// import ChatComponent from "./ChatComponent.vue";
+
 export default {
+  // components: {
+  //   ChatComponent,
+  // },
   data() {
     return {
+      showChatFlag: false,
+
       name: "",  // Make sure to initialize the name property
       password: "",
 
@@ -93,6 +90,9 @@ export default {
     this.checkAuthentication();
   },
   methods: {
+    showChat() {
+      this.showChatFlag = true;
+    },
 
     async checkAuthentication()
     {
@@ -128,15 +128,13 @@ export default {
         console.log('RESPONSE: ')
         console.log(response)
         const data = await response.json();
-
         if (response.ok)
         {
           this.errorMessage = null;
           this.isLoggedIn = true;
           this.userData = data;
         }
-        else
-        {
+        else {
           this.errorMessage = data.error;
         }
       }
@@ -169,13 +167,11 @@ export default {
           // Fetch user data again to get the updated information
           this.fetchUserData();
         }
-        else
-        {
+        else {
           console.error('Failed to update age:', response.statusText);
         }
       }
-      catch (error)
-      {
+      catch (error) {
         console.error('Error updating age:', error);
       }
     },
