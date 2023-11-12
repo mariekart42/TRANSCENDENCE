@@ -2,20 +2,22 @@
 <template>
   <div>
     <div v-if="isLoggedIn && userData && userData.user_data">
-      <p :style="{ color: loginColor }">Login successful</p>
+<!--      <p :style="{ color: loginColor }">Login successful</p>-->
       <h2>Welcome, {{ userData.user_data.name }}!</h2>
           NAME &nbsp;: {{ userData.user_data.name }}<br>
           PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
           AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
-        <br><br>
-      <button @click="updateUserAge">Update Age</button>
-      <button @click="logout">Logout</button>
+        <br>
+      make me:
+      <button @click="updateUserAge(-1)">younger</button>&nbsp;
+      <button @click="updateUserAge(+1)">older</button><br>
       <div v-if="showImageFlag">
-        <button @click="flipImageFlag">hide Image</button><br><br><br>
+        <button @click="flipImageFlag">hide Image</button><br><br>
       </div>
       <div v-else>
-        <button @click="flipImageFlag">show Image</button><br><br><br>
+        <button @click="flipImageFlag">show Image</button><br><br>
       </div>
+      <button @click="logout">Logout</button><br><br>
       <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
     </div>
       <!-- Content for logged-out state -->
@@ -39,20 +41,22 @@
           <input type="text" id="password" v-model="new_password" /><br><br>
           <button @click="createAccount">Submit</button><br><br>
             <div v-if="isLoggedIn && userData && userData.user_data">
-              <p :style="{ color: loginColor }">Login successful</p>
+<!--              <p :style="{ color: loginColor }">Login successful</p>-->
               <h2>Welcome, {{ userData.user_data.name }}!</h2>
                   NAME &nbsp;: {{ userData.user_data.name }}<br>
                   PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
                   AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
-                <br><br>
-              <button @click="updateUserAge">Update Age</button>
-              <button @click="logout">Logout</button>
+                <br>
+              make me:
+              <button @click="updateUserAge(-1)">younger</button>&nbsp;
+              <button @click="updateUserAge(+1)">older</button><br>
               <div v-if="showImageFlag">
-                <button @click="flipImageFlag">hide Image</button><br><br><br>
+                <button @click="flipImageFlag">hide Image</button><br><br>
               </div>
               <div v-else>
-                <button @click="flipImageFlag">show Image</button><br><br><br>
+                <button @click="flipImageFlag">show Image</button><br><br>
               </div>
+              <button @click="logout">Logout</button><br><br>
               <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
             </div>
           <button @click="changeToLoginPage">Have an Account?</button><br><br>
@@ -147,13 +151,13 @@ export default {
       this.showImageFlag = !this.showImageFlag;
     },
 
-    async updateUserAge() {
+    async updateUserAge(operation) {
       try
       {
         const myInit = {
           method: "POST",
           body: JSON.stringify({
-            newAge: this.userData.user_data.age + 1,
+            newAge: this.userData.user_data.age + operation,
           }),
         };
         const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
