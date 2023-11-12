@@ -1,36 +1,23 @@
 
 <template>
   <div>
-    <!-- Content for logged-in state -->
     <div v-if="isLoggedIn && userData && userData.user_data">
-      <!--      <div v-if="userData && userData.user_data">-->
       <p :style="{ color: loginColor }">Login successful</p>
       <h2>Welcome, {{ userData.user_data.name }}!</h2>
-      NAME &nbsp;: {{ userData.user_data.name }}<br>
-      PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
-      AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br><br>
-
+          NAME &nbsp;: {{ userData.user_data.name }}<br>
+          PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
+          AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
+        <br><br>
       <button @click="updateUserAge">Update Age</button>
-
-            <!-- Display current user avatar -->
-<!--      <img v-if="userData.user_data.avatar" :src="userData.user_data.avatar" alt="User Avatar" />-->
-
-<!--      <label for="avatarInput">Update Avatar:</label>-->
-<!--      &lt;!&ndash; Input for selecting a new avatar &ndash;&gt;-->
-<!--      <input type="file" id="avatarInput" @change="handleAvatarChange" accept="image/*">-->
-
       <button @click="logout">Logout</button>
-
       <div v-if="showImageFlag">
         <button @click="flipImageFlag">hide Image</button><br><br><br>
       </div>
       <div v-else>
         <button @click="flipImageFlag">show Image</button><br><br><br>
       </div>
-      <!-- Only shows image if showImageFlag is set to true -->
       <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
     </div>
-
       <!-- Content for logged-out state -->
       <div v-else>
         <div v-if="showPage === 'login'">
@@ -51,13 +38,25 @@
           <label for="password">Enter your password:</label><br>
           <input type="text" id="password" v-model="new_password" /><br><br>
           <button @click="createAccount">Submit</button><br><br>
-            <div v-if="isLoggedIn">
-
+            <div v-if="isLoggedIn && userData && userData.user_data">
+              <p :style="{ color: loginColor }">Login successful</p>
+              <h2>Welcome, {{ userData.user_data.name }}!</h2>
+                  NAME &nbsp;: {{ userData.user_data.name }}<br>
+                  PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
+                  AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br>
+                <br><br>
+              <button @click="updateUserAge">Update Age</button>
+              <button @click="logout">Logout</button>
+              <div v-if="showImageFlag">
+                <button @click="flipImageFlag">hide Image</button><br><br><br>
+              </div>
+              <div v-else>
+                <button @click="flipImageFlag">show Image</button><br><br><br>
+              </div>
+              <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
             </div>
           <button @click="changeToLoginPage">Have an Account?</button><br><br>
         </div>
-
-      <!-- Display error message -->
       <div v-if="errorMessage" :style="{ color: errorColor }">
         <p>{{ errorMessage }}</p>
       </div>
@@ -116,7 +115,6 @@ export default {
           this.errorMessage = 'Please enter ur username!';
           return;  // Do not proceed with the API request if the input is empty
         }
-        // Check if the password input is empty
         if (!this.password.trim())
         {
           this.errorMessage = 'Please enter ur password!';
@@ -149,7 +147,6 @@ export default {
       this.showImageFlag = !this.showImageFlag;
     },
 
-
     async updateUserAge() {
       try
       {
@@ -159,11 +156,8 @@ export default {
             newAge: this.userData.user_data.age + 1,
           }),
         };
-
-        // Make an API request to update the age
         const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
         const response = await fetch(apiUrl, myInit);
-
         if (response.ok)
         {
           console.log('Age updated successfully');
@@ -183,11 +177,9 @@ export default {
     },
 
     logout() {
-      // Perform logout logic here
       this.isLoggedIn = false;
       this.name = ""
       this.password = ""
-      // Additional logic like clearing tokens, redirecting, etc.
     },
 
     changeToRegisterPage() {
@@ -202,7 +194,6 @@ export default {
       this.new_age = ""
     },
 
-
     async createAccount() {
       try
       {
@@ -212,14 +203,15 @@ export default {
         if (response.ok)
         {
           console.log('creating new account successfully');
-          // this.name = this.new_name
-          // this.age = this.new_age
-          // this.password = this.new_password
+          this.isLoggedIn = true;
+          this.name = this.new_name
+          this.age = this.new_age
+          this.password = this.new_password
           this.new_name = ""
           this.new_password = ""
           this.new_age = ""
           // Fetch user data again to get the updated information
-          // this.fetchUserData();
+          this.fetchUserData();
         }
         else
         {
@@ -232,8 +224,6 @@ export default {
         this.errorMessage = "lol some big error am been";
       }
     }
-
-
   },
 };
 </script>
