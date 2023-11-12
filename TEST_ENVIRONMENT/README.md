@@ -79,5 +79,5 @@ TEST_ENVIRONMENT/
 
 <br></br>
 
-![ARCHITECTURE](frontMock/frontTest/public/lol.png)
+![ARCHITECTURE](frontMock/frontTest/public/arch.png)
 <br></br>
