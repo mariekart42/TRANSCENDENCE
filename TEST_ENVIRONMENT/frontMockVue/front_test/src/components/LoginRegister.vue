@@ -1,7 +1,7 @@
 
 <template>
   <!--USER IS LOGGED IN-->
-  <div v-if="isLoggedIn && userData && userData.user_data">
+  <div v-if="!showChatFlag && isLoggedIn && userData && userData.user_data">
     <h2>Welcome, {{ userData.user_data.name }}!</h2>
     NAME &nbsp;: {{ userData.user_data.name }}<br>
     PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>
@@ -15,8 +15,23 @@
     <div v-else>
       <button @click="flipImageFlag">show Image</button><br><br>
     </div>
+
+    <!-- Connection to Chat component -->
+    <button @click="flipChatFlag">Show Chat</button>
+
     <button @click="logout">Logout</button><br><br>
     <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
+  </div>
+
+  <!--SHOW CHAT-->
+  <div v-else-if="showChatFlag">
+
+    <!-- Chat component will be rendered if showChatFlag is true -->
+    <ChatComponent v-if="showChatFlag" />
+
+    <!-- Connection to Chat component -->
+    <button @click="flipChatFlag">Hide Chat</button>
+
   </div>
 
   <!--USER IS NOT LOGGED IN-->
@@ -60,12 +75,12 @@
 
 <script>
 
-// import ChatComponent from "./ChatComponent.vue";
+import ChatComponent from "./ChatComponent.vue";
 
 export default {
-  // components: {
-  //   ChatComponent,
-  // },
+  components: {
+    ChatComponent,
+  },
   data() {
     return {
       showChatFlag: false,
@@ -90,8 +105,8 @@ export default {
     this.checkAuthentication();
   },
   methods: {
-    showChat() {
-      this.showChatFlag = true;
+    flipChatFlag() {
+      this.showChatFlag = !this.showChatFlag;
     },
 
     async checkAuthentication()
