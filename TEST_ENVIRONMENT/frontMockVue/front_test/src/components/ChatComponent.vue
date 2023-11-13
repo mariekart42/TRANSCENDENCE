@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <h2>My Chats</h2><br>
+    <h2>My Chats</h2>
     <ul>
       <!--for loop that iterates through userChats Array-->
       <li v-for="chat in userChats" :key="chat.id">
@@ -13,13 +13,6 @@
     Enter Chat Name:
     <input type="text" id="newChat" v-model="chatName" />
     <button @click="createChat">Create</button><br><br><br><br>
-
-    -- [TO FIX:] --<br>
-    -  every user has all the same chats rn<br>
-    -  update of created chat doesn't happen realtime but after refreshing page<br>
-         or going back to prev page and then back to Chats
-
-<br><br><br><br>
   </div>
 </template>
 
@@ -61,6 +54,8 @@ export default {
         const data = await response.json();
         if (response.ok)
         {
+          this.getUsersChats()
+          this.chatName = ''
           // this.userChats = data.allChats
           console.log('CREATED CHAT SUCCESS')
         }
@@ -95,10 +90,7 @@ export default {
         console.error('Error creating new Chat:', error);
       }
     },
-
-
   },
-
 
   mounted() {
     this.getUsersChats()
