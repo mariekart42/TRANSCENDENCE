@@ -19,7 +19,3 @@ class Chat(models.Model):
 class Message(models.Model):
     username = models.CharField(max_length=50)
     text = models.CharField(max_length=10000)
-
-
-    # Chat = models.ForeignKey(Chat, on_delete=models.CASCADE, default=None)
-    # on_delete=models.CASCADE == Child(Message) gets deleted if Parent(Chat) gets deleted

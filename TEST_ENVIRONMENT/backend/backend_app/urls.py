@@ -13,4 +13,5 @@ urlpatterns = [
     path('user/createAccount/<str:username>/<str:password>/<int:age>/', views.createAccount, name='create-account'),
     path('user/createChat/<int:user_id>/<str:chatname>/', views.createChat, name='create-chat'),
     path('user/getUserChats/<int:user_id>/', views.getUserChats, name='getUserChats'),
+    path('user/getChatData/<int:user_id>/<int:chat_id>/', views.getChatData, name='getChatData'),
 ]

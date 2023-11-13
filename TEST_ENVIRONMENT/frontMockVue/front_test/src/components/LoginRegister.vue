@@ -22,7 +22,7 @@
         :fetchUserDataFunc="fetchUserData"
         @update-user-name="updateUserNameInParent"
         @update-user-password="updateUserPasswordInParent"/>
-    <button @click="flipUpdateUserFlag">Go Back</button>
+    <button @click="flipUpdateUserFlag">Go Back to Profile</button>
   </div>
 
   <!--USER CLICKED SHOW CHAT-->
@@ -30,7 +30,7 @@
     <ChatComponent
         :userDataObject="userData"
         :fetchUserDataFunc="fetchUserData"/>
-    <button @click="flipChatFlag">Go Back</button>
+    <button @click="flipChatFlag">Go Back to Profile</button>
   </div>
 
 
@@ -171,6 +171,7 @@ export default {
           this.errorMessage = null;
           this.isLoggedIn = true;
           this.userData = data;
+
         }
         else {
           this.errorMessage = data.error;

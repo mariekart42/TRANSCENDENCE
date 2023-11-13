@@ -73,7 +73,6 @@ def updateUserName(request, user_id):
             return JsonResponse({'error': 'Username already exists!'}, status=409)
 
         user.name = new_name
-
         user.save()
 
         return JsonResponse({'message': 'Username updated successfully'}, status=200)
@@ -153,7 +152,6 @@ def getUserChats(request, user_id):
     try:
         user_instance = MyUser.objects.get(id=user_id)
         user_chats = user_instance.chats.all()
-        # Assuming 'chats' is the related name of the ManyToManyField in MyUser model
 
         # Convert user_chats to a list of dictionaries for JSON response
         chats_data = [{'id': chat.id, 'chatName': chat.chatName} for chat in user_chats]
@@ -163,6 +161,44 @@ def getUserChats(request, user_id):
         return JsonResponse({'error': 'User not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+@require_GET
+def getChatData(request, user_id, chat_id):
+    try:
+        user_exists = MyUser.objects.filter(id=user_id).exists()
+        if not user_exists:
+            return JsonResponse({'error': 'User in getChatData not found'}, status=404)
+        user = MyUser.objects.get(id=user_id)
+        chat_exists = user.chats.filter(id=chat_id).exists()
+        if not chat_exists:
+            return JsonResponse({'error': 'chat in getChatData not found'}, status=404)
+        chat = user.chats.get(id=chat_id)
+
+        chat_data = {
+            'name': chat.chatName,
+            'messages': chat.messages, # ?? does it work like this? messages is manyToMany field
+        }
+        return JsonResponse({'chat_data': chat_data}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': 'something big in getChatData'}, status=500)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # not using dis yet/maybe never lol:
