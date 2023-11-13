@@ -4,8 +4,8 @@ class CorsMiddleware:
 
     def __call__(self, request):
         # Log incoming Origin header
-        origin = request.META.get('HTTP_ORIGIN', '')
-        print('Incoming Origin:', origin)
+        # origin = request.META.get('HTTP_ORIGIN', '')
+        # print('Incoming Origin:', origin)
 
         response = self.get_response(request)
 
