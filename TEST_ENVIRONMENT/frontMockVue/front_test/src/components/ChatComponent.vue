@@ -6,8 +6,7 @@
     <ul>
       <!--for loop that iterates through userChats Array-->
       <li v-for="chat in userChats" :key="chat.id">
-        {{ chat.chatName }}
-        <button @click="openChatWindow(chat.id, this.userDataObject.user_data.id)">Join</button>
+        <button @click="openChatWindow(chat.id, this.userDataObject.user_data.id)">{{ chat.chatName }}</button>
       </li>
     </ul><br>
     <h3><label for="text">Create new Chat:</label></h3>
@@ -18,7 +17,7 @@
 
 <!--  INSIDE OF SELECTED CHAT-->
   <div v-else>
-    <h2>Welcome to {{this.chatData.name}}</h2><br><br>
+    <h2>Chatroom: &nbsp;{{this.chatData.name}}</h2><br><br>
     <button @click="closeChatWindow">Go Back to Chats</button>
   </div>
 </template>
