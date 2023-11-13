@@ -20,7 +20,10 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
     echo -e " 🗿  ${BLUE}Installing Django...${RESET}"
     python3 -m pip install Django
 
-    echo -e " 🗿  ${BLUE}Installing npm...${RESET}"
+#    echo -e " 🗿  ${BLUE}Installing Vue CLI...${RESET}"
+#    npm install --save-dev @vue/cli
+#    npm install --save-dev @vue/cli-service
+
 
         # Prompt the user to run migrations
 #    echo -e " 🔔  ${YEL}DO YOU WANT TO MIGRATE CHANGES TO DATABASE?${RESET} (optional but recommended)"

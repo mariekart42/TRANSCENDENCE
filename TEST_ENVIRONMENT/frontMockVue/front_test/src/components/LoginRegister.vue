@@ -3,10 +3,6 @@
   <!--USER IS LOGGED IN-->
   <div v-if="!showChatFlag && !updateUserDataFlag && isLoggedIn && userData && userData.user_data">
     <h2>Welcome, {{ userData.user_data.name }}!</h2>
-<!--    NAME &nbsp;: {{ userData.user_data.name }}<br>-->
-<!--    PAWO &nbsp;&nbsp;: {{ userData.user_data.password }}<br>-->
-<!--    AGE &nbsp;&nbsp;&nbsp;&nbsp;: {{ userData.user_data.age }}<br><br>-->
-
     <div v-if="showImageFlag">
       <button @click="flipImageFlag">hide Image</button><br><br>
     </div>
@@ -31,7 +27,9 @@
 
   <!--USER CLICKED SHOW CHAT-->
   <div v-else-if="showChatFlag">
-    <ChatComponent v-if="showChatFlag" />
+    <ChatComponent
+        :userDataObject="userData"
+        :fetchUserDataFunc="fetchUserData"/>
     <button @click="flipChatFlag">Go Back</button>
   </div>
 
@@ -89,10 +87,8 @@ export default {
     return {
       updateUserDataFlag: false,
       showChatFlag: false,
-
       name: "",  // Make sure to initialize the name property
       password: "",
-
       new_name: "",
       new_age: "",
       new_password: "",
@@ -119,6 +115,7 @@ export default {
         console.error('Error updating username in parent:', error);
       }
     },
+
     updateUserPasswordInParent(newUserPassword) {
       try {
         this.userData.user_data.password = newUserPassword;
@@ -127,7 +124,6 @@ export default {
         console.error('Error updating password in parent:', error);
       }
     },
-
 
     flipUpdateUserFlag() {
       this.updateUserDataFlag = !this.updateUserDataFlag
@@ -156,7 +152,6 @@ export default {
     {
       try
       {
-        // Check if the name input is empty
         if (!this.name.trim())
         {
           this.errorMessage = 'Please enter ur username!';
@@ -165,7 +160,7 @@ export default {
         if (!this.password.trim())
         {
           this.errorMessage = 'Please enter ur password!';
-          return;  // Do not proceed with the API request if the input is empty
+          return;
         }
         const response = await fetch(`http://127.0.0.1:6969/user/data/${this.name}/${this.password}/`);
         console.log('RESPONSE: ')
@@ -191,33 +186,6 @@ export default {
     flipImageFlag() {
       this.showImageFlag = !this.showImageFlag;
     },
-
-    // async updateUserAge(operation) {
-    //   try
-    //   {
-    //     const myInit = {
-    //       method: "POST",
-    //       body: JSON.stringify({
-    //         newAge: this.userData.user_data.age + operation,
-    //       }),
-    //     };
-    //     const apiUrl = `http://localhost:6969/user/update-age/${this.userData.user_data.id}/`;
-    //     const response = await fetch(apiUrl, myInit);
-    //     if (response.ok)
-    //     {
-    //       console.log('Age updated successfully');
-    //       this.isLoggedIn = true
-    //       // Fetch user data again to get the updated information
-    //       this.fetchUserData();
-    //     }
-    //     else {
-    //       console.error('Failed to update age:', response.statusText);
-    //     }
-    //   }
-    //   catch (error) {
-    //     console.error('Error updating age:', error);
-    //   }
-    // },
 
     logout() {
       this.isLoggedIn = false;

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import MyUser
+from .models import MyUser, Chat, Message
 from django.http import JsonResponse
 import json  # build in python module
 from django.views.decorators.http import require_GET, require_POST
@@ -127,7 +127,44 @@ def createAccount(request, username, password, age):
 
 
 
+@require_POST
+def createChat(request, user_id, chatname):
+    try:
+        new_chat = Chat.objects.create(chatName=chatname)
+        chat_id = new_chat.id
 
+        # getting user instance
+        user_instance = MyUser.objects.get(id=user_id)
+
+        # Add the user to the chat's participants
+        user_instance.chats.add(new_chat.id)
+        new_chat.save()
+        user_instance.save()
+
+        return JsonResponse({"message": "Chat created successfully"})
+
+    except ValueError:
+        return JsonResponse({"error": "Invalid user ID"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+
+@require_GET
+def getUserChats(request, user_id):
+    try:
+        user_instance = MyUser.objects.get(id=user_id)
+        user_chats = user_instance.chats.all()
+        # Assuming 'chats' is the related name of the ManyToManyField in MyUser model
+
+        # Convert user_chats to a list of dictionaries for JSON response
+        chats_data = [{'id': chat.id, 'chatName': chat.chatName} for chat in user_chats]
+
+        return JsonResponse({'allChats': chats_data})
+    except MyUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 # not using dis yet/maybe never lol:
