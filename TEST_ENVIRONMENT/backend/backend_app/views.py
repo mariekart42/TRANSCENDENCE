@@ -177,8 +177,9 @@ def getChatData(request, user_id, chat_id):
         chat = user.chats.get(id=chat_id)
 
         chat_data = {
+            'id': chat.id,
             'name': chat.chatName,
-            'messages': chat.messages, # ?? does it work like this? messages is manyToMany field
+            # 'messages': chat.messages, # ?? does it work like this? messages is manyToMany field
         }
         return JsonResponse({'chat_data': chat_data}, status=200)
     except Exception as e:
