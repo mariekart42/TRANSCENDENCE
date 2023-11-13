@@ -18,6 +18,9 @@
 <!--  INSIDE OF SELECTED CHAT-->
   <div v-else>
     <h2>Chatroom: &nbsp;{{this.chatData.name}}</h2><br><br>
+    <label for="username">Invite User:</label><br>
+      <input type="text" id="username" v-model="invited_user" /><br><br>
+    <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, this.invited_user)">Send Invite</button><br><br>
     <button @click="closeChatWindow">Go Back to Chats</button>
   </div>
 </template>
@@ -28,10 +31,12 @@ export default {
     return {
       chatName: '',
       userChats: [],
+      invited_user: '',
 
       chatData: {
+        id: 0,
         name: '',
-        messages: [],  // not sure about this rn
+        // messages: [],  // not sure about this rn
       },
 
       insideChatFlag: false,
@@ -51,17 +56,40 @@ export default {
 
 
   methods: {
+    async inviteUserToChat(user_id, chat_id, invited_user) {
+      try
+      {
+        if (!invited_user.trim())
+        {
+          this.errorMessage = 'Please enter a username!';
+          return;
+        }
+        const response = await fetch(`http://127.0.0.1:6969/user/inviteUserToChat/${user_id}/${chat_id}/${invited_user}/`);
+        const data = await response.json()
+        if (response.ok)
+        {
+          console.log('SOME SUCCESS LOL')
+        }
+        else {
+          console.error('Error Invite User to chat:', data.error);
+        }
+      }
+      catch (error) {
+        console.error('Error Invite User to chat:', error);
+      }
+    },
+
+
     async openChatWindow(chat_id, user_id) {
       try {
-        console.log("USER_ID: ", user_id)
-        console.log("CHAT_ID: ", chat_id)
         const response = await fetch(`http://127.0.0.1:6969/user/getChatData/${user_id}/${chat_id}/`);
         const data = await response.json()
         if (response.ok)
         {
           this.insideChatFlag = true
+          this.chatData.id = data.chat_data.id
           this.chatData.name = data.chat_data.name
-          this.chatData.messages = data.chat_data.messages
+          // this.chatData.messages = data.chat_data.messages
         }
         else
         {
@@ -105,11 +133,8 @@ export default {
     async getUsersChats() {
       try
       {
-        console.log('USER_ID: ')
         console.log(this.userDataObject.user_data.id)
         const response = await fetch(`http://127.0.0.1:6969/user/getUserChats/${this.userDataObject.user_data.id}/`);
-        console.log('RESPONSE: ')
-        console.log(response)
         const data = await response.json();
         if (response.ok)
         {

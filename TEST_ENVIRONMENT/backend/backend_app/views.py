@@ -3,7 +3,7 @@ from .models import MyUser, Chat, Message
 from django.http import JsonResponse
 import json  # build in python module
 from django.views.decorators.http import require_GET, require_POST
-
+from django.db import models
 
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
@@ -133,13 +133,12 @@ def createChat(request, user_id, chatname):
         # getting user instance
         user_instance = MyUser.objects.get(id=user_id)
 
-        # Add the user to the chat's participants
+        # Add new chat to user
         user_instance.chats.add(new_chat.id)
         new_chat.save()
         user_instance.save()
 
         return JsonResponse({"message": "Chat created successfully"})
-
     except ValueError:
         return JsonResponse({"error": "Invalid user ID"}, status=400)
     except Exception as e:
@@ -186,7 +185,28 @@ def getChatData(request, user_id, chat_id):
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
 
 
+def inviteUserToChat(request, user_id, chat_id, invited_user):
+    try:
+        invited_user_exists = MyUser.objects.filter(name=invited_user).exists()
+        if not invited_user_exists:
+            return JsonResponse({'error': 'User you want to invite doesnt exists'}, status=404)
 
+        # get instance of both users
+        inviting_user = MyUser.objects.get(id=user_id)
+        invited_user = MyUser.objects.get(name=invited_user)
+
+        # get instance of chat that the user is inviting the other user to
+        chat = inviting_user.chats.get(id=chat_id)
+
+        # add chat to invited user instance
+        invited_user.chats.add(chat)
+        return JsonResponse({"message": "Invite was send successfully"})
+    except inviting_user.DoesNotExist:
+        return JsonResponse({"error": "User does not exist"}, status=404)
+    except invited_user.DoesNotExist:
+        return JsonResponse({"error": "User does not exist"}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 
