@@ -109,16 +109,17 @@ export default {
           this.errorMessage = null
           console.log('Password updated successfully');
           this.$emit('update-user-password', this.newUserPassword);
+
           this.newUserPassword = ""
         }
         else {
           console.error('Failed to update Password:', response.statusText);
-          this.errorMessage = "Failed to update Password"
+          this.errorMessage = "Failed to update Password 1"
         }
       }
       catch (error) {
         console.error('Error updating Password:', error);
-        this.errorMessage = "Failed to update Password"
+        this.errorMessage = "Failed to update Password 2"
       }
     },
 

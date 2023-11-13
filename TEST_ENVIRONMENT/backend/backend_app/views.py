@@ -91,11 +91,9 @@ def updateUserPassword(request, user_id):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         user = MyUser.objects.get(id=user_id)
-
         # Extract the new username from the request body
         data = json.loads(request.body.decode('utf-8'))
         new_password = data.get('newPassword')
-
         user.password = new_password
 
         user.save()
