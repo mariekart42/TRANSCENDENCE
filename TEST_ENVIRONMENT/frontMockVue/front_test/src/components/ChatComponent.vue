@@ -18,9 +18,24 @@
 <!--  INSIDE OF SELECTED CHAT-->
   <div v-else>
     <h2>Chatroom: &nbsp;{{this.chatData.name}}</h2><br><br>
-    <label for="username">Invite User:</label><br>
-      <input type="text" id="username" v-model="invited_user" /><br><br>
-    <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, this.invited_user)">Send Invite</button><br><br>
+    <h3>User:</h3>
+    <ul>
+      <!--for loop that iterates through userChats Array-->
+      <li v-for="(user, index) in chatUser" :key="index">
+        {{ user }}
+      </li>
+    </ul><br>
+
+    <label for="username">Invite User:</label>
+      <input type="text" id="username" v-model="invited_user" />
+    <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, this.invited_user)"> Send Invitation</button><br><br><br>
+    <!--DISPLAY ERROR-->
+      <div v-if="errorMessage" :style="{ color: errorColor }">
+        <p>{{ errorMessage }}</p>
+      </div>
+      <div v-else-if="successMessage" :style="{ color: successColor }">
+        <p>{{ successMessage }}</p>
+      </div>
     <button @click="closeChatWindow">Go Back to Chats</button>
   </div>
 </template>
@@ -29,8 +44,13 @@
 export default {
   data() {
     return {
+      errorMessage: null,
+      successMessage: null,
+      errorColor: 'red',
+      successColor: 'green',
       chatName: '',
       userChats: [],
+      chatUser: [],
       invited_user: '',
 
       chatData: {
@@ -68,17 +88,19 @@ export default {
         const data = await response.json()
         if (response.ok)
         {
-          console.log('SOME SUCCESS LOL')
+          this.errorMessage = null
+          this.successMessage = 'Send Invitation successfully'
         }
         else {
+          this.errorMessage = data.error;
           console.error('Error Invite User to chat:', data.error);
         }
       }
       catch (error) {
+        this.errorMessage = error;
         console.error('Error Invite User to chat:', error);
       }
     },
-
 
     async openChatWindow(chat_id, user_id) {
       try {
@@ -86,19 +108,23 @@ export default {
         const data = await response.json()
         if (response.ok)
         {
+          this.errorMessage = null
           this.insideChatFlag = true
           this.chatData.id = data.chat_data.id
           this.chatData.name = data.chat_data.name
+          this.chatUser = data.chat_data.user
           // this.chatData.messages = data.chat_data.messages
         }
         else
         {
           console.error('Error open Chat Window:', data.error);
+          this.errorMessage = data.error;
           this.insideChatFlag = false
         }
       }
       catch (error) {
         console.error('Error open Chat Window:', error);
+        this.errorMessage = error;
         this.insideChatFlag = false
       }
     },
@@ -113,11 +139,10 @@ export default {
           method: "POST",
         };
         const response = await fetch(`http://127.0.0.1:6969/user/createChat/${this.userDataObject.user_data.id}/${this.chatName}/`, myInit);
-        console.log('RESPONSE: ')
-        console.log(response)
         const data = await response.json();
         if (response.ok)
         {
+          this.errorMessage = null
           this.getUsersChats()
           this.chatName = ''
         }
@@ -127,6 +152,7 @@ export default {
       }
       catch (error) {
         console.error('Error creating new Chat:', error);
+        this.errorMessage = error;
       }
     },
 
@@ -138,6 +164,7 @@ export default {
         const data = await response.json();
         if (response.ok)
         {
+          this.errorMessage = null
           this.userChats = data.allChats
         }
         else {
@@ -146,8 +173,10 @@ export default {
       }
       catch (error) {
         console.error('Error creating new Chat:', error);
+        this.errorMessage = error;
       }
     },
+
   },
 
   mounted() {

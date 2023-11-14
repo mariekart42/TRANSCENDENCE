@@ -173,11 +173,15 @@ def getChatData(request, user_id, chat_id):
         chat_exists = user.chats.filter(id=chat_id).exists()
         if not chat_exists:
             return JsonResponse({'error': 'chat in getChatData not found'}, status=404)
-        chat = user.chats.get(id=chat_id)
+
+        chat_instance = Chat.objects.get(id=chat_id)
+        users_in_chat = chat_instance.myuser_set.all()
+        user_names = [user.name for user in users_in_chat]
 
         chat_data = {
-            'id': chat.id,
-            'name': chat.chatName,
+            'id': chat_instance.id,
+            'name': chat_instance.chatName,
+            'user': user_names,
             # 'messages': chat.messages, # ?? does it work like this? messages is manyToMany field
         }
         return JsonResponse({'chat_data': chat_data}, status=200)
