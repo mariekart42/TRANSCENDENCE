@@ -18,6 +18,35 @@
 <!--  INSIDE OF SELECTED CHAT-->
   <div v-else>
     <h2>Chatroom: &nbsp;{{this.chatData.name}}</h2><br><br>
+      <div v-for="(message, index) in messages" :key="index" :class="{ 'own-message': isOwnMessage(message.sender) }">
+
+        <!--DISPLAY OWN MESSAGE-->
+        <div v-if="isOwnMessage(message.sender)">
+          <div class="own-message-text">
+            <strong>{{ message.sender }}</strong><br>
+            {{ message.text }}<br>
+            <div class="timestamp" :style="{ 'font-size': '14px' }">
+              {{ message.timestamp }}
+            </div>
+          </div>
+        </div>
+
+        <!--DISPLAY OTHER MESSAGE-->
+        <div v-else>
+          <div class="other-message-text">
+            <strong>{{ message.sender }}</strong><br>
+            {{ message.text }}<br>
+            <div class="timestamp" :style="{ 'font-size': '14px' }">
+              {{ message.timestamp }}
+            </div>
+            </div>
+        </div><br>
+      </div>
+
+    <label for="message">&nbsp;&nbsp;>>&nbsp;&nbsp;</label>
+    <input type="text" id="message" v-model="current_message" />
+    <button @click="createMessage(this.userDataObject.user_data.id, this.chatData.id, current_message)">Send</button><br><br><br>
+
     <h3>User:</h3>
     <ul>
       <!--for loop that iterates through userChats Array-->
@@ -28,7 +57,7 @@
 
     <label for="username">Invite User:</label>
       <input type="text" id="username" v-model="invited_user" />
-    <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, this.invited_user)"> Send Invitation</button><br><br><br>
+    <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, invited_user)"> Send Invitation</button><br><br><br>
     <!--DISPLAY ERROR-->
       <div v-if="errorMessage" :style="{ color: errorColor }">
         <p>{{ errorMessage }}</p>
@@ -52,13 +81,21 @@ export default {
       userChats: [],
       chatUser: [],
       invited_user: '',
+      current_message: '',
+
+      messages: [
+        {
+          id: 0,
+          sender: '',
+          text: '',
+          timestamp: 0,
+        }
+      ],
 
       chatData: {
         id: 0,
         name: '',
-        // messages: [],  // not sure about this rn
       },
-
       insideChatFlag: false,
     }
   },
@@ -74,8 +111,33 @@ export default {
     },
   },
 
-
   methods: {
+
+    isOwnMessage(sender) {
+      return sender === this.userDataObject.user_data.name;
+    },
+
+    async getChatMessages(chat_id) {
+      try
+      {
+        const response = await fetch(`http://127.0.0.1:6969/user/getChatMessages/${chat_id}/`);
+        const data = await response.json();
+        if (response.ok)
+        {
+          this.errorMessage = null
+          this.messages = data.message_data;
+        }
+        else {
+          this.errorMessage = data.error;
+          console.error('Error getChatMessages:', data.error);
+        }
+      }
+      catch (error) {
+        this.errorMessage = error;
+        console.error('Error getChatMessages:', error);
+      }
+    },
+
     async inviteUserToChat(user_id, chat_id, invited_user) {
       try
       {
@@ -89,6 +151,7 @@ export default {
         if (response.ok)
         {
           this.errorMessage = null
+          this.invited_user = null
           this.successMessage = 'Send Invitation successfully'
         }
         else {
@@ -102,6 +165,35 @@ export default {
       }
     },
 
+    async createMessage(user_id, chat_id, text)
+    {
+      try
+      {
+        const myInit = {
+          method: "POST",
+        };
+        const response = await fetch(`http://127.0.0.1:6969/user/createMessage/${user_id}/${chat_id}/${text}/`, myInit);
+        const data = await response.json()
+        if (response.ok)
+        {
+          this.current_message = null
+          console.log('RESPONSE FROM CREATE_MESSAGE oK ')
+          await this.getChatMessages(chat_id)
+        }
+        else
+        {
+          this.errorMessage = 'Error in create Message'
+          console.error('Error in create Message: ', data.error)
+        }
+      }
+      catch (error)
+      {
+        this.errorMessage = 'Error in create Message'
+        console.error('Error in create Message: ', error);
+      }
+    },
+
+
     async openChatWindow(chat_id, user_id) {
       try {
         const response = await fetch(`http://127.0.0.1:6969/user/getChatData/${user_id}/${chat_id}/`);
@@ -110,10 +202,8 @@ export default {
         {
           this.errorMessage = null
           this.insideChatFlag = true
-          this.chatData.id = data.chat_data.id
-          this.chatData.name = data.chat_data.name
-          this.chatUser = data.chat_data.user
-          // this.chatData.messages = data.chat_data.messages
+          this.chatData = data.chat_data
+          await this.getChatMessages(chat_id)
         }
         else
         {
@@ -129,9 +219,11 @@ export default {
       }
     },
 
+
     closeChatWindow() {
       this.insideChatFlag = false
     },
+
     async createChat() {
       try
       {
@@ -143,7 +235,7 @@ export default {
         if (response.ok)
         {
           this.errorMessage = null
-          this.getUsersChats()
+          await this.getUsersChats()
           this.chatName = ''
         }
         else {
@@ -185,3 +277,27 @@ export default {
 };
 
 </script>
+
+
+<style scoped>
+.own-message {
+  text-align: right;
+}
+
+.own-message-text {
+  background-color: #e6e6e6;  /* Example background color for own messages */
+  padding: 5px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.other-message-text {
+  background-color: #a6c8ff;  /* Example background color for own messages */
+  padding: 5px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 16px;
+
+}
+</style>

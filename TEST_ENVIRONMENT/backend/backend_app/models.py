@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # inherits from "models.Model" which means it's a database model
 class MyUser(models.Model):
@@ -17,5 +18,10 @@ class Chat(models.Model):
 
 
 class Message(models.Model):
-    username = models.CharField(max_length=50)
+    sender = models.CharField(max_length=50)
     text = models.CharField(max_length=10000)
+    # timestamp = models.IntegerField("timestamp")
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def formatted_timestamp(self):
+        return self.timestamp.strftime('%H:%M %d.%m.%Y')

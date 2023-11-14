@@ -4,6 +4,8 @@ from django.http import JsonResponse
 import json  # build in python module
 from django.views.decorators.http import require_GET, require_POST
 from django.db import models
+from django.utils import timezone
+
 
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
@@ -29,7 +31,7 @@ def getUserData(request, username, provided_password):
         else:
             return JsonResponse({'error': 'Password is wrong'}, status=401)
     except Exception as e:
-        print(f"An error occurred: { str(e) }")
+        print(f"An error occurred: {str(e)}")
         return JsonResponse({'error': 'something big in getUserData'}, status=500)
 
 
@@ -49,7 +51,6 @@ def updateUserAge(request, user_id):
         user.save()
 
         return JsonResponse({'message': 'Age updated successfully'}, status=200)
-
     except Exception as e:
         return JsonResponse({'error': 'something big in updateUserAge'}, status=500)
 
@@ -74,9 +75,7 @@ def updateUserName(request, user_id):
 
         user.name = new_name
         user.save()
-
         return JsonResponse({'message': 'Username updated successfully'}, status=200)
-
     except Exception as e:
         return JsonResponse({'error': 'something big in updateUserName'}, status=500)
 
@@ -94,11 +93,8 @@ def updateUserPassword(request, user_id):
         data = json.loads(request.body.decode('utf-8'))
         new_password = data.get('newPassword')
         user.password = new_password
-
         user.save()
-
         return JsonResponse({'message': 'password updated successfully'}, status=200)
-
     except Exception as e:
         return JsonResponse({'error': 'something big in updateUserPassword'}, status=500)
 
@@ -117,33 +113,27 @@ def createAccount(request, username, password, age):
         }
         new_user = MyUser(**user_data)
         new_user.save()
-
         return JsonResponse({"message": "User created successfully"})
     except Exception as e:
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
-
 
 
 @require_POST
 def createChat(request, user_id, chatname):
     try:
         new_chat = Chat.objects.create(chatName=chatname)
-        chat_id = new_chat.id
 
-        # getting user instance
         user_instance = MyUser.objects.get(id=user_id)
 
         # Add new chat to user
         user_instance.chats.add(new_chat.id)
         new_chat.save()
         user_instance.save()
-
         return JsonResponse({"message": "Chat created successfully"})
     except ValueError:
         return JsonResponse({"error": "Invalid user ID"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-
 
 
 @require_GET
@@ -160,7 +150,6 @@ def getUserChats(request, user_id):
         return JsonResponse({'error': 'User not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 
 
 @require_GET
@@ -182,11 +171,50 @@ def getChatData(request, user_id, chat_id):
             'id': chat_instance.id,
             'name': chat_instance.chatName,
             'user': user_names,
-            # 'messages': chat.messages, # ?? does it work like this? messages is manyToMany field
         }
+
         return JsonResponse({'chat_data': chat_data}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
+
+
+
+@require_POST
+def createMessage(request, user_id, chat_id, text):
+    try:
+        user_instance = MyUser.objects.get(id=user_id)
+        specific_timestamp = timezone.now()
+        new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
+
+        # add new_message to chat:
+        chat_instance = Chat.objects.get(id=chat_id)
+        chat_instance.messages.add(new_message.id)
+        new_message.save()
+
+        return JsonResponse({'message': "Message created successfully"})
+    except Exception as e:
+        return JsonResponse({'error': 'something big in createMessage'}, status=500)
+
+
+def getChatMessages(request, chat_id):
+    try:
+        chat_instance = Chat.objects.get(id=chat_id)
+        messages_in_chat = chat_instance.messages.all()
+
+        message_data = [
+            {
+                'id': message.id,
+                'sender': message.sender,
+                'text': message.text,
+                'timestamp': message.formatted_timestamp(),
+            }
+            for message in messages_in_chat
+        ]
+
+        return JsonResponse({'message_data': message_data}, status=200)
+    except Exception as e:
+            return JsonResponse({'error': 'something big in createMessage'}, status=500)
+
 
 
 def inviteUserToChat(request, user_id, chat_id, invited_user):
@@ -211,9 +239,6 @@ def inviteUserToChat(request, user_id, chat_id, invited_user):
         return JsonResponse({"error": "User does not exist"}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
 
 
 
