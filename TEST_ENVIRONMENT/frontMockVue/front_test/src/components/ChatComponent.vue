@@ -47,7 +47,6 @@
     <input type="text" id="message" v-model="current_message" />
     <button @click="createMessage(this.userDataObject.user_data.id, this.chatData.id, current_message)">Send</button><br><br><br>
 
-    <h3>User:</h3>
     <ul>
       <!--for loop that iterates through userChats Array-->
       <li v-for="(user, index) in chatUser" :key="index">
@@ -55,7 +54,7 @@
       </li>
     </ul><br>
 
-    <label for="username">Invite User:</label>
+    <label for="username">Invite User:</label><br>
       <input type="text" id="username" v-model="invited_user" />
     <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, invited_user)"> Send Invitation</button><br><br><br>
     <!--DISPLAY ERROR-->
