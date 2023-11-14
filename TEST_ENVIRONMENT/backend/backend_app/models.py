@@ -7,7 +7,6 @@ class MyUser(models.Model):
     password = models.CharField("password", max_length=100)
     age = models.IntegerField("age")
     avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
-
     chats = models.ManyToManyField('Chat', blank=True)
     # can hold multiple Chat instances
 
@@ -20,7 +19,6 @@ class Chat(models.Model):
 class Message(models.Model):
     sender = models.CharField(max_length=50)
     text = models.CharField(max_length=10000)
-    # timestamp = models.IntegerField("timestamp")
     timestamp = models.DateTimeField(default=timezone.now)
 
     def formatted_timestamp(self):

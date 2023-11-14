@@ -4,7 +4,6 @@
   <div v-if="!insideChatFlag">
     <h2>My Chats</h2>
     <ul>
-      <!--for loop that iterates through userChats Array-->
       <li v-for="chat in userChats" :key="chat.id">
         <button @click="openChatWindow(chat.id, this.userDataObject.user_data.id)">{{ chat.chatName }}</button>
       </li>
@@ -42,21 +41,18 @@
             </div>
         </div><br>
       </div>
-
     <label for="message">&nbsp;&nbsp;>>&nbsp;&nbsp;</label>
     <input type="text" id="message" v-model="current_message" />
     <button @click="createMessage(this.userDataObject.user_data.id, this.chatData.id, current_message)">Send</button><br><br><br>
-
     <ul>
-      <!--for loop that iterates through userChats Array-->
       <li v-for="(user, index) in chatUser" :key="index">
         {{ user }}
       </li>
     </ul><br>
-
     <label for="username">Invite User:</label><br>
       <input type="text" id="username" v-model="invited_user" />
     <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, invited_user)"> Send Invitation</button><br><br><br>
+
     <!--DISPLAY ERROR-->
       <div v-if="errorMessage" :style="{ color: errorColor }">
         <p>{{ errorMessage }}</p>
