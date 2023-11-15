@@ -4,11 +4,16 @@
   <div v-if="!showChatFlag && !updateUserDataFlag && isLoggedIn && userData && userData.user_data">
     <div class="container-xxl">
       <h2>Welcome, {{ userData.user_data.name }}!</h2>
-      <div v-if="showImageFlag">
-        <button @click="flipImageFlag">hide Image</button><br><br>
-      </div>
-      <div v-else>
-        <button @click="flipImageFlag">show Image</button><br><br>
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="imageSwitch"
+          v-model="showImageFlag"
+        />
+        <label class="form-check-label" for="imageSwitch">
+          {{ showImageFlag ? 'Hide' : 'Show' }} Image
+        </label>
       </div>
       <button @click="flipUpdateUserFlag">Change User Data</button><br>
       <button @click="flipChatFlag">Show Chat</button><br><br><br>
@@ -85,7 +90,7 @@
         <div class="row">
           <div class="col-md-3 mb-3">
             <label for="age" class="form-label">Age</label>
-            <input type="age" class="form-control" id="age" v-model="new_age">
+            <input type="text" class="form-control" id="age" v-model="new_age">
           </div>
         </div>
           <!-- Password Input -->
