@@ -201,7 +201,7 @@ export default {
           this.errorMessage = 'Please enter ur password!';
           return;
         }
-        const response = await fetch(`http://127.0.0.1:6969/user/data/${this.name}/${this.password}/`);
+        const response = await fetch(`http://127.0.0.1:6969/user/data/get/${this.name}/${this.password}/`);
         const data = await response.json();
         if (response.ok)
         {
@@ -260,7 +260,7 @@ export default {
           this.errorMessage = 'Please enter a password!';
           return;
         }
-        const apiUrl = `http://localhost:6969/user/createAccount/${this.new_name}/${this.new_password}/${this.new_age}/`;
+        const apiUrl = `http://localhost:6969/user/account/create/${this.new_name}/${this.new_password}/${this.new_age}/`;
         const response = await fetch(apiUrl);
         const data = await response.json();
         if (response.ok)

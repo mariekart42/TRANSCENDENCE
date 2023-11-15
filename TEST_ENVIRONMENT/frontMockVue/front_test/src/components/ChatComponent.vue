@@ -18,12 +18,13 @@
   <div v-else>
     <h2>Chatroom: &nbsp;{{this.chatData.name}}</h2><br><br>
       <div v-for="(message, index) in messages" :key="index" :class="{ 'own-message': isOwnMessage(message.sender) }">
-
         <!--DISPLAY OWN MESSAGE-->
         <div v-if="isOwnMessage(message.sender)">
-          <div class="own-message-text">
-            <strong>You</strong><br>
-            {{ message.text }}<br>
+            <div class="own-message-text" style="max-width: 70%">
+          <strong>You</strong><br>
+          <div class="text-break" style="word-break: break-all;">
+              {{ message.text }}
+            </div>
             <div class="timestamp" :style="{ 'font-size': '14px' }">
               {{ message.timestamp }}
             </div>
@@ -32,9 +33,11 @@
 
         <!--DISPLAY OTHER MESSAGE-->
         <div v-else>
-          <div class="other-message-text">
+          <div class="other-message-text" style="max-width: 70%">
             <strong>{{ message.sender }}</strong><br>
-            {{ message.text }}<br>
+            <div class="text-break" style="word-break: break-all;">
+              {{ message.text }}
+            </div>
             <div class="timestamp" :style="{ 'font-size': '14px' }">
               {{ message.timestamp }}
             </div>

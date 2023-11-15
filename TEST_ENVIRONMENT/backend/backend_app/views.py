@@ -55,6 +55,8 @@ def updateUserAge(request, user_id):
         return JsonResponse({'error': 'something big in updateUserAge'}, status=500)
 
 
+
+
 @require_POST
 def updateUserName(request, user_id):
     try:

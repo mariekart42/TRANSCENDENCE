@@ -66,7 +66,7 @@ export default {
         };
         console.log('USER ID: ')
         console.log(this.userDataObject.user_data.id)
-        const apiUrl = `http://localhost:6969/user/updateUserName/${this.userDataObject.user_data.id}/`;
+        const apiUrl = `http://localhost:6969/user/name/post/${this.userDataObject.user_data.id}/`;
         const response = await fetch(apiUrl, myInit);
         if (response.ok)
         {
@@ -102,7 +102,7 @@ export default {
         };
         console.log('USER ID: ')
         console.log(this.userDataObject.user_data.id)
-        const apiUrl = `http://localhost:6969/user/updateUserPassword/${this.userDataObject.user_data.id}/`;
+        const apiUrl = `http://localhost:6969/user/password/post/${this.userDataObject.user_data.id}/`;
         const response = await fetch(apiUrl, myInit);
         if (response.ok)
         {
@@ -140,7 +140,7 @@ export default {
             newAge: this.userDataObject.user_data.age + operation,
           }),
         };
-        const apiUrl = `http://localhost:6969/user/update-age/${this.userDataObject.user_data.id}/`;
+        const apiUrl = `http://localhost:6969/user/age/post/${this.userDataObject.user_data.id}/`;
         const response = await fetch(apiUrl, myInit);
         if (response.ok)
         {
