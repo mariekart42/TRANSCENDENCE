@@ -1,6 +1,13 @@
 <!-- ChatComponent.vue -->
 
 <template>
+<!--  <div class="container">-->
+<!--    <h1 class="display-4">Hello, Bootstrap!</h1>-->
+<!--    <p class="lead">This is a lead paragraph.</p>-->
+<!--    <button class="btn btn-primary">Click me</button>-->
+<!--  </div>-->
+
+
   <div v-if="!insideChatFlag">
     <h2>My Chats</h2>
     <ul>
@@ -22,7 +29,7 @@
         <!--DISPLAY OWN MESSAGE-->
         <div v-if="isOwnMessage(message.sender)">
           <div class="own-message-text">
-            <strong>{{ message.sender }}</strong><br>
+            <strong>You</strong><br>
             {{ message.text }}<br>
             <div class="timestamp" :style="{ 'font-size': '14px' }">
               {{ message.timestamp }}
