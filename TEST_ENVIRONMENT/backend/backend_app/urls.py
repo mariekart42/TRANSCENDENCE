@@ -15,6 +15,6 @@ urlpatterns = [
     path('user/getUserChats/<int:user_id>/', views.getUserChats, name='getUserChats'),
     path('user/getChatData/<int:user_id>/<int:chat_id>/', views.getChatData, name='getChatData'),
     path('user/inviteUserToChat/<int:user_id>/<int:chat_id>/<str:invited_user>/', views.inviteUserToChat, name='inviteUserToChat'),
-    path('user/createMessage/<int:user_id>/<int:chat_id>/<str:text>/', views.createMessage, name='createMessage'),
+    path('user/createMessage/<int:user_id>/<int:chat_id>/', views.createMessage, name='createMessage'),
     path('user/getChatMessages/<int:chat_id>/', views.getChatMessages, name='getChatMessages'),
 ]

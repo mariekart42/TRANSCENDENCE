@@ -180,10 +180,14 @@ def getChatData(request, user_id, chat_id):
 
 
 @require_POST
-def createMessage(request, user_id, chat_id, text):
+def createMessage(request, user_id, chat_id):
     try:
         user_instance = MyUser.objects.get(id=user_id)
         specific_timestamp = timezone.now()
+
+        data = json.loads(request.body.decode('utf-8'))
+        text = data.get('text')
+
         new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
 
         # add new_message to chat:

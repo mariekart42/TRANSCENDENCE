@@ -60,7 +60,7 @@
           </div>
           <!-- Password Input -->
          <div class="row">
-          <div class="col-md-3 mb-4">
+          <div class="col-md-3 mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" v-model="password">
           </div>

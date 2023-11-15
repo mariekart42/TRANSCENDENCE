@@ -178,8 +178,11 @@ export default {
       {
         const myInit = {
           method: "POST",
+          body: JSON.stringify({
+            text: text,
+          }),
         };
-        const response = await fetch(`http://127.0.0.1:6969/user/createMessage/${user_id}/${chat_id}/${text}/`, myInit);
+        const response = await fetch(`http://127.0.0.1:6969/user/createMessage/${user_id}/${chat_id}/`, myInit);
         const data = await response.json()
         if (response.ok)
         {
