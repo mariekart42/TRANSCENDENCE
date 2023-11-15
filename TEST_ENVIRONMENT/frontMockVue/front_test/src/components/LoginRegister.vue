@@ -3,7 +3,7 @@
   <!--USER IS LOGGED IN-->
   <div v-if="!showChatFlag && !updateUserDataFlag && isLoggedIn && userData && userData.user_data">
     <div class="container-xxl">
-      <h2>Welcome, {{ userData.user_data.name }}!</h2>
+      <h2>Welcome, {{ userData.user_data.name }}!</h2><br><br>
       <div class="form-check form-switch">
         <input
           class="form-check-input"
@@ -13,10 +13,10 @@
         />
         <label class="form-check-label" for="imageSwitch">
           {{ showImageFlag ? 'Hide' : 'Show' }} Image
-        </label>
+        </label><br><br>
       </div>
-      <button @click="flipUpdateUserFlag">Change User Data</button><br>
-      <button @click="flipChatFlag">Show Chat</button><br><br><br>
+      <button @click="flipUpdateUserFlag">Change User Data</button><br><br>
+      <button @click="flipChatFlag">Show Chat</button><br><br><br><br><br>
       <button @click="logout" class="btn btn-danger">Logout</button><br><br>
       <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image"/>
     </div>
