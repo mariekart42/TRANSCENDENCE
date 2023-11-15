@@ -1,13 +1,6 @@
 <!-- ChatComponent.vue -->
 
 <template>
-<!--  <div class="container">-->
-<!--    <h1 class="display-4">Hello, Bootstrap!</h1>-->
-<!--    <p class="lead">This is a lead paragraph.</p>-->
-<!--    <button class="btn btn-primary">Click me</button>-->
-<!--  </div>-->
-
-
   <div v-if="!insideChatFlag">
     <h2>My Chats</h2>
     <ul>
@@ -48,17 +41,29 @@
             </div>
         </div><br>
       </div>
-    <label for="message">&nbsp;&nbsp;>>&nbsp;&nbsp;</label>
-    <input type="text" id="message" v-model="current_message" />
-    <button @click="createMessage(this.userDataObject.user_data.id, this.chatData.id, current_message)">Send</button><br><br><br>
+      <div class="input-group mb-6">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Type your message..."
+          v-model="current_message"
+          @keyup.enter="current_message"
+        />
+        <button @click="createMessage(this.userDataObject.user_data.id, this.chatData.id, current_message)" class="btn btn-primary">Send</button><br><br><br>
+      </div>
     <ul>
       <li v-for="(user, index) in chatUser" :key="index">
         {{ user }}
       </li>
-    </ul><br>
-    <label for="username">Invite User:</label><br>
-      <input type="text" id="username" v-model="invited_user" />
-    <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, invited_user)"> Send Invitation</button><br><br><br>
+    </ul><br><br><br><br>
+
+    <div class="row">
+      <!-- Username Input -->
+      <div class="col-md-3 mb-3">
+        <input type="text" class="form-control" id="username" v-model="invited_user" placeholder="username">
+        <button @click="inviteUserToChat(this.userDataObject.user_data.id, this.chatData.id, invited_user)" class="btn btn-primary"> Send Invitation</button><br><br><br>
+      </div>
+    </div>
 
     <!--DISPLAY ERROR-->
       <div v-if="errorMessage" :style="{ color: errorColor }">

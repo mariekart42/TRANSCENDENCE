@@ -13,7 +13,7 @@
       <button @click="flipUpdateUserFlag">Change User Data</button><br>
       <button @click="flipChatFlag">Show Chat</button><br><br><br>
       <button @click="logout" class="btn btn-danger">Logout</button><br><br>
-      <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
+      <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image"/>
     </div>
   </div>
 
