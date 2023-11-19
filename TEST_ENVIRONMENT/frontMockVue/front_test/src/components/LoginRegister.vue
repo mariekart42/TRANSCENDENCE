@@ -11,6 +11,7 @@
     </div>
     <button @click="flipUpdateUserFlag">Change User Data</button><br>
     <button @click="flipChatFlag">Show Chat</button><br><br><br>
+    <button @click="flipGameFlag">Play Game</button><br><br><br>
     <button @click="logout">Logout</button><br><br>
     <img v-if="showImageFlag" :src="imageUrl" alt="Uploaded Image" />
   </div>
@@ -33,6 +34,13 @@
     <button @click="flipChatFlag">Go Back to Profile</button>
   </div>
 
+  <!--USER CLICKED PLAY GAME-->
+  <div v-else-if="showGameFlag">
+    <GameComponent
+        :userDataObject="userData"
+        :fetchUserDataFunc="fetchUserData"/>
+    <button @click="flipGameFlag">Go Back to Profile</button>
+  </div>
 
   <!--USER IS NOT LOGGED IN-->
   <div v-else>
@@ -77,16 +85,19 @@
 
 import ChatComponent from "./ChatComponent.vue";
 import UpdateUserData from "./UpdateUserData.vue";
+import GameComponent from "./GameComponent.vue";
 
 export default {
   components: {
     ChatComponent,
-    UpdateUserData
+    UpdateUserData,
+    GameComponent
   },
   data() {
     return {
       updateUserDataFlag: false,
       showChatFlag: false,
+      showGameFlag: false,
       name: "",  // Make sure to initialize the name property
       password: "",
       new_name: "",
@@ -131,6 +142,11 @@ export default {
 
     flipChatFlag() {
       this.showChatFlag = !this.showChatFlag
+    },
+
+    flipGameFlag() {
+      console.log('flipGameFlag method called');
+      this.showGameFlag = true
     },
 
     async checkAuthentication()
