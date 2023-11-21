@@ -1,18 +1,18 @@
-# asgi.py
 import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-# from lol.appname import routing  # Import your routing configuration
-import lol.appname.routing
+from . import routing  # Replace with your actual project name
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lol.settings')
+
+django_asgi_app = get_asgi_application()
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            lol.appname.routing.websocket_urlpatterns
+            routing.websocket_urlpatterns
         )
     ),
 })

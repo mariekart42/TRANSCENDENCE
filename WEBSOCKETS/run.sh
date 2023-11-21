@@ -31,8 +31,8 @@ RESET='\033[0m' # No Color (reset color back to normal)
         python3 lol/manage.py makemigrations
         python3 lol/manage.py migrate
 
-
-
+    python3 -m pip install daphne
+    daphne lol.asgi:application
 
     echo -e " 🗿  ${BLUE}Starting Django server...${RESET}"
     # u can specify port at the end, default is 8000
