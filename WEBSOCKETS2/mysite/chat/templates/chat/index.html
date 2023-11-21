@@ -1,0 +1,73 @@
+<!-- chat/templates/chat/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+    What chat room would you like to enter?<br>
+    <input id="room-name-input" type="text" size="100"><br>
+    <input id="room-name-submit" type="button" value="Enter">
+
+
+
+    <script>
+const roomName = "your_room_name";  // Replace with the actual room name
+
+const chatSocket = new WebSocket(
+    'ws://' +
+    window.location.host +
+    '/ws/chat/' +
+    roomName +
+    '/'
+);
+
+// Wait for the WebSocket to open before sending messages
+chatSocket.onopen = function (event) {
+    console.log("WebSocket opened. You can now send messages.");
+
+    // Example: Sending a message after the WebSocket is open
+    const message = "Hello, WebSocket!";
+    chatSocket.send(JSON.stringify({
+        'type': 'chat.message',
+        'message': message,
+    }));
+};
+
+// Handle incoming messages
+chatSocket.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    // Process the incoming message data
+    console.log(data);
+};
+
+// Handle WebSocket errors
+chatSocket.onerror = function (error) {
+    console.error("WebSocket error:", error);
+};
+
+// Handle WebSocket closure
+chatSocket.onclose = function (event) {
+    console.log("WebSocket closed:", event);
+};
+
+</script>
+
+
+<!--    -->
+<!--    <script>-->
+<!--        document.querySelector('#room-name-input').focus();-->
+<!--        document.querySelector('#room-name-input').onkeyup = function(e) {-->
+<!--            if (e.key === 'Enter') {  // enter, return-->
+<!--                document.querySelector('#room-name-submit').click();-->
+<!--            }-->
+<!--        };-->
+
+<!--        document.querySelector('#room-name-submit').onclick = function(e) {-->
+<!--            var roomName = document.querySelector('#room-name-input').value;-->
+<!--            window.location.pathname = '/chat/' + roomName + '/';-->
+<!--        };-->
+<!--    </script>-->
+</body>
+</html>
