@@ -1,17 +1,147 @@
-<!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
-</html>
+<div id="loginPage">
+  <h1>Login Page</h1>
+  <label for="username">Enter your name:</label><br>
+  <input type="text" id="username" /><br><br>
+  <label for="password">Enter your password:</label><br>
+  <input type="password" id="password" /><br><br>
+  <button id="submitBtn">Submit</button><br><br>
+  <button id="registerBtn">No Account yet?</button><br><br>
+
+  <!-- DISPLAY ERROR -->
+  <div id="errorContainer"></div>
+</div>
+
+<div id="registrationPage" style="display: none;">
+  <h1>Register Page</h1>
+  <label for="newUsername">Enter your name:</label><br>
+  <input type="text" id="newUsername" /><br><br>
+  <label for="newAge">Enter your Age:</label><br>
+  <input type="text" id="newAge" /><br><br>
+  <label for="newPassword">Enter your password:</label><br>
+  <input type="password" id="newPassword" /><br><br>
+  <button id="createAccountBtn">Submit</button><br><br>
+  <button id="loginPageBtn">Have an Account?</button><br><br>
+
+  <!-- DISPLAY ERROR -->
+  <div id="registrationErrorContainer"></div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var showPage = 'login'; // You can set the initial value as needed
+
+  // Function to handle login
+  async function fetchUserData() {
+    var username = document.getElementById('username').value;
+    var password = document.getElementById('password').value;
+
+    try {
+      if (!username.trim()) {
+        displayError('Please enter your username!');
+        return;
+      }
+      if (!password.trim()) {
+        displayError('Please enter your password!');
+        return;
+      }
+
+      const response = await fetch(`http://127.0.0.1:6969/user/data/${username}/${password}/`);
+      const data = await response.json();
+
+      if (response.ok) {
+        displayError(null);
+        // Perform actions on successful login, e.g., set isLoggedIn and userData
+        alert('Login successful!');
+      } else {
+        displayError(data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      displayError('Error fetching user data');
+    }
+  }
+
+  // Function to switch to the register page
+  async function createAccount() {
+    var newUsername = document.getElementById('newUsername').value;
+    var newAge = document.getElementById('newAge').value;
+    var newPassword = document.getElementById('newPassword').value;
+
+    // Check if all registration fields are filled
+    if (newUsername && newAge && newPassword) {
+      try {
+
+        // const response = `http://localhost:6969/user/createAccount/${this.newUsername}/${this.newPassword}/${this.newAge}/`, {
+        // const response = await fetch(`http://127.0.0.1:6969/user/register`, {
+          const response = await fetch(`http://localhost:6969/user/createAccount/${newUsername}/${newPassword}/${newAge}/`);
+
+        const data = await response.json();
+        // const response = await fetch(apiUrl);
+
+        if (response.ok) {
+          displayRegistrationError(null);
+          // Perform actions on successful registration
+          alert('Account created successfully!');
+        } else {
+          displayRegistrationError(data.error);
+        }
+      } catch (error) {
+        console.error('Error creating account:', error);
+        displayRegistrationError('Error creating account');
+      }
+    } else {
+      displayRegistrationError('Please fill in all registration fields.');
+    }
+  }
+
+  // Function to switch to the login page
+  function changeToLoginPage() {
+    var loginPage = document.getElementById('loginPage');
+    var registrationPage = document.getElementById('registrationPage');
+    loginPage.style.display = 'block';
+    registrationPage.style.display = 'none';
+  }
+
+  // Function to switch to the registration page
+  function changeToRegistrationPage() {
+    var loginPage = document.getElementById('loginPage');
+    var registrationPage = document.getElementById('registrationPage');
+    loginPage.style.display = 'none';
+    registrationPage.style.display = 'block';
+  }
+
+  // Function to display error on login
+  function displayError(errorMessage) {
+    var errorContainer = document.getElementById('errorContainer');
+    errorContainer.style.color = 'red';
+    errorContainer.innerHTML = errorMessage ? '<p>' + errorMessage + '</p>' : '';
+  }
+
+  // Function to display error on registration
+  function displayRegistrationError(errorMessage) {
+    var errorContainer = document.getElementById('registrationErrorContainer');
+    errorContainer.style.color = 'red';
+    errorContainer.innerHTML = errorMessage ? '<p>' + errorMessage + '</p>' : '';
+  }
+
+  // Attach click event listeners for the login page
+  document.getElementById('submitBtn').addEventListener('click', fetchUserData);
+  document.getElementById('registerBtn').addEventListener('click', changeToRegistrationPage);
+
+  // Attach click event listeners for the registration page
+  document.getElementById('createAccountBtn').addEventListener('click', createAccount);
+  document.getElementById('loginPageBtn').addEventListener('click', changeToLoginPage);
+
+  // Show or hide the login and registration pages based on the showPage variable
+  function toggleLoginPage() {
+    var loginPage = document.getElementById('loginPage');
+    var registrationPage = document.getElementById('registrationPage');
+    loginPage.style.display = showPage === 'login' ? 'block' : 'none';
+    registrationPage.style.display = showPage === 'registration' ? 'block' : 'none';
+  }
+
+  // Initial setup
+  toggleLoginPage();
+});
+</script>
