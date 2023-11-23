@@ -13,9 +13,57 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+<!--    <div id="app"></div>-->
 
-    <!-- built files will be auto injected -->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!--    &lt;!&ndash; built files will be auto injected &ndash;&gt;-->
+<!--      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>-->
+
+        LOL THIS IS TESTING WeBSOCKET SHIT WITHOUT VUE
+
+        What chat room would you like to enter?<br>
+        <input id="room-name-input" type="text" size="100"><br>
+        <input id="room-name-submit" type="button" value="Enter">
+        <script>
+            const roomName = "your_room_name";  // Replace with the actual room name
+
+            const chatSocket = new WebSocket(
+                'ws://' +
+                window.location.host +
+                '/ws/chat/' +
+                roomName +
+                '/'
+            );
+
+            // Wait for the WebSocket to open before sending messages
+            chatSocket.onopen = function (event) {
+                console.log("WebSocket opened. You can now send messages.");
+
+                // Example: Sending a message after the WebSocket is open
+                const message = "Hello, WebSocket!";
+                chatSocket.send(JSON.stringify({
+                    'type': 'chat.message',
+                    'message': message,
+                }));
+            };
+
+            // Handle incoming messages
+            chatSocket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                // Process the incoming message data
+                console.log(data);
+            };
+
+            // Handle WebSocket errors
+            chatSocket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
+
+            // Handle WebSocket closure
+            chatSocket.onclose = function (event) {
+                console.log("WebSocket closed:", event);
+            };
+        </script>
+
+
   </body>
 </html>

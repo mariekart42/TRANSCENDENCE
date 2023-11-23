@@ -13,7 +13,9 @@ export default {
     'my-component': LoginRegister,
   },
 };
+
 </script>
+
 
 <style>
 /* Your styles go here */

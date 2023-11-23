@@ -5,6 +5,13 @@ from .views import updateUserAge, updateUserName, updateUserPassword
 urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port
 
+
+# testing intigrading websockets:
+#     path("", views.index, name="index"),
+#     path("<str:room_name>/", views.room, name="room"),
+#
+
+
     # USER
     path('user/data/get/<str:username>/<str:provided_password>/', views.getUserData, name='userData'),
     path('user/age/post/<int:user_id>/', updateUserAge, name='updateUserAge'),

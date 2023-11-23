@@ -11,9 +11,21 @@ def goToFrontend(request):
     return render(request, 'goToFrontend.html')
 
 
+
+# testing intigrading websockets:
+# def index(request):
+#     return render(request, "chat/index.html")
+# def room(request, room_name):
+#     return render(request, "chat/room.html", {"room_name": room_name})
+#
+#
+
+
+
 @require_GET
 def getUserData(request, username, provided_password):
     try:
+        print('IN BACKEND GET USER DATA')
         user = MyUser.objects.filter(name=username).exists()
         if not user:
             return JsonResponse({'error': 'User not found'}, status=404)

@@ -35,6 +35,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',  # HAS to be on top
+
     'django.contrib.admin',
     'django.contrib.auth',  # comes with authentication tools! :))
     'django.contrib.contenttypes',
@@ -66,7 +68,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -84,6 +85,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+
+ASGI_APPLICATION = 'backend.asgi.application'
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:4242', 'http://127.0.0.1:4242']
 
