@@ -22,6 +22,30 @@ def goToFrontend(request):
 
 
 
+# @require_GET
+def checkUserCredentials(request, username, password):
+    try:
+        print('IN BACKEND loginUser')
+        user_exist_check = MyUser.objects.filter(name=username).exists()
+        if not user_exist_check:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        user_object = MyUser.objects.get(name=username)
+
+        if password == user_object.password:
+            return JsonResponse({'message': 'ALL RIGHT'}, status=200)
+        else:
+            return JsonResponse({'error': 'Password is wrong'}, status=401)
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return JsonResponse({'error': 'something big in getUserData'}, status=500)
+
+
+
+
+
+
+
 @require_GET
 def getUserData(request, username, provided_password):
     try:

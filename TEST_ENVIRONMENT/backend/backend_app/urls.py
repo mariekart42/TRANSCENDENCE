@@ -13,6 +13,8 @@ urlpatterns = [
 
 
     # USER
+    path('user/check_user_credentials/<str:username>/<str:password>/', views.checkUserCredentials, name='checkUserCredentials'),
+
     path('user/data/get/<str:username>/<str:provided_password>/', views.getUserData, name='userData'),
     path('user/age/post/<int:user_id>/', updateUserAge, name='updateUserAge'),
     path('user/name/post/<int:user_id>/', updateUserName, name='updateUserName'),
