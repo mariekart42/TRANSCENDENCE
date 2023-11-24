@@ -21,8 +21,13 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
     python3 -m pip install Django
     python3 -m pip install --upgrade django
 
+    python3 -m pip install channels
+    python3 -m pip install --upgrade channels
+
     python3 -m pip install daphne
     python3 -m pip install --upgrade daphne
+
+    
 
 #    echo -e " 🗿  ${BLUE}Installing Vue CLI...${RESET}"
 #    npm install --save-dev @vue/cli
