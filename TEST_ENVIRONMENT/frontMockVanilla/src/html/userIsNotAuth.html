@@ -1,30 +1,54 @@
+
 <!--LOGIN PAGE-->
-<!--<script src="../js/loadFiles.js"></script>-->
-
-
 <div id="loginPage">
   <div class="container-xxl">
   <h1>Login Page</h1>
   <!-- Username Input -->
   <div class="row">
     <div class="col-md-3 mb-3">
-      <label for="loginUsernameID" class="form-label">Username</label>
-      <input type="text" class="form-control" id="loginUsernameID">
+      <label for="loginUsername" class="form-label">Username</label>
+      <input type="text" class="form-control" id="loginUsername">
     </div>
   </div>
   <!-- Password Input -->
   <div class="row">
     <div class="col-md-3 mb-3">
-      <label for="loginPasswordID" class="form-label">Password</label>
-      <input type="password" class="form-control" id="loginPasswordID">
+      <label for="loginPassword" class="form-label">Password</label>
+      <input type="password" class="form-control" id="loginPassword">
     </div>
   </div>
-
   <button type="submit" id="loginUserButton">Login</button>
-<!--      <button id="registerButton" class="btn btn-primary btn-sm">No Account yet?</button><br><br>-->
+  <button id="changeToRegisterPageButton" class="btn btn-primary btn-sm">No Account yet?</button><br><br>
   </div>
 </div>
 
-<!--<script src="../js/login_register.js"></script>-->
-
+<!--REGISTER PAGE-->
+<div id="registerPage" class="hidden">
+  <div class="container-xxl">
+  <h1>Login Page</h1>
+  <!-- Username Input -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label for="registerUsername" class="form-label">Username</label>
+      <input type="text" class="form-control" id="registerUsername">
+    </div>
+  </div>
+  <!-- Age Input -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label for="registerAge" class="form-label">Age</label>
+      <input type="text" class="form-control" id="registerAge">
+    </div>
+  </div>
+  <!-- Password Input -->
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <label for="registerPassword" class="form-label">Password</label>
+      <input type="password" class="form-control" id="registerPassword">
+    </div>
+  </div>
+  <button type="submit" id="RegisterUserButton">Register</button>
+  <button id="changeToLoginPageButton" class="btn btn-primary btn-sm">Have an Account?</button><br><br>
+  </div>
+</div>
 
