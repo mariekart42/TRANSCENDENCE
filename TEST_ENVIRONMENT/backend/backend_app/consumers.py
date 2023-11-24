@@ -16,12 +16,15 @@ class test(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print('TEXT_DATA_JSON: ', text_data_json)
-        message = text_data_json["message"]
-        print('I AM BACKEND AND I GOT UR MESSAGE: ', message)
+        # print('TEXT_DATA_JSON: ', text_data_json)
+        # message = text_data_json["message"]
+        # print('I AM BACKEND AND I GOT UR MESSAGE: ', message)
 
-        response = 'I AM BACKEND AND I SEND YOU THIS'
-        await self.send(text_data=json.dumps({"message": response}))
+        switch = text_data_json["switch"]
+        if switch:
+            await self.send(text_data=json.dumps({"switch": True}))
+        else:
+            await self.send(text_data=json.dumps({"switch": False}))
 
 
 

@@ -17,14 +17,14 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(response => response.text())
     .then(html => {
       document.getElementById(targetId).innerHTML = html;
-
-      // addEventListeners();
+      addEventListenersIsAuth();
     })
     .catch(error => console.error('Error loading content:', error));
   }
   loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
+
 });
 
 // function addEventListeners() {
 //     // Add your event listeners or other JavaScript functionality here.
-// }
+// }addEventListenersIsAuth
