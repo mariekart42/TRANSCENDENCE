@@ -284,6 +284,26 @@ def inviteUserToChat(request, user_id, chat_id, invited_user):
 
 
 
+##GAMEEEEEEEEEEEEEEE
+
+def createGameroom(request, username):
+    try:
+        new_gameroom = Gameroom.objects.create()
+
+        user_instance = MyUser.objects.get(Name=username)
+
+        # Add new chat to user
+        user_instance.games.add(new_gameroom.id)
+        new_gameroom.save()
+        user_instance.save()
+        return JsonResponse({"message": "Gameroom was created successfully"})
+    except ValueError:
+        return JsonResponse({"error": "Invalid username"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+
 
 
 

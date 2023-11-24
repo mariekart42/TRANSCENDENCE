@@ -9,11 +9,16 @@ class MyUser(models.Model):
     avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
     chats = models.ManyToManyField('Chat', blank=True)
     # can hold multiple Chat instances
+    games = models.ManyToManyField('Game', blank=True)
 
 
 class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)
     messages = models.ManyToManyField('Message', blank=True)
+
+class Game(models.Model):
+    hostUser = models.ManyToManyField('myUser', blank=True)
+    
 
 
 class Message(models.Model):

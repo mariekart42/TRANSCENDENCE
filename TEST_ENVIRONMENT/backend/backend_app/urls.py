@@ -29,6 +29,7 @@ urlpatterns = [
 
 
     # GAME
+    path('user/create_game/<int:username>/', views.createGameroom, name='create_gameroom'),
 
 
     # path('user/update-avatar/<int:id>/', views.updateAvatar, name='userAvatar')
