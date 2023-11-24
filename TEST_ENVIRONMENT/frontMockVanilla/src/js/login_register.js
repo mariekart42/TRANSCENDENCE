@@ -1,7 +1,7 @@
-// let obj = {
-//     name: "",  // Make sure to initialize the name property
-//     password: "",
-// }
+let obj = {
+    username: "",  // Make sure to initialize the name property
+    password: "",
+}
 
 function addEventListenersNotAuth() {
 //   // Your script here
@@ -24,6 +24,8 @@ function addEventListenersNotAuth() {
         const isAuth = document.getElementById('userIsAuth');
         notAuth.classList.add('hidden');
         isAuth.classList.remove('hidden');
+        obj.username = username
+        obj.password = password
         establishWebsocketConnection()
       })
       .catch(error => {

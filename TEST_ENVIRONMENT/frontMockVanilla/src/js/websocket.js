@@ -1,7 +1,11 @@
 
 
 function establishWebsocketConnection() {
-    const roomName = "your_room_name";  // Replace with the actual room name
+
+    const username = obj.username
+    const password = obj.password
+    console.log('TEST OBJ< NAME: ', username)
+    console.log('TEST OBJ< PASSWORD: ', password)
 
     const chatSocket = new WebSocket(
         'ws://localhost:6969/ws/test/'
