@@ -11,75 +11,14 @@
             display: none;
         }
     </style>
+
 </head>
 <body>
 
+<div id="userIsNotAuth"></div>
+<div id="userIsAuth" class="hidden"></div>
 
-<div id="userIsNotAuth">
-<!--LOGIN PAGE-->
-  <div id="loginPage">
-    <div class="container-xxl">
-    <h1>Login Page</h1>
-    <!-- Username Input -->
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <label for="loginUsernameID" class="form-label">Username</label>
-        <input type="text" class="form-control" id="loginUsernameID">
-      </div>
-    </div>
-    <!-- Password Input -->
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <label for="loginPasswordID" class="form-label">Password</label>
-        <input type="password" class="form-control" id="loginPasswordID">
-      </div>
-    </div>
-
-    <button type="submit" id="loginUserButton">Login</button>
-<!--      <button id="registerButton" class="btn btn-primary btn-sm">No Account yet?</button><br><br>-->
-    </div>
-  </div>
-</div>
-
-
-<!--  &lt;!&ndash;REGISTER PAGE&ndash;&gt;-->
-<!--  <div id="registerPage" class="hidden">-->
-<!--    <div class="container-xxl">-->
-<!--      <h1>Register Page</h1>-->
-<!--      <div class="row">-->
-<!--        &lt;!&ndash; Username Input &ndash;&gt;-->
-<!--        <div class="col-md-3 mb-3">-->
-<!--          <label for="registerUsernameID" class="form-label">Username</label>-->
-<!--          <input type="text" class="form-control" id="registerUsernameID">-->
-<!--        </div>-->
-<!--      </div>-->
-<!--        &lt;!&ndash; Age Input &ndash;&gt;-->
-<!--      <div class="row">-->
-<!--        <div class="col-md-3 mb-3">-->
-<!--          <label for="registerAgeID" class="form-label">Age</label>-->
-<!--          <input type="text" class="form-control" id="registerAgeID">-->
-<!--        </div>-->
-<!--      </div>-->
-<!--        &lt;!&ndash; Password Input &ndash;&gt;-->
-<!--      <div class="row">-->
-<!--        <div class="col-md-3 mb-3">-->
-<!--          <label for="registerPasswordID" class="form-label">Password</label>-->
-<!--          <input type="password" class="form-control" id="registerPasswordID">-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      &lt;!&ndash;        <button onclick="createAccount()" class="btn btn-success">Login</button><br><br>&ndash;&gt;-->
-<!--      <button type="submit" id="registerUserButton">Register</button>-->
-<!--      <button id="loginButton" class="btn btn-primary btn-sm">Have an Account?</button><br><br>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  -->
-
-
-<div id="userIsAuth" class="hidden">
-  USER IS LOGGED IN
-</div>
-
-
-</body>
+<script src="js/loadFiles.js"></script>
 <script src="js/login_register.js"></script>
+</body>
 </html>
