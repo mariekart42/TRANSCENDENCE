@@ -24,6 +24,7 @@ function addEventListenersNotAuth() {
         const isAuth = document.getElementById('userIsAuth');
         notAuth.classList.add('hidden');
         isAuth.classList.remove('hidden');
+        establishWebsocketConnection()
       })
       .catch(error => {
         console.error('Error during login:', error);
@@ -36,13 +37,15 @@ function addEventListenersNotAuth() {
     const loginPage = document.getElementById('loginPage');
     const registerPage = document.getElementById('registerPage');
 
-    // Function to show the login page
-    function showLoginPage() {
-      loginPage.classList.remove('hidden');
-      registerPage.classList.add('hidden');
-    }
+    loginPage.classList.remove('hidden');
+    registerPage.classList.add('hidden');
+  });
 
-    // Attach the showLoginPage function to the button click event
-    document.getElementById('changeToLoginPageButton').addEventListener('click', showLoginPage);
+  document.getElementById('changeToRegisterPageButton').addEventListener('click', function () {
+    const loginPage = document.getElementById('loginPage');
+    const registerPage = document.getElementById('registerPage');
+
+    loginPage.classList.add('hidden');
+    registerPage.classList.remove('hidden');
   });
 }
