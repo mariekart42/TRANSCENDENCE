@@ -23,16 +23,12 @@ def checkUserCredentials(request, username, password):
         user_object = MyUser.objects.get(name=username)
 
         if password == user_object.password:
-            return JsonResponse({'message': 'ALL RIGHT'}, status=200)
+            return JsonResponse({'message': 'ALL RIGHT', 'user_id': user_object.id}, status=200)
         else:
             return JsonResponse({'error': 'Password is wrong'}, status=401)
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return JsonResponse({'error': 'something big in getUserData'}, status=500)
-
-
-
-
 
 
 

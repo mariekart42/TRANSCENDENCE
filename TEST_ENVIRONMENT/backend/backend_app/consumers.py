@@ -51,42 +51,23 @@ class test(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        type = text_data_json["type"]
+        what_type = text_data_json["type"]
 
-        if type == 'chat.message':
+        if what_type == 'chat.message':
             # chat_id = text_data_json["chat_id"]
             chat_id = 44
+
             # Use await to call the async method in the synchronous context
-            # user_id = text_data_json["user_id"]
-            user_id = 52
+            user_id = text_data_json["user_id"]
             message = text_data_json["message"]
             text = text_data_json.get("text", message)
 
             # Use await to call the async method in the synchronous context
             await self.create_message(user_id, chat_id, text)
             message_data = await self.get_chat_messages(chat_id)
-
-            # print('MESSAGE DATA: ', message_data)
             await self.send(text_data=json.dumps({"message_data": message_data}))
         else:
             print('IS SOMETHING ELSE')
-        # extract chat data and create message object in database
-
-
-        # create array of all messages with sender, timestamp data...
-
-        # send array of message data back
-
-
-
-
-        # sender = text_data_json["sender"]
-        # message = text_data_json["message"]
-        # if message is None:
-        #     await self.send(text_data=json.dumps({"error": 'Message could not be read'}))
-        # else:
-        #     await self.send(text_data=json.dumps({"message": 'lol fine'}))
-        #
 
 
 
@@ -114,7 +95,5 @@ class ChatConsumer2(AsyncWebsocketConsumer):
         pass
 
     async def receive(self, text_data):
-        # text_data_json = json.loads(text_data)
-        # message = text_data_json["message"]
         message = 'bullshit lol, Consumer2'
         await self.send(text_data=json.dumps({"message": message}))

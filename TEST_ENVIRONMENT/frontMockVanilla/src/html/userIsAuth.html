@@ -1,11 +1,8 @@
 
-
-<p id="sender"></p><br><br>
-
+<p id="senderTitle"></p><br><br>
 
 <div id="messageContainer"></div>
-<!--<p id="message"></p><br><br>-->
-
+<br>
 <div class="input-group mb-6">
     <input
       type="text"
@@ -15,3 +12,25 @@
     />
     <button id="sendMessageButton" class="btn btn-primary">Send</button>
 </div>
+
+
+<style>
+.own-message-text {
+  background-color: #e6e6e6;
+  padding: 5px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 16px;
+  max-width: 70%;
+  word-break: break-all;
+}
+.other-message-text {
+  background-color: #a6c8ff;  /* Example background color for own messages */
+  padding: 5px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 16px;
+  max-width: 70%;
+  word-break: break-all;
+}
+</style>

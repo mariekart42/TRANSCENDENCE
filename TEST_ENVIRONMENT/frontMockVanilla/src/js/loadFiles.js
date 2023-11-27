@@ -1,4 +1,5 @@
 
+
 document.addEventListener('DOMContentLoaded', function () {
   function loadContent(file, targetId) {
     fetch(file)

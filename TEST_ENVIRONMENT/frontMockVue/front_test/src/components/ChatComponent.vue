@@ -311,6 +311,5 @@ export default {
   border-radius: 8px;
   display: inline-block;
   font-size: 16px;
-
 }
 </style>
