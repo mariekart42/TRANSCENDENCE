@@ -12,7 +12,6 @@ websocket_obj = {
     }
   ],
 
-  switch_bool: false,
   message: null,
   sender: null,
   websocket: null,
@@ -42,8 +41,9 @@ function establishWebsocketConnection() {
 
     // Process the incoming message data
     console.log(data);
-    const message = data.message
-    updateMessageContainer(message)
+    const message = data.messages
+    console.log('MESSAGE ARRAY: ', message)
+    // updateMessageContainer(message)
     // let sender= document.getElementById('sender')
     // let message= document.getElementById('message')
     //
@@ -79,19 +79,19 @@ function sendWebsocketData() {
 
 
 
-  // Function to update the DOM with the received message
-function updateMessageContainer(message) {
-  const container = document.getElementById('messageContainer');
-
-  // Create HTML elements for the message
-  const messageElement = document.createElement('div');
-  messageElement.innerHTML = `
-    <p>Sender: ${websocket_obj.messages.sender}</p>
-    <p>Message: ${websocket_obj.messages.text}</p>
-    <p>Timestamp: ${websocket_obj.messages.timestamp}</p>
-    <hr>
-  `;
-
-  // Append the message to the container
-  container.appendChild(messageElement);
-}
+// // Function to update the DOM with the received message
+// function updateMessageContainer(message) {
+//   const container = document.getElementById('messageContainer');
+//
+//   // Create HTML elements for the message
+//   const messageElement = document.createElement('div');
+//   messageElement.innerHTML = `
+//     <p>Sender: ${websocket_obj.messages.sender}</p>
+//     <p>Message: ${websocket_obj.messages.text}</p>
+//     <p>Timestamp: ${websocket_obj.messages.timestamp}</p>
+//     <hr>
+//   `;
+//
+//   // Append the message to the container
+//   container.appendChild(messageElement);
+// }

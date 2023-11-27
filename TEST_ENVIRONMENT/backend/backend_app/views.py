@@ -12,16 +12,6 @@ def goToFrontend(request):
 
 
 
-# testing intigrading websockets:
-# def index(request):
-#     return render(request, "chat/index.html")
-# def room(request, room_name):
-#     return render(request, "chat/room.html", {"room_name": room_name})
-#
-#
-
-
-
 # @require_GET
 def checkUserCredentials(request, username, password):
     try:
@@ -216,48 +206,48 @@ def getChatData(request, user_id, chat_id):
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
 
 
-
-@require_POST
-def createMessage(request, user_id, chat_id):
-    try:
-        user_instance = MyUser.objects.get(id=user_id)
-        specific_timestamp = timezone.now()
-
-        data = json.loads(request.body.decode('utf-8'))
-        text = data.get('text')
-
-        new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
-
-        # add new_message to chat:
-        chat_instance = Chat.objects.get(id=chat_id)
-        chat_instance.messages.add(new_message.id)
-        new_message.save()
-
-        return JsonResponse({'message': "Message created successfully"})
-    except Exception as e:
-        return JsonResponse({'error': 'something big in createMessage'}, status=500)
-
-
-def getChatMessages(request, chat_id):
-    try:
-        chat_instance = Chat.objects.get(id=chat_id)
-        messages_in_chat = chat_instance.messages.all()
-
-        message_data = [
-            {
-                'id': message.id,
-                'sender': message.sender,
-                'text': message.text,
-                'timestamp': message.formatted_timestamp(),
-            }
-            for message in messages_in_chat
-        ]
-
-        return JsonResponse({'message_data': message_data}, status=200)
-    except Exception as e:
-            return JsonResponse({'error': 'something big in createMessage'}, status=500)
-
-
+# moved to utils file
+# @require_POST
+# def createMessage(request, user_id, chat_id):
+#     try:
+#         user_instance = MyUser.objects.get(id=user_id)
+#         specific_timestamp = timezone.now()
+#
+#         data = json.loads(request.body.decode('utf-8'))
+#         text = data.get('text')
+#
+#         new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
+#
+#         # add new_message to chat:
+#         chat_instance = Chat.objects.get(id=chat_id)
+#         chat_instance.messages.add(new_message.id)
+#         new_message.save()
+#
+#         return JsonResponse({'message': "Message created successfully"})
+#     except Exception as e:
+#         return JsonResponse({'error': 'something big in createMessage'}, status=500)
+#
+#
+# def getChatMessages(request, chat_id):
+#     try:
+#         chat_instance = Chat.objects.get(id=chat_id)
+#         messages_in_chat = chat_instance.messages.all()
+#
+#         message_data = [
+#             {
+#                 'id': message.id,
+#                 'sender': message.sender,
+#                 'text': message.text,
+#                 'timestamp': message.formatted_timestamp(),
+#             }
+#             for message in messages_in_chat
+#         ]
+#
+#         return JsonResponse({'message_data': message_data}, status=200)
+#     except Exception as e:
+#             return JsonResponse({'error': 'something big in createMessage'}, status=500)
+#
+#
 
 def inviteUserToChat(request, user_id, chat_id, invited_user):
     try:

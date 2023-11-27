@@ -15,7 +15,4 @@ function addEventListenersIsAuth() {
     // send inited data to backend:
     sendWebsocketData()
   });
-
-
-
 }

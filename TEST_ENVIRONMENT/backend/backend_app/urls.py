@@ -1,15 +1,10 @@
 from django.urls import path
 from . import views
+from . import utils
 from .views import updateUserAge, updateUserName, updateUserPassword
 
 urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port
-
-
-# testing intigrading websockets:
-#     path("", views.index, name="index"),
-#     path("<str:room_name>/", views.room, name="room"),
-#
 
 
     # USER
@@ -36,6 +31,6 @@ urlpatterns = [
     path('user/getUserChats/<int:user_id>/', views.getUserChats, name='getUserChats'),
     path('user/getChatData/<int:user_id>/<int:chat_id>/', views.getChatData, name='getChatData'),
     path('user/inviteUserToChat/<int:user_id>/<int:chat_id>/<str:invited_user>/', views.inviteUserToChat, name='inviteUserToChat'),
-    path('user/createMessage/<int:user_id>/<int:chat_id>/', views.createMessage, name='createMessage'),
-    path('user/getChatMessages/<int:chat_id>/', views.getChatMessages, name='getChatMessages'),
+    path('user/createMessage/<int:user_id>/<int:chat_id>/', utils.createMessage, name='createMessage'),
+    path('user/getChatMessages/<int:chat_id>/', utils.getChatMessages, name='getChatMessages'),
 ]
