@@ -3,9 +3,6 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-
-
-
 class test(AsyncWebsocketConsumer):
     async def connect(self):
         print('CONNECT TO TEST CONSUMER')
@@ -16,15 +13,16 @@ class test(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        # print('TEXT_DATA_JSON: ', text_data_json)
-        # message = text_data_json["message"]
-        # print('I AM BACKEND AND I GOT UR MESSAGE: ', message)
 
-        switch = text_data_json["switch"]
-        if switch:
-            await self.send(text_data=json.dumps({"switch": True}))
+        print('I AM BACKEND AND I GOT UR DATA: ', text_data_json)
+
+        sender = text_data_json["sender"]
+        message = text_data_json["message"]
+        if message is None:
+            await self.send(text_data=json.dumps({"error": 'Message could not be read'}))
         else:
-            await self.send(text_data=json.dumps({"switch": False}))
+            await self.send(text_data=json.dumps({"message": 'lol fine'}))
+
 
 
 

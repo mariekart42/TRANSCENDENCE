@@ -1,17 +1,22 @@
 
-
-
 function addEventListenersIsAuth() {
 
-  document.getElementById('button').addEventListener('click', function () {
-    console.log('Button clicked'); // Check if the button click is registered
-    websocket_obj.switch_bool = !websocket_obj.switch_bool
-    console.log('SWITCH: ', websocket_obj.switch_bool)
-    const content1 = document.getElementById('oneThing');
-    const content2 = document.getElementById('anotherThing');
-    content1.classList.toggle('hidden');
-    content2.classList.toggle('hidden');
+  document.getElementById('sendMessageButton').addEventListener('click', function () {
+    const message = document.getElementById('messageInput').value
+    const sender = obj.username
+    console.log('MESSGAE: ', message)
+    websocket_obj.message = message
+    console.log('SENDER: ', sender)
+    websocket_obj.sender = sender
+
+    // message bar empty after user hit send:
+    document.getElementById('messageInput').value = ''
+
+    // send inited data to backend:
     sendWebsocketData()
   });
+
+
+
 
 }

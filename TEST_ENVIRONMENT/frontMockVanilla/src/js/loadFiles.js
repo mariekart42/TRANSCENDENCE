@@ -24,7 +24,3 @@ document.addEventListener('DOMContentLoaded', function () {
   loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
 
 });
-
-// function addEventListeners() {
-//     // Add your event listeners or other JavaScript functionality here.
-// }addEventListenersIsAuth

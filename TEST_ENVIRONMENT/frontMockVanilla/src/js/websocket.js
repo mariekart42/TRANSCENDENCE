@@ -1,5 +1,7 @@
   websocket_obj = {
     switch_bool: false,
+    message: null,
+    sender: null,
     websocket: null,
 }
 
@@ -26,13 +28,12 @@ function establishWebsocketConnection() {
         const data = JSON.parse(event.data);
         // Process the incoming message data
         console.log(data);
-        let switch_text = document.getElementById('lol')
+        let sender = document.getElementById('sender')
+        let message = document.getElementById('message')
 
-        if (data.switch) {
-            switch_text.textContent = 'IS TRUE'
-        } else {
-            switch_text.textContent = 'IS NOT TRUE'
-        }
+        sender.textContent = websocket_obj.sender
+        message.textContent = websocket_obj.message
+
     };
 
     // Handle WebSocket errors
@@ -53,8 +54,8 @@ function sendWebsocketData() {
         console.log("WebSocket open");
         websocket_obj.websocket.send(JSON.stringify({
             'type': 'chat.message',
-            'switch': websocket_obj.switch_bool,
-            // 'message': message,
+            'sender': websocket_obj.sender,
+            'message': websocket_obj.message,
         }));
     }
     else {
