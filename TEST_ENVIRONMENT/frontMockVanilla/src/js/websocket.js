@@ -4,7 +4,7 @@ websocket_obj = {
   password: null,
 
   chat_name: null,
-  chat_id: null,
+  chat_id: 44,
 
   messages: [
     {
@@ -34,7 +34,6 @@ function establishWebsocketConnection() {
   // Handle incoming messages
   websocket_obj.websocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
-    console.log('DATA: ', data);
     websocket_obj.messages = data
     console.log('WEBSOCKET DATA: ', websocket_obj.messages)
 
@@ -62,6 +61,7 @@ function sendWebsocketData() {
     websocket_obj.websocket.send(JSON.stringify({
         'type': 'chat.message',
         'user_id': websocket_obj.user_id,
+        'chat_id': websocket_obj.chat_id, // init somewhere, rn hardcoded in object
         'sender': websocket_obj.sender,
         'message': websocket_obj.message,
     }));

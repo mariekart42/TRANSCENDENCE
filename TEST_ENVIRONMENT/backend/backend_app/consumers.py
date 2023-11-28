@@ -13,8 +13,18 @@ class test(AsyncWebsocketConsumer):
         print('CONNECT TO TEST CONSUMER')
         await self.accept()
 
+        # Add the consumer to a group
+        await self.channel_layer.group_add(
+            'some_group_name',
+            self.channel_name,
+        )
+
     async def disconnect(self, close_code):
-        pass
+        # Remove the consumer from the group when the WebSocket disconnects
+        await self.channel_layer.group_discard(
+            'some_group_name',
+            self.channel_name,
+        )
 
     @database_sync_to_async
     def create_message(self, user_id, chat_id, text):
@@ -49,15 +59,32 @@ class test(AsyncWebsocketConsumer):
         ]
         return message_data
 
+
+
+
+    async def chat_message(self, event):
+        # This method is called when the group receives a message
+        message_data = event['message_data']
+
+        # Send the message back to the WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'chat.message',
+            'message_data': message_data,
+        }))
+
+
+
+
+
+
+
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        print('DATA: ', text_data_json)
         what_type = text_data_json["type"]
 
         if what_type == 'chat.message':
-            # chat_id = text_data_json["chat_id"]
-            chat_id = 44
-
-            # Use await to call the async method in the synchronous context
+            chat_id = text_data_json["chat_id"]
             user_id = text_data_json["user_id"]
             message = text_data_json["message"]
             text = text_data_json.get("text", message)
@@ -65,7 +92,17 @@ class test(AsyncWebsocketConsumer):
             # Use await to call the async method in the synchronous context
             await self.create_message(user_id, chat_id, text)
             message_data = await self.get_chat_messages(chat_id)
-            await self.send(text_data=json.dumps({"message_data": message_data}))
+
+            await self.channel_layer.group_send(
+                'some_group_name',
+                {
+                    'type': 'chat.message',
+                    # 'message': text_data,
+                    "message_data": message_data,
+                }
+            )
+
+        #     # await self.send(text_data=json.dumps({"message_data": message_data}))
         else:
             print('IS SOMETHING ELSE')
 

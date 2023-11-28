@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'channels',
     # my created apps:
     'backend_app'
     ]
@@ -66,6 +67,12 @@ MIDDLEWARE = [
 
 # path to the urls.py file [all my endpoints]:
 ROOT_URLCONF = 'backend.urls'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use 'channels.layers.RedisChannelLayer' for production
+    },
+}
 
 
 TEMPLATES = [
