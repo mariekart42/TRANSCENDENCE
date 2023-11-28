@@ -16,20 +16,31 @@ function addEventListenersNotAuth() {
       })
       .then(data => {
         console.log('LOGIN OK RESPONSE:', data);
-        const notAuth = document.getElementById('userIsNotAuth');
-        const isAuth = document.getElementById('userIsAuth');
-        notAuth.classList.add('hidden');
-        isAuth.classList.remove('hidden');
-        websocket_obj.username = username
-        websocket_obj.password = password
-        websocket_obj.user_id = data.user_id
-        console.log('USER_ID: ', websocket_obj.user_id)
+        initUserData(data)
         establishWebsocketConnection()
       })
       .catch(error => {
         console.error('Error during login:', error);
       });
   });
+
+
+
+  function initUserData(data) {
+
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    const notAuth = document.getElementById('userIsNotAuth');
+    const isAuth = document.getElementById('userIsAuth');
+
+    notAuth.classList.toggle('hidden');
+    isAuth.classList.toggle('hidden');
+    websocket_obj.username = username
+    websocket_obj.password = password
+    websocket_obj.user_id = data.user_id
+  }
+
 
 
   document.getElementById('RegisterUserButton').addEventListener('click', function () {
@@ -48,14 +59,7 @@ function addEventListenersNotAuth() {
       })
       .then(data => {
         console.log('REGISTER OK RESPONSE:', data);
-        const notAuth = document.getElementById('userIsNotAuth');
-        const isAuth = document.getElementById('userIsAuth');
-        notAuth.classList.add('hidden');
-        isAuth.classList.remove('hidden');
-        websocket_obj.username = username
-        websocket_obj.password = password
-        websocket_obj.user_id = data.user_id
-        console.log('USER_ID: ', websocket_obj.user_id)
+        initUserData(data)
         establishWebsocketConnection()
       })
       .catch(error => {
@@ -70,7 +74,9 @@ function addEventListenersNotAuth() {
   document.getElementById('changeToLoginPageButton').addEventListener('click', function () {
     const loginPage = document.getElementById('loginPage');
     const registerPage = document.getElementById('registerPage');
-
+    document.getElementById('registerUsername').value = null;
+    document.getElementById('registerAge').value  = null;
+    document.getElementById('registerPassword').value  = null;
     loginPage.classList.remove('hidden');
     registerPage.classList.add('hidden');
   });
@@ -78,7 +84,8 @@ function addEventListenersNotAuth() {
   document.getElementById('changeToRegisterPageButton').addEventListener('click', function () {
     const loginPage = document.getElementById('loginPage');
     const registerPage = document.getElementById('registerPage');
-
+    document.getElementById('loginUsername').value = null;
+    document.getElementById('loginPassword').value  = null;
     loginPage.classList.add('hidden');
     registerPage.classList.remove('hidden');
   });
