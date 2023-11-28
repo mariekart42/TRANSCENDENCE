@@ -2,10 +2,17 @@ websocket_obj = {
 
   username: null,
   password: null,
+  age: null,
 
   chat_name: null,
-  chat_id: 44,
+  chat_id: null,
 
+  chat_data: [
+    {
+      chat_id: null,
+      chat_name: null,
+    }
+  ],
   messages: [
     {
       id: 0,
@@ -37,7 +44,8 @@ function establishWebsocketConnection() {
     websocket_obj.messages = data
     console.log('WEBSOCKET DATA: ', websocket_obj.messages)
 
-    renderChat()
+    renderProfile() // not working yet
+    // renderChat()
   };
 
 
@@ -55,16 +63,31 @@ function establishWebsocketConnection() {
 
 
 function sendWebsocketData() {
+
   if (websocket_obj.websocket.readyState === WebSocket.OPEN)
   {
-    console.log("WebSocket open");
-    websocket_obj.websocket.send(JSON.stringify({
+    if (websocket_obj.chat_id === null)
+    {
+      websocket_obj.websocket.send(JSON.stringify({
         'type': 'chat.message',
         'user_id': websocket_obj.user_id,
-        'chat_id': websocket_obj.chat_id, // init somewhere, rn hardcoded in object
+        'chat_id': 44, // init somewhere, rn hardcoded in object
         'sender': websocket_obj.sender,
         'message': websocket_obj.message,
-    }));
+      }));
+    }
+    else
+    {
+      websocket_obj.websocket.send(JSON.stringify({
+        'type': 'chat.message',
+        'user_id': websocket_obj.user_id,
+        'chat_id': websocket_obj.chat_id,
+        'sender': websocket_obj.sender,
+        'message': websocket_obj.message,
+      }));
+    }
+    console.log("WebSocket open");
+
   }
   else {
     console.error("WebSocket connection is not open.");
@@ -73,9 +96,6 @@ function sendWebsocketData() {
 
 
 function renderChat() {
-
-  let sender_title = document.getElementById('senderTitle');
-  sender_title.textContent = 'YOU ARE:  ' + websocket_obj.username
 
   let myArray = websocket_obj.messages.message_data;
 

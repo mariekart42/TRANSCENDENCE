@@ -16,7 +16,7 @@ function addEventListenersNotAuth() {
       })
       .then(data => {
         console.log('LOGIN OK RESPONSE:', data);
-        initUserData(data)
+        initUserData(data, username, password, 69)
         establishWebsocketConnection()
       })
       .catch(error => {
@@ -26,10 +26,7 @@ function addEventListenersNotAuth() {
 
 
 
-  function initUserData(data) {
-
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
+  function initUserData(data, username, password, age) {
 
     const notAuth = document.getElementById('userIsNotAuth');
     const isAuth = document.getElementById('userIsAuth');
@@ -38,9 +35,9 @@ function addEventListenersNotAuth() {
     isAuth.classList.toggle('hidden');
     websocket_obj.username = username
     websocket_obj.password = password
+    websocket_obj.age = age
     websocket_obj.user_id = data.user_id
   }
-
 
 
   document.getElementById('RegisterUserButton').addEventListener('click', function () {
@@ -59,7 +56,7 @@ function addEventListenersNotAuth() {
       })
       .then(data => {
         console.log('REGISTER OK RESPONSE:', data);
-        initUserData(data)
+        initUserData(data, username, password, age)
         establishWebsocketConnection()
       })
       .catch(error => {
@@ -90,3 +87,5 @@ function addEventListenersNotAuth() {
     registerPage.classList.remove('hidden');
   });
 }
+
+

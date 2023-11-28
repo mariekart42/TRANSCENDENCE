@@ -23,3 +23,7 @@ class Message(models.Model):
 
     def formatted_timestamp(self):
         return self.timestamp.strftime('%H:%M %d.%m.%Y')
+
+
+class Test(models.Model):
+    test = models.CharField("test", max_length=69)

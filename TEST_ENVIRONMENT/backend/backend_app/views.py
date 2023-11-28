@@ -168,9 +168,9 @@ def getUserChats(request, user_id):
         user_chats = user_instance.chats.all()
 
         # Convert user_chats to a list of dictionaries for JSON response
-        chats_data = [{'id': chat.id, 'chatName': chat.chatName} for chat in user_chats]
+        chat_data = [{'chat_id': chat.id, 'chat_name': chat.chatName} for chat in user_chats]
 
-        return JsonResponse({'allChats': chats_data})
+        return JsonResponse({'chat_data': chat_data})
     except MyUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
     except Exception as e:
@@ -268,12 +268,6 @@ def inviteUserToChat(request, user_id, chat_id, invited_user):
         return JsonResponse({"error": "User does not exist"}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
-
-
-
 
 
 

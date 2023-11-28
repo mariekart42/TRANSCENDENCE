@@ -6,8 +6,6 @@ from .views import updateUserAge, updateUserName, updateUserPassword
 urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port
 
-
-    # USER
     path('user/check_user_credentials/<str:username>/<str:password>/', views.checkUserCredentials, name='checkUserCredentials'),
 
     path('user/data/get/<str:username>/<str:provided_password>/', views.getUserData, name='userData'),
