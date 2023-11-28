@@ -84,6 +84,7 @@ class test(AsyncWebsocketConsumer):
         what_type = text_data_json["type"]
 
         if what_type == 'chat.message':
+
             chat_id = text_data_json["chat_id"]
             user_id = text_data_json["user_id"]
             message = text_data_json["message"]

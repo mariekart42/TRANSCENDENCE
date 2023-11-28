@@ -75,7 +75,7 @@ function sendWebsocketData() {
 function renderChat() {
 
   let sender_title = document.getElementById('senderTitle');
-  sender_title.textContent = 'CHAT: ' + websocket_obj.username
+  sender_title.textContent = 'YOU ARE:  ' + websocket_obj.username
 
   let myArray = websocket_obj.messages.message_data;
 

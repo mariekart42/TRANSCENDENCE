@@ -14,3 +14,13 @@ function addEventListenersIsAuth() {
     sendWebsocketData()
   });
 }
+
+
+function changeButtonText() {
+  const button = document.getElementById('showChatButton');
+  const chatDiv = document.getElementById('showChat')
+
+  chatDiv.classList.toggle('hidden');
+  button.textContent = (button.textContent === 'show Chat') ? 'hide Chat' : 'show Chat';
+
+}

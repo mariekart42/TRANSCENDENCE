@@ -1,17 +1,30 @@
+<p id="senderTitle"></p><br>
 
-<p id="senderTitle"></p><br><br>
+<button id="showChatButton" onclick="changeButtonText()" class="btn btn-sm btn-outline-primary">show Chat</button>
+<br><br>
 
-<div id="messageContainer"></div>
-<br>
-<div class="input-group mb-6">
-  <input
-    type="text"
-    class="form-control"
-    placeholder="Type your message..."
-    id="messageInput"
-  />
-  <button id="sendMessageButton" class="btn btn-primary">Send</button>
+
+<div id="showChat" class="hidden">
+  <div id="messageContainer"></div>
+  <br>
+  <div class="input-group mb-6">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Type your message..."
+      id="messageInput"
+    />
+    <button id="sendMessageButton" class="btn btn-primary">Send</button>
+  </div>
 </div>
+
+
+
+
+
+
+
+
 
 
 <style>
