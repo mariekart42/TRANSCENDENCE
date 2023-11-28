@@ -52,6 +52,8 @@ function addEventListenersNotAuth() {
         const isAuth = document.getElementById('userIsAuth');
         notAuth.classList.add('hidden');
         isAuth.classList.remove('hidden');
+        websocket_obj.username = username
+        websocket_obj.password = password
         websocket_obj.user_id = data.user_id
         console.log('USER_ID: ', websocket_obj.user_id)
         establishWebsocketConnection()

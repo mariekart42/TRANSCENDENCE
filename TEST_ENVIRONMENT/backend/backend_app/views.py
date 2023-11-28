@@ -137,7 +137,8 @@ def createAccount(request, username, password, age):
         }
         new_user = MyUser(**user_data)
         new_user.save()
-        return JsonResponse({"message": "User created successfully"})
+        user_instance = MyUser.objects.get(name=username)
+        return JsonResponse({"message": "User created successfully", 'user_id': user_instance.id})
     except Exception as e:
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
 
