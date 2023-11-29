@@ -1,13 +1,13 @@
 
 // BUTTON TO SEND MESSAGE IN CHAT
 async function addEventListenersIsAuth() {
-  document.getElementById('sendMessageButton').addEventListener('click', function () {
+  await document.getElementById('sendMessageButton').addEventListener('click', async function () {
     websocket_obj.message = document.getElementById('messageInput').value
     websocket_obj.sender = websocket_obj.username
 
     document.getElementById('messageInput').value = ''
-    renderChat()
-    // getMessageData()
+    await getMessageData()
+    await renderChat();
   });
 }
 
@@ -37,6 +37,19 @@ async function renderProfile() {
 }
 
 
+async function handleButtonClick(chatId, chatName) {
+  const chatDiv = document.getElementById('showChat');
+  chatDiv.classList.remove('hidden');
+
+  // Assuming websocket_obj is a global object
+  websocket_obj.chat_id = chatId;
+  websocket_obj.chat_name = chatName;
+
+  // Call renderChat or any other logic you want to execute on button click
+  await getMessageData()
+  await renderChat();
+}
+
 async function renderUsersChatList() {
   let array_of_chats = websocket_obj.chat_data
   let userChatsList = document.getElementById('userChatsList');
@@ -49,15 +62,12 @@ async function renderUsersChatList() {
     let button = document.createElement('button');
     button.textContent = array_of_chats[i].chat_name;
 
-    button.addEventListener('click', function () {
-      const chatDiv = document.getElementById('showChat')
-      chatDiv.classList.remove('hidden');
-      websocket_obj.chat_id = array_of_chats[i].chat_id
-      websocket_obj.chat_name = array_of_chats[i].chat_name
-      renderChat()
+    button.addEventListener('click', async function () {
+      await handleButtonClick(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
     });
 
     userChatsList.appendChild(paragraph);
     userChatsList.appendChild(button);
   }
 }
+

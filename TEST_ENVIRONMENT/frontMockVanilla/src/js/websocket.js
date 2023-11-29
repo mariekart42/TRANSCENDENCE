@@ -27,7 +27,7 @@ websocket_obj = {
   websocket: null,
 }
 
-function establishWebsocketConnection() {
+async function establishWebsocketConnection() {
 
   websocket_obj.websocket = new WebSocket('ws://localhost:6969/ws/test/');
 
@@ -36,10 +36,16 @@ function establishWebsocketConnection() {
     sendInitData()
   };
 
-  websocket_obj.websocket.onmessage = function (event) {
-    websocket_obj.messages = JSON.parse(event.data);
-    console.log('FE MESSAGE DATA: ', websocket_obj.messages)
-    renderProfile()
+  websocket_obj.websocket.onmessage = async function (event) {
+    const data = JSON.parse(event.data);
+    if (data.type === 'chat.init') {
+      await renderProfile()
+    } else {
+      console.log('FE MESSAGE DATA: ', data)
+      console.log('USER_ID: [', websocket_obj.user_id)
+      websocket_obj.messages = data
+      await renderChat()
+    }
   };
 
   websocket_obj.websocket.onerror = function (error) {
@@ -66,7 +72,7 @@ function sendInitData() {
 }
 
 
-function sendWsMessageDataRequest() {
+async function sendWsMessageDataRequest() {
   console.log('CALLING SEND WS DATA')
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
@@ -78,13 +84,12 @@ function sendWsMessageDataRequest() {
         'message': websocket_obj.message,
       }));
 
-      websocket_obj.websocket.addEventListener('message', (event) => {
-        // console.log('GETTIN MESSAGE EVENT')
-        // console.log('Message received:', event.data);
-        // Parse the response JSON
+      websocket_obj.websocket.addEventListener('message', async (event) => {
+
         const responseData = JSON.parse(event.data);
-        console.log('RESPONSE DATA 4: ', responseData)
-        // Resolve the promise with the response data
+        websocket_obj.messages = responseData.message_data
+        console.log('RESPONSE DATA 4: ', websocket_obj.messages)
+
         resolve(responseData);
       });
 
@@ -109,6 +114,7 @@ async function getMessageData() {
   {
     const response = await sendWsMessageDataRequest();
     console.log('SAFE GET MESSAGE: ', response)
+    websocket_obj.messages = response
   } catch (error) {
     console.error("Error:", error);
   }
@@ -119,12 +125,12 @@ async function getMessageData() {
 
 async function renderChat() {
 
+  // await getMessageData()
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = ' [ '+ websocket_obj.chat_name +' | ' + websocket_obj.chat_id + ' ]'
 
-  await getMessageData()
-
   let myArray = websocket_obj.messages.message_data;
+  // console.
 
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';

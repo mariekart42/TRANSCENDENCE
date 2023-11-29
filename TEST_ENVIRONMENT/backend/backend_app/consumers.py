@@ -69,6 +69,7 @@ class test(AsyncWebsocketConsumer):
         # Send the message back to the WebSocket
         await self.send(text_data=json.dumps({
             'type': 'chat.message',
+
             'message_data': message_data,
         }))
 
@@ -94,13 +95,14 @@ class test(AsyncWebsocketConsumer):
                 }
             )
         elif what_type == 'chat.message':
-            print('DATA: ', text_data_json)
+            # print('DATA: ', text_data_json)
             chat_id = text_data_json["chat_id"]
+            # chat_id = 42
             user_id = text_data_json["user_id"]
             message = text_data_json["message"]
             # text = text_data_json.get("text", message)
             # print('TEXT: ', text)
-            print('MESSGAE: ', message)
+            # print('MESSGAE: ', message)
 
             # Use await to call the async method in the synchronous context
             await self.create_message(user_id, chat_id, message)
