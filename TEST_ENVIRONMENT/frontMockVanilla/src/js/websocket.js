@@ -31,53 +31,43 @@ function establishWebsocketConnection() {
 
   websocket_obj.websocket = new WebSocket('ws://localhost:6969/ws/test/');
 
-  // Wait for the WebSocket to open before sending messages
   websocket_obj.websocket.onopen = function (event) {
-    console.log("WebSocket opened. You can now send messages.");
-    sendWebsocketData()
+    console.log("WebSocket onopen");
+    sendInitData()
   };
 
-
-  // Handle incoming messages
   websocket_obj.websocket.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    websocket_obj.messages = data
-    console.log('WEBSOCKET DATA: ', websocket_obj.messages)
-
-    renderProfile() // not working yet
-    // renderChat()
+    websocket_obj.messages = JSON.parse(event.data);
+    renderProfile()
   };
 
-
-  // Handle WebSocket errors
   websocket_obj.websocket.onerror = function (error) {
     console.error("WebSocket error:", error);
   };
 
-
-  // Handle WebSocket closure
   websocket_obj.websocket.onclose = function (event) {
     console.log("WebSocket closed:", event);
   };
 }
 
 
-function sendWebsocketData() {
-
+function sendInitData() {
   if (websocket_obj.websocket.readyState === WebSocket.OPEN)
   {
-    if (websocket_obj.chat_id === null)
-    {
-      websocket_obj.websocket.send(JSON.stringify({
-        'type': 'chat.message',
-        'user_id': websocket_obj.user_id,
-        'chat_id': 44, // init somewhere, rn hardcoded in object
-        'sender': websocket_obj.sender,
-        'message': websocket_obj.message,
-      }));
-    }
-    else
-    {
+    websocket_obj.websocket.send(JSON.stringify({
+      'type': 'chat.init',
+    }));
+  }
+  else
+  {
+    console.error("WebSocket connection is not open.");
+  }
+}
+
+
+async function sendWsMessageDataRequest() {
+  return new Promise((resolve, reject) => {
+    if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
       websocket_obj.websocket.send(JSON.stringify({
         'type': 'chat.message',
         'user_id': websocket_obj.user_id,
@@ -85,17 +75,50 @@ function sendWebsocketData() {
         'sender': websocket_obj.sender,
         'message': websocket_obj.message,
       }));
-    }
-    console.log("WebSocket open");
 
-  }
-  else {
-    console.error("WebSocket connection is not open.");
+      websocket_obj.websocket.addEventListener('message', (event) => {
+        // Parse the response JSON
+        const responseData = JSON.parse(event.data);
+
+        // Resolve the promise with the response data
+        resolve(responseData);
+      });
+
+      websocket_obj.websocket.addEventListener('error', (error) => {
+        // Reject the promise if there is an error
+        reject(error);
+      });
+    } else {
+      console.error("WebSocket connection is not open.");
+      reject(new Error("WebSocket connection is not open."));
+    }
+  });
+}
+
+
+
+// ASYNC because we want to get a Promise that we got the response
+// of the ws request before continuing with further functions where
+// we're dependent on the data
+async function getMessageData() {
+  try
+  {
+    const response = await sendWsMessageDataRequest();
+    console.log('SAFE GET MESSAGE: ', response)
+  } catch (error) {
+    console.error("Error:", error);
   }
 }
 
 
-function renderChat() {
+
+
+async function renderChat() {
+
+  const chatTitle = document.getElementById('chatTitle')
+  chatTitle.textContent = 'CHAT_ID: ' + websocket_obj.chat_id + ' -- CHAT_NAME: '+ websocket_obj.chat_name
+
+  await getMessageData()
 
   let myArray = websocket_obj.messages.message_data;
 

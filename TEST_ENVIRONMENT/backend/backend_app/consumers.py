@@ -73,9 +73,11 @@ class test(AsyncWebsocketConsumer):
         }))
 
 
-
-
-
+    async def chat_init(self, event):
+        # Send the message back to the WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'chat.init',
+        }))
 
 
     async def receive(self, text_data):
@@ -83,8 +85,14 @@ class test(AsyncWebsocketConsumer):
         print('DATA: ', text_data_json)
         what_type = text_data_json["type"]
 
+        if what_type == 'chat.init':
+            await self.channel_layer.group_send(
+                'some_group_name',
+                {
+                    'type': 'chat.init',
+                }
+            )
         if what_type == 'chat.message':
-
             chat_id = text_data_json["chat_id"]
             user_id = text_data_json["user_id"]
             message = text_data_json["message"]
@@ -102,8 +110,6 @@ class test(AsyncWebsocketConsumer):
                     "message_data": message_data,
                 }
             )
-
-        #     # await self.send(text_data=json.dumps({"message_data": message_data}))
         else:
             print('IS SOMETHING ELSE')
 
