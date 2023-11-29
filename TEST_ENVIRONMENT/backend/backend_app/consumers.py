@@ -74,6 +74,7 @@ class test(AsyncWebsocketConsumer):
 
 
     async def chat_init(self, event):
+        print('INIT PROOF')
         # Send the message back to the WebSocket
         await self.send(text_data=json.dumps({
             'type': 'chat.init',
@@ -82,25 +83,29 @@ class test(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print('DATA: ', text_data_json)
         what_type = text_data_json["type"]
 
         if what_type == 'chat.init':
+            print('INIT CALL')
             await self.channel_layer.group_send(
                 'some_group_name',
                 {
                     'type': 'chat.init',
                 }
             )
-        if what_type == 'chat.message':
+        elif what_type == 'chat.message':
+            print('DATA: ', text_data_json)
             chat_id = text_data_json["chat_id"]
             user_id = text_data_json["user_id"]
             message = text_data_json["message"]
-            text = text_data_json.get("text", message)
+            # text = text_data_json.get("text", message)
+            # print('TEXT: ', text)
+            print('MESSGAE: ', message)
 
             # Use await to call the async method in the synchronous context
-            await self.create_message(user_id, chat_id, text)
+            await self.create_message(user_id, chat_id, message)
             message_data = await self.get_chat_messages(chat_id)
+            print('BE MESSAGE DATA: ', message_data)
 
             await self.channel_layer.group_send(
                 'some_group_name',
@@ -115,29 +120,35 @@ class test(AsyncWebsocketConsumer):
 
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        print('TEST IN CONNECT CHATCONSUMER')
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        pass
-
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-
-        message = text_data_json["message"]
-
-        await self.send(text_data=json.dumps({"message": message}))
 
 
-class ChatConsumer2(AsyncWebsocketConsumer):
-    async def connect(self):
-        await self.accept()
 
-    async def disconnect(self, close_code):
-        pass
 
-    async def receive(self, text_data):
-        message = 'bullshit lol, Consumer2'
-        await self.send(text_data=json.dumps({"message": message}))
+
+
+# class ChatConsumer(AsyncWebsocketConsumer):
+#     async def connect(self):
+#         print('TEST IN CONNECT CHATCONSUMER')
+#         await self.accept()
+#
+#     async def disconnect(self, close_code):
+#         pass
+#
+#     async def receive(self, text_data):
+#         text_data_json = json.loads(text_data)
+#
+#         message = text_data_json["message"]
+#
+#         await self.send(text_data=json.dumps({"message": message}))
+#
+#
+# class ChatConsumer2(AsyncWebsocketConsumer):
+#     async def connect(self):
+#         await self.accept()
+#
+#     async def disconnect(self, close_code):
+#         pass
+#
+#     async def receive(self, text_data):
+#         message = 'bullshit lol, Consumer2'
+#         await self.send(text_data=json.dumps({"message": message}))

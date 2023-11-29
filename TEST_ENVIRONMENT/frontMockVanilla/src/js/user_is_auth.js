@@ -6,7 +6,8 @@ async function addEventListenersIsAuth() {
     websocket_obj.sender = websocket_obj.username
 
     document.getElementById('messageInput').value = ''
-    sendWsMessageDataRequest()
+    renderChat()
+    // getMessageData()
   });
 }
 

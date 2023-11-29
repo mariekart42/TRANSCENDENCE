@@ -38,6 +38,7 @@ function establishWebsocketConnection() {
 
   websocket_obj.websocket.onmessage = function (event) {
     websocket_obj.messages = JSON.parse(event.data);
+    console.log('FE MESSAGE DATA: ', websocket_obj.messages)
     renderProfile()
   };
 
@@ -65,7 +66,8 @@ function sendInitData() {
 }
 
 
-async function sendWsMessageDataRequest() {
+function sendWsMessageDataRequest() {
+  console.log('CALLING SEND WS DATA')
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
       websocket_obj.websocket.send(JSON.stringify({
@@ -77,9 +79,11 @@ async function sendWsMessageDataRequest() {
       }));
 
       websocket_obj.websocket.addEventListener('message', (event) => {
+        // console.log('GETTIN MESSAGE EVENT')
+        // console.log('Message received:', event.data);
         // Parse the response JSON
         const responseData = JSON.parse(event.data);
-
+        console.log('RESPONSE DATA 4: ', responseData)
         // Resolve the promise with the response data
         resolve(responseData);
       });

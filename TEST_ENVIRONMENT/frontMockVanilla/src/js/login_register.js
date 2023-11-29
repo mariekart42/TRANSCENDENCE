@@ -31,6 +31,7 @@ function addEventListenersNotAuth() {
       .then(data => {
         console.log('LOGIN OK RESPONSE:', data);
         initUserData(data, username, password, 69)
+        console.log('USER_DATA: ', websocket_obj)
         establishWebsocketConnection()
       })
       .catch(error => {
@@ -57,6 +58,7 @@ function addEventListenersNotAuth() {
       .then(data => {
         console.log('REGISTER OK RESPONSE:', data);
         initUserData(data, username, password, age)
+        console.log('USER_DATA: ', websocket_obj)
         establishWebsocketConnection()
       })
       .catch(error => {
