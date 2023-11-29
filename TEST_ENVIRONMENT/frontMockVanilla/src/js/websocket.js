@@ -41,8 +41,6 @@ async function establishWebsocketConnection() {
     if (data.type === 'chat.init') {
       await renderProfile()
     } else {
-      console.log('FE MESSAGE DATA: ', data)
-      console.log('USER_ID: [', websocket_obj.user_id)
       websocket_obj.messages = data
       await renderChat()
     }
@@ -65,15 +63,20 @@ function sendInitData() {
       'type': 'chat.init',
     }));
   }
-  else
-  {
+  else {
     console.error("WebSocket connection is not open.");
   }
 }
 
+const onMessage = async (event) => {
+  const responseData = JSON.parse(event.data);
+  websocket_obj.messages = responseData.message_data
+}
+const sendError = async (error) => {
+  console.error('Error: Failed to receive ws data: ', error)
+}
 
 async function sendWsMessageDataRequest() {
-  console.log('CALLING SEND WS DATA')
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
       websocket_obj.websocket.send(JSON.stringify({
@@ -83,20 +86,8 @@ async function sendWsMessageDataRequest() {
         'sender': websocket_obj.sender,
         'message': websocket_obj.message,
       }));
-
-      websocket_obj.websocket.addEventListener('message', async (event) => {
-
-        const responseData = JSON.parse(event.data);
-        websocket_obj.messages = responseData.message_data
-        console.log('RESPONSE DATA 4: ', websocket_obj.messages)
-
-        resolve(responseData);
-      });
-
-      websocket_obj.websocket.addEventListener('error', (error) => {
-        // Reject the promise if there is an error
-        reject(error);
-      });
+      websocket_obj.websocket.addEventListener('message', onMessage);
+      websocket_obj.websocket.addEventListener('error', sendError);
     } else {
       console.error("WebSocket connection is not open.");
       reject(new Error("WebSocket connection is not open."));
@@ -112,9 +103,7 @@ async function sendWsMessageDataRequest() {
 async function getMessageData() {
   try
   {
-    const response = await sendWsMessageDataRequest();
-    console.log('SAFE GET MESSAGE: ', response)
-    websocket_obj.messages = response
+    websocket_obj.messages = await sendWsMessageDataRequest();
   } catch (error) {
     console.error("Error:", error);
   }
@@ -125,13 +114,10 @@ async function getMessageData() {
 
 async function renderChat() {
 
-  // await getMessageData()
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = ' [ '+ websocket_obj.chat_name +' | ' + websocket_obj.chat_id + ' ]'
 
   let myArray = websocket_obj.messages.message_data;
-  // console.
-
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';
 

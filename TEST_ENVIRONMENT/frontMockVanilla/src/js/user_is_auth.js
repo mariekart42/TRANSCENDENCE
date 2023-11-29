@@ -1,7 +1,7 @@
 
 // BUTTON TO SEND MESSAGE IN CHAT
-async function addEventListenersIsAuth() {
-  await document.getElementById('sendMessageButton').addEventListener('click', async function () {
+function addEventListenersIsAuth() {
+  document.getElementById('sendMessageButton').addEventListener('click', async function () {
     websocket_obj.message = document.getElementById('messageInput').value
     websocket_obj.sender = websocket_obj.username
 
@@ -26,9 +26,7 @@ async function renderProfile() {
       return response.json();
     })
     .then(data => {
-      console.log('getUserChats OK RESPONSE:', data);
       websocket_obj.chat_data = data.chat_data
-
       renderUsersChatList()
     })
     .catch(error => {
@@ -41,11 +39,9 @@ async function handleButtonClick(chatId, chatName) {
   const chatDiv = document.getElementById('showChat');
   chatDiv.classList.remove('hidden');
 
-  // Assuming websocket_obj is a global object
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
 
-  // Call renderChat or any other logic you want to execute on button click
   await getMessageData()
   await renderChat();
 }
@@ -58,7 +54,6 @@ async function renderUsersChatList() {
   for (let i = 0; i < array_of_chats.length; i++)
   {
     let paragraph = document.createElement('p');
-
     let button = document.createElement('button');
     button.textContent = array_of_chats[i].chat_name;
 
