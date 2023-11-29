@@ -116,7 +116,7 @@ async function getMessageData() {
 async function renderChat() {
 
   const chatTitle = document.getElementById('chatTitle')
-  chatTitle.textContent = 'CHAT_ID: ' + websocket_obj.chat_id + ' -- CHAT_NAME: '+ websocket_obj.chat_name
+  chatTitle.textContent = ' [ '+ websocket_obj.chat_name +' | ' + websocket_obj.chat_id + ' ]'
 
   await getMessageData()
 
@@ -125,7 +125,6 @@ async function renderChat() {
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';
 
-  // Iterate through the array and append each element to the output div
   let tmpDiv = [];
   for (let i = 0; i < myArray.length; i++) {
     let messageDiv = document.createElement('div');
@@ -133,7 +132,6 @@ async function renderChat() {
     let strongElement = document.createElement('strong');
     let lineBreakElement = document.createElement('br');
 
-    // Create a div element for the message text
     let textDiv = document.createElement('div');
     textDiv.classList.add('text-break');
     textDiv.textContent = myArray[i].text;

@@ -1,26 +1,14 @@
 
+// BUTTON TO SEND MESSAGE IN CHAT
 async function addEventListenersIsAuth() {
-
   document.getElementById('sendMessageButton').addEventListener('click', function () {
     websocket_obj.message = document.getElementById('messageInput').value
     websocket_obj.sender = websocket_obj.username
 
-    // message bar empty after user hit send:
     document.getElementById('messageInput').value = ''
-
     sendWsMessageDataRequest()
   });
 }
-
-
-function changeButtonText() {
-  const button = document.getElementById('showChatButton');
-  const chatDiv = document.getElementById('showChat')
-
-  chatDiv.classList.toggle('hidden');
-  button.textContent = (button.textContent === 'show Chat') ? 'hide Chat' : 'show Chat';
-}
-
 
 
 async function renderProfile() {
@@ -56,20 +44,15 @@ async function renderUsersChatList() {
   for (let i = 0; i < array_of_chats.length; i++)
   {
     let paragraph = document.createElement('p');
-    console.log('PARA ORI: ', array_of_chats[i])
 
     let button = document.createElement('button');
     button.textContent = array_of_chats[i].chat_name;
 
-
     button.addEventListener('click', function () {
       const chatDiv = document.getElementById('showChat')
-
       chatDiv.classList.remove('hidden');
       websocket_obj.chat_id = array_of_chats[i].chat_id
       websocket_obj.chat_name = array_of_chats[i].chat_name
-      console.log('NEW CHAT_ID: ', websocket_obj.chat_id)
-
       renderChat()
     });
 

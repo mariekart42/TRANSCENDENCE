@@ -1,6 +1,20 @@
 
 function addEventListenersNotAuth() {
-//   // Your script here
+
+  function initUserData(data, username, password, age) {
+    const notAuth = document.getElementById('userIsNotAuth');
+    const isAuth = document.getElementById('userIsAuth');
+
+    notAuth.classList.toggle('hidden');
+    isAuth.classList.toggle('hidden');
+    websocket_obj.username = username
+    websocket_obj.password = password
+    websocket_obj.age = age
+    websocket_obj.user_id = data.user_id
+  }
+
+
+  // BUTTON TO LOGIN
   document.getElementById('loginUserButton').addEventListener('click', function () {
     const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
@@ -25,21 +39,7 @@ function addEventListenersNotAuth() {
   });
 
 
-
-  function initUserData(data, username, password, age) {
-
-    const notAuth = document.getElementById('userIsNotAuth');
-    const isAuth = document.getElementById('userIsAuth');
-
-    notAuth.classList.toggle('hidden');
-    isAuth.classList.toggle('hidden');
-    websocket_obj.username = username
-    websocket_obj.password = password
-    websocket_obj.age = age
-    websocket_obj.user_id = data.user_id
-  }
-
-
+  // BUTTON TO REGISTER
   document.getElementById('RegisterUserButton').addEventListener('click', function () {
     const username = document.getElementById('registerUsername').value;
     const age = document.getElementById('registerAge').value;
@@ -65,9 +65,7 @@ function addEventListenersNotAuth() {
   });
 
 
-
-
-  // Event listener for changing to the login page
+  // BUTTON TO CHANGE TO LOGIN PAGE
   document.getElementById('changeToLoginPageButton').addEventListener('click', function () {
     const loginPage = document.getElementById('loginPage');
     const registerPage = document.getElementById('registerPage');
@@ -78,6 +76,7 @@ function addEventListenersNotAuth() {
     registerPage.classList.add('hidden');
   });
 
+  // BUTTON TO CHANGE TO REGISTER PAGE
   document.getElementById('changeToRegisterPageButton').addEventListener('click', function () {
     const loginPage = document.getElementById('loginPage');
     const registerPage = document.getElementById('registerPage');
@@ -87,5 +86,3 @@ function addEventListenersNotAuth() {
     registerPage.classList.remove('hidden');
   });
 }
-
-
