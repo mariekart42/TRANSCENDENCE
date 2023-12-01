@@ -17,18 +17,20 @@ class test(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         # Remove the consumer from the group when the WebSocket disconnects
         await self.channel_layer.group_discard(
-            'group_',
+            self.my_group_id,
             self.channel_name,
         )
 
     async def chat_message(self, event):
         # This method is called when the group receives a message
         message_data = event['message_data']
+        chat_id = event["chat_id"]
 
         # Send the message back to the WebSocket
         await self.send(text_data=json.dumps({
             'type': 'chat.message',
             'message_data': message_data,
+            'chat_id': chat_id
         }))
 
     async def receive(self, text_data):
@@ -41,7 +43,7 @@ class test(AsyncWebsocketConsumer):
 
         if what_type == 'chat.message':
             await self.channel_layer.group_add(
-                'group_',
+                self.my_group_id,
                 self.channel_name,
             )
             user_id = text_data_json["data"]["user_id"]
@@ -52,8 +54,9 @@ class test(AsyncWebsocketConsumer):
             message_data = await self.get_chat_messages(chat_id)
 
             await self.channel_layer.group_send(
-                'group_',
+                self.my_group_id,
                 {
+                    'chat_id': chat_id,
                     'type': 'chat.message',
                     "message_data": message_data,
                 }

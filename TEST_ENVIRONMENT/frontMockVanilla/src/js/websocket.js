@@ -39,9 +39,14 @@ async function establishWebsocketConnection() {
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
     console.log('ON MESSAGE: ', data)
+
+    // check if current user is in the same chat_id
+    console.log('CHAT_ID: ', data.chat_id)
+    if (data.chat_id === websocket_obj.chat_id) {
       await renderProfile()
       websocket_obj.messages = data
       await renderChat()
+    }
   };
 
   websocket_obj.websocket.onerror = function (error) {
