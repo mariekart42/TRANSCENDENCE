@@ -5,10 +5,15 @@ from django.http import JsonResponse
 from .models import MyUser, Chat, Message
 from . import utils
 from channels.db import database_sync_to_async
+from channels.layers import get_channel_layer
 from django.utils import timezone
 
 
 class test(AsyncWebsocketConsumer):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.my_group_id = None
 
     async def connect(self):
         print('CONNECT TO TEST CONSUMER')
@@ -33,6 +38,11 @@ class test(AsyncWebsocketConsumer):
             'chat_id': chat_id
         }))
 
+    @database_sync_to_async
+    def group_exists(self, group_name):
+        channel_layer = get_channel_layer()
+        return channel_layer.group_exists(group_name)
+
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         print('TEXT DTA; ', text_data)
@@ -42,6 +52,8 @@ class test(AsyncWebsocketConsumer):
         print('MY_GROUP_ID', self.my_group_id)
 
         if what_type == 'chat.message':
+            # Check if the group exists before adding the channel
+            # if not self.group_exists(self.my_group_id):
             await self.channel_layer.group_add(
                 self.my_group_id,
                 self.channel_name,
@@ -52,7 +64,8 @@ class test(AsyncWebsocketConsumer):
             # Use await to call the async method in the synchronous context
             await self.create_message(user_id, chat_id, message)
             message_data = await self.get_chat_messages(chat_id)
-
+            print('MESSGAE DATA: ', message_data)
+            print('GROUP ID: ', self.my_group_id)
             await self.channel_layer.group_send(
                 self.my_group_id,
                 {
@@ -63,6 +76,8 @@ class test(AsyncWebsocketConsumer):
             )
         else:
             print('IS SOMETHING ELSE')
+
+
 
     @database_sync_to_async
     def create_message(self, user_id, chat_id, text):

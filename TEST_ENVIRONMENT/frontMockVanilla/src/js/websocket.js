@@ -41,7 +41,6 @@ async function establishWebsocketConnection() {
     console.log('ON MESSAGE: ', data)
 
     // check if current user is in the same chat_id
-    console.log('CHAT_ID: ', data.chat_id)
     if (data.chat_id === websocket_obj.chat_id) {
       await renderProfile()
       websocket_obj.messages = data
@@ -106,8 +105,12 @@ async function getMessageData() {
 
 async function renderChat() {
 
+  const chatDiv = document.getElementById('userChatsList');
+  chatDiv.classList.add('hidden');
   const chatTitle = document.getElementById('chatTitle')
-  chatTitle.textContent = ' [ '+ websocket_obj.chat_name +' | ' + websocket_obj.chat_id + ' ]'
+  chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
+
+  // let leaveChatButton = document.createElement('button')
 
   let myArray = websocket_obj.messages.message_data;
   let mainContainer = document.getElementById('messageContainer');

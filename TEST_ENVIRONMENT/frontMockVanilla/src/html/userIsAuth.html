@@ -1,10 +1,61 @@
-<p id="senderTitle"></p><br>
-
-<!--<button id="showChatButton" onclick="changeButtonText()" class="btn btn-sm btn-outline-primary">show Chat</button>-->
+<h1 id="displayUserName"></h1><br>
 
 <div id="userChatsList"></div>
-<p id="chatTitle"></p>
+
+  <!-- Your button to create a new chat -->
+<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createChatModal">
+  Create New Chat
+</button>
+
+<!-- Create New Chat Modal -->
+<div class="modal fade" id="createChatModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createChatModalLabel">Create New Chat</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="new_chat_name" class="form-label">Chat Name</label>
+        <input type="text" class="form-control" id="new_chat_name">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="createChat()">Create Chat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <div id="showChat" class="hidden">
+  <h3 id="chatTitle"></h3>
+
+<!--USER WANTS TO LEAVE CHAT BUTTON-->
+  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    Leave Chat
+  </button>
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Leave Chat</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you wan't to leave the Chat?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Oh, wait</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="leaveChat()">Yes, I wan't to leave</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="messageContainer"></div>
   <br>
   <div class="input-group mb-6">
@@ -17,13 +68,6 @@
     <button id="sendMessageButton" class="btn btn-primary">Send</button>
   </div>
 </div>
-
-
-
-
-
-
-
 
 
 

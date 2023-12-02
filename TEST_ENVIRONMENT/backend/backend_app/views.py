@@ -143,14 +143,17 @@ def createAccount(request, username, password, age):
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
 
 
-@require_POST
-def createChat(request, user_id, chatname):
+# @require_POST
+def createChat(request, user_id, chat_name):
     try:
-        new_chat = Chat.objects.create(chatName=chatname)
+        chat_exists = Chat.objects.filter(chatName=chat_name).exists()
+        if chat_exists:
+            return JsonResponse({'error': 'Chatname already exist'}, status=409)
+
+        new_chat = Chat.objects.create(chatName=chat_name)
 
         user_instance = MyUser.objects.get(id=user_id)
 
-        # Add new chat to user
         user_instance.chats.add(new_chat.id)
         new_chat.save()
         user_instance.save()
@@ -201,6 +204,28 @@ def getChatData(request, user_id, chat_id):
         return JsonResponse({'chat_data': chat_data}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
+
+
+
+
+def leaveChat(request, user_id, chat_id):
+    try:
+        user_exists = MyUser.objects.filter(id=user_id).exists()
+        if not user_exists:
+            return JsonResponse({'error': 'User in leaveChat not found'}, status=404)
+        chat_exists = Chat.objects.filter(id=chat_id).exists()
+        if not chat_exists:
+            return JsonResponse({'error': 'Chat in leaveChat not found'}, status=404)
+
+        chat_instance = Chat.objects.get(id=chat_id)
+        user_instance = MyUser.objects.get(id=user_id)
+
+        user_instance.chats.remove(chat_instance)
+        user_instance.save()
+
+        return JsonResponse({'message': 'everything toggo'}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': 'something big in leaveChat'}, status=500)
 
 
 # moved to utils file
