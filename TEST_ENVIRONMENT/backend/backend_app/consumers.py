@@ -110,4 +110,5 @@ class test(AsyncWebsocketConsumer):
             }
             for message in messages_in_chat
         ]
+
         return message_data

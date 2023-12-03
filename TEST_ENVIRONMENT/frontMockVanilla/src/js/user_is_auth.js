@@ -33,7 +33,6 @@ async function leaveChat() {
 
 
 async function createChat() {
-  console.log('LOL CREATING CHAT SOON')
 
   const chat_name = document.getElementById('new_chat_name').value
   if (!chat_name.trim()) {
@@ -41,7 +40,6 @@ async function createChat() {
     return
   }
 
-  console.log('USER_ID | CHAT_NAme: ', websocket_obj.user_id, chat_name)
   const url = `http://127.0.0.1:6969/user/createChat/${websocket_obj.user_id}/${chat_name}/`
   fetch(url)
     .then(response => {
@@ -63,6 +61,9 @@ async function createChat() {
 
 async function renderProfile() {
 
+  const chatDiv = document.getElementById('userChatsList');
+  chatDiv.classList.remove('hidden');
+
   let sender_title = document.getElementById('displayUserName');
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 
@@ -75,8 +76,9 @@ async function renderProfile() {
       return response.json();
     })
     .then(data => {
-      console.log('GOT USER CHAT LIST: ', data)
+      // console.log('GOT USER CHAT LIST: ', data)
       websocket_obj.chat_data = data.chat_data
+      console.log('GOT USER CHAT LIST: ', websocket_obj.chat_data)
       renderUsersChatList()
     })
     .catch(error => {

@@ -16,14 +16,18 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
   python3 -m pip install --upgrade pip
 
   echo -e " 🗿  ${BLUE}Installing Django...${RESET}"
-  python3 -m pip install Django
-  python3 -m pip install --upgrade django
+  python3 -m pip install django==4.0
+#  python3 -m pip install --upgrade django
 
-  python3 -m pip install channels
-  python3 -m pip install --upgrade channels
 
-  python3 -m pip install daphne
-  python3 -m pip install --upgrade daphne
+  python3 -m pip install channels==4.0.0
+#  python3 -m pip install --upgrade channels
+
+  python3 -m pip install daphne==4.0.0
+#  python3 -m pip install --upgrade daphne
+
+  python3 -m pip install channels_redis
+#  python3 -m pip install --upgrade channels_redis
 
 
   echo -e " 🗿  ${BLUE}Applying migrations...${RESET}"
