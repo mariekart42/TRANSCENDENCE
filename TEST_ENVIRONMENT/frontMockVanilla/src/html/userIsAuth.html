@@ -1,9 +1,12 @@
 <h1 id="displayUserName"></h1><br>
 
-<div id="userChatsList"></div>
+<p id="tempTextInfo" class="hidden">
+<div id="userFriendsList"></div><br>
+
+<div id="userChatsList"></div><br>
 
   <!-- Your button to create a new chat -->
-<button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createChatModal">
+<button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#createChatModal">
   Create New Chat
 </button>
 
@@ -28,14 +31,29 @@
 </div>
 
 
+<div id="showUser" class="hidden">
 
+</div>
 
 
 <div id="showChat" class="hidden">
   <h3 id="chatTitle"></h3>
 
+
+  <div class="input-group mb-6">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Invite User..."
+      id="invite_user"
+    />
+    <button id="invite_user_button" class="btn btn-primary">Invite</button>
+  </div>
+
+
+
 <!--USER WANTS TO LEAVE CHAT BUTTON-->
-  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
     Leave Chat
   </button>
   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

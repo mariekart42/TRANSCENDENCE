@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     # my created apps:
     'backend_app',
 
-    'channels_redis'
+    # 'channels_redis'
     ]
 
 
@@ -71,20 +71,20 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 
 # before this:
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use 'channels.layers.RedisChannelLayer' for production
-#     },
-# }
-
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use 'channels.layers.RedisChannelLayer' for production
     },
 }
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
 
 
 TEMPLATES = [

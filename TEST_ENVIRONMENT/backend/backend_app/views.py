@@ -12,6 +12,16 @@ def goToFrontend(request):
 
 
 
+
+def inviteUser(request, invited_user_name):
+    try:
+        pass
+    except Exception as e:
+        return JsonResponse({'error': 'something big in inviteUser'}, status=500)
+
+
+
+
 # @require_GET
 def checkUserCredentials(request, username, password):
     try:
@@ -226,6 +236,23 @@ def leaveChat(request, user_id, chat_id):
         return JsonResponse({'message': 'everything toggo'}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in leaveChat'}, status=500)
+
+
+
+# gettin user_id cause dis function should later only
+# return hat users friends and not all user
+def getAllUser(request, user_id):
+    try:
+        all_users_info = MyUser.objects.values('id', 'name')
+
+        # Convert QuerySet to a list of dictionaries
+        all_user = list(all_users_info)
+        print('ALL USER: ', all_user)
+
+        return JsonResponse({'all_user': all_user}, status=200)
+    except Exception as e:
+        return JsonResponse({'error': 'something big in getChatData'}, status=500)
+
 
 
 # moved to utils file

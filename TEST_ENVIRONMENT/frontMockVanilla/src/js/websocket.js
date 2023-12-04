@@ -7,6 +7,20 @@ websocket_obj = {
   chat_name: null,
   chat_id: null,
 
+  onlineStats: [
+    {
+      user_id: null,
+      online_stat: null,
+    }
+  ],
+
+  all_user: [
+    {
+      user_id: null,
+      user_name: null,
+    }
+  ],
+
   chat_data: [
     {
       chat_id: null,
@@ -29,7 +43,7 @@ websocket_obj = {
 
 async function establishWebsocketConnection() {
 
-  websocket_obj.websocket = new WebSocket('ws://localhost:6969/ws/test/');
+  websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/test/${websocket_obj.user_id}/`);
 
   websocket_obj.websocket.onopen = function (event) {
     console.log("WebSocket onopen");
@@ -40,12 +54,21 @@ async function establishWebsocketConnection() {
     const data = JSON.parse(event.data);
     console.log('ON MESSAGE: ', data)
 
-    // check if current user is in the same chat_id
-    if (data.chat_id === websocket_obj.chat_id) {
-      await renderProfile()
-      websocket_obj.messages = data
-      await renderChat()
+    if (data.type === 'chat.online_stats') {
+      websocket_obj.onlineStats = data.online_stats
+      console.log('LOL: ', websocket_obj.onlineStats)
+      await getMessageData()
     }
+    else
+    {
+      // check if current user is in the same chat_id
+      if (data.chat_id === websocket_obj.chat_id) {
+        await renderProfile()
+        websocket_obj.messages = data
+        await renderChat()
+      }
+    }
+
   };
 
   websocket_obj.websocket.onerror = function (error) {
@@ -54,31 +77,49 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket.onclose = function (event) {
     console.log("WebSocket closed:", event);
+
   };
 }
 
-const onMessage = async (event) => {
-  const responseData = JSON.parse(event.data);
-  websocket_obj.messages = responseData.message_data
-}
+// const onMessage = async (event) => {
+//   const responseData = JSON.parse(event.data);
+//   websocket_obj.messages = responseData.message_data
+// }
 const sendError = async (error) => {
   console.error('Error: Failed to receive ws data: ', error)
 }
 
-async function sendWsMessageDataRequest() {
+async function sendWsMessageDataRequest(request_type) {
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
-      websocket_obj.websocket.send(JSON.stringify({
-        'status': 'ok',
-        'type': 'chat.message',
-        'data': {
-          'user_id': websocket_obj.user_id,
-          'chat_id': websocket_obj.chat_id,
-          'sender': websocket_obj.sender,
-          'message': websocket_obj.message,
-        },
-      }));
-      websocket_obj.websocket.addEventListener('message', onMessage);
+      if (request_type === 'chat.message') {
+        console.log('WS REQUEST MESSAGE DATA')
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'chat.message',
+          'data': {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'sender': websocket_obj.sender,
+            'message': websocket_obj.message,
+          },
+        }));
+      }
+      else {
+        console.log('WS REQUEST ONLINE STATS')
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'chat.online_stats',
+          'data': {
+            // 'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          },
+        }));
+      }
+
+
+
+      // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
     } else {
       console.error("WebSocket connection is not open.");
@@ -95,12 +136,23 @@ async function sendWsMessageDataRequest() {
 async function getMessageData() {
   try
   {
-    websocket_obj.messages = await sendWsMessageDataRequest();
+    const request_type = 'chat.message'
+    await sendWsMessageDataRequest(request_type);
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
+
+async function getOnlineStats() {
+  try
+  {
+    const request_type = 'chat.online_stats'
+    await sendWsMessageDataRequest(request_type);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 
 
 async function renderChat() {
@@ -109,6 +161,7 @@ async function renderChat() {
   chatDiv.classList.add('hidden');
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
+
 
   // let leaveChatButton = document.createElement('button')
 
@@ -152,7 +205,6 @@ async function renderChat() {
     tmpDiv.push(messageDiv);
   }
 
-  // Append all divs in the tmpDiv array to the main container
   for (let i = 0; i < myArray.length; i++) {
     mainContainer.appendChild(tmpDiv[i]);
 

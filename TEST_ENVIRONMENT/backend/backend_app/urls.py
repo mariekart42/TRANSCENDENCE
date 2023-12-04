@@ -16,6 +16,13 @@ urlpatterns = [
 
     path('user/leaveChat/<int:user_id>/<int:chat_id>/', views.leaveChat),
 
+    path('user/getAllUser/<int:user_id>/', views.getAllUser),
+
+
+    # path('user/inviteUser/<str:invited_user_name>/<int:chat_id>/', views.inviteUser),
+
+
+
     # CHAT
 
 
