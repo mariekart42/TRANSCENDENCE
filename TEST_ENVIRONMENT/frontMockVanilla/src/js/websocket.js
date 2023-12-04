@@ -53,11 +53,9 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
-    // console.log('ON MESSAGE: ', data)
 
-    if (data.type === 'chat.online_stats') {
+    if (data.type === 'chat.online.stats') {
       websocket_obj.onlineStats = data.online_stats
-      // console.log('LOL: ', websocket_obj.onlineStats)
       await getMessageData()
     }
     else
@@ -65,11 +63,10 @@ async function establishWebsocketConnection() {
       // check if current user is in the same chat_id
       if (data.chat_id === websocket_obj.chat_id) {
         await renderProfile()
-        websocket_obj.messages = data//.message_data
+        websocket_obj.messages = data
         await renderChat()
       }
     }
-
   };
 
   websocket_obj.websocket.onerror = function (error) {
@@ -110,7 +107,7 @@ async function sendWsMessageDataRequest(request_type) {
         // console.log('WS REQUEST ONLINE STATS')
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
-          'type': 'chat.online_stats',
+          'type': 'chat.online.stats',
           'data': {
             // 'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -148,7 +145,7 @@ async function getMessageData() {
 async function getOnlineStats() {
   try
   {
-    const request_type = 'chat.online_stats'
+    const request_type = 'chat.online.stats'
     await sendWsMessageDataRequest(request_type);
   } catch (error) {
     console.error("Error:", error);
