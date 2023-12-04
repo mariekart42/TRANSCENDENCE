@@ -122,7 +122,7 @@ async function renderProfile() {
   fetch(url)
     .then(response => {
       if (!response.ok) {
-        throw new Error('Could not get sll Users');
+        throw new Error('Could not get all Users');
       }
       return response.json();
     })
@@ -134,7 +134,7 @@ async function renderProfile() {
       renderAllUsersList()
     })
     .catch(error => {
-      console.error('Error during getUserChats:', error);
+      console.error('Error during getAllUser:', error);
     });
 
   console.log('YES YSR YSRXDGS')

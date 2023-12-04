@@ -10,7 +10,7 @@ websocket_obj = {
   onlineStats: [
     {
       user_id: null,
-      online_stat: null,
+      stat: null,
     }
   ],
 
@@ -30,6 +30,7 @@ websocket_obj = {
   messages: [
     {
       id: 0,
+      sender_id: null,
       sender: null,
       text: null,
       timestamp: 0,
@@ -52,11 +53,11 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
-    console.log('ON MESSAGE: ', data)
+    // console.log('ON MESSAGE: ', data)
 
     if (data.type === 'chat.online_stats') {
       websocket_obj.onlineStats = data.online_stats
-      console.log('LOL: ', websocket_obj.onlineStats)
+      // console.log('LOL: ', websocket_obj.onlineStats)
       await getMessageData()
     }
     else
@@ -64,7 +65,7 @@ async function establishWebsocketConnection() {
       // check if current user is in the same chat_id
       if (data.chat_id === websocket_obj.chat_id) {
         await renderProfile()
-        websocket_obj.messages = data
+        websocket_obj.messages = data//.message_data
         await renderChat()
       }
     }
@@ -93,7 +94,7 @@ async function sendWsMessageDataRequest(request_type) {
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
       if (request_type === 'chat.message') {
-        console.log('WS REQUEST MESSAGE DATA')
+        // console.log('WS REQUEST MESSAGE DATA')
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'chat.message',
@@ -106,7 +107,7 @@ async function sendWsMessageDataRequest(request_type) {
         }));
       }
       else {
-        console.log('WS REQUEST ONLINE STATS')
+        // console.log('WS REQUEST ONLINE STATS')
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'chat.online_stats',
@@ -159,10 +160,13 @@ async function renderChat() {
 
   const chatDiv = document.getElementById('userChatsList');
   chatDiv.classList.add('hidden');
+  const userDiv = document.getElementById('userFriendsList');
+  userDiv.classList.add('hidden');
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
 
-
+// console.log('HEEEERE1: ', websocket_obj.all_user)
+//   console.log('HEEEERE2: ', websocket_obj.onlineStats)
   // let leaveChatButton = document.createElement('button')
 
   let myArray = websocket_obj.messages.message_data;
@@ -193,7 +197,22 @@ async function renderChat() {
     else
     {
       contentDiv.classList.add('other-message-text');
-      strongElement.textContent = myArray[i].sender;
+      const currentUserId = myArray[i].sender_id
+      // const onlineStatData = websocket_obj.onlineStats
+      // console.log('ONLINE STATS: ', onlineStatData)
+      // const isCurrentUserOnline = websocket_obj.onlineStats.some(user => user.user_id === currentUserId);
+      function hasMatchingUserId(user) {
+        console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
+        // console.log('USER : ', user)
+        // console.log('OTHER USER NAME: ', user.user_id)
+        return user.user_id === currentUserId;
+      }
+      const isCurrentUserOnline = websocket_obj.onlineStats.some(hasMatchingUserId);
+      if (isCurrentUserOnline) {
+        strongElement.textContent = myArray[i].sender + ' 🟢';
+      } else {
+        strongElement.textContent = myArray[i].sender + ' 🔴';
+      }
     }
 
     contentDiv.appendChild(strongElement);
@@ -213,3 +232,4 @@ async function renderChat() {
     }
   }
 }
+

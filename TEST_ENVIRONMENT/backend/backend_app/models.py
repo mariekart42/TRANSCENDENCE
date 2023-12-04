@@ -17,6 +17,7 @@ class Chat(models.Model):
 
 
 class Message(models.Model):
+    senderId = models.CharField("senderId", max_length=50)
     sender = models.CharField(max_length=50)
     text = models.CharField(max_length=10000)
     timestamp = models.DateTimeField(default=timezone.now)

@@ -132,7 +132,7 @@ class test(AsyncWebsocketConsumer):
             user_instance = MyUser.objects.get(id=user_id)
             specific_timestamp = timezone.now()
 
-            new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
+            new_message = Message.objects.create(senderId=user_id, sender=user_instance.name, text=text, timestamp=specific_timestamp)
 
             # add new_message to chat:
             chat_instance = Chat.objects.get(id=chat_id)
@@ -151,6 +151,7 @@ class test(AsyncWebsocketConsumer):
         message_data = [
             {
                 'id': message.id,
+                'sender_id': message.senderId,
                 'sender': message.sender,
                 'text': message.text,
                 'timestamp': message.formatted_timestamp(),
