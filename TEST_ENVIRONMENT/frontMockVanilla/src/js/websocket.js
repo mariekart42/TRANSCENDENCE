@@ -58,6 +58,12 @@ async function establishWebsocketConnection() {
       websocket_obj.onlineStats = data.online_stats
       await getMessageData()
     }
+    // else if (data.type === 'chat.online.stats.onClose') {
+    //   websocket_obj.onlineStats = data.online_stats
+    //   await renderProfile()
+    //     // websocket_obj.messages = data
+    //     await renderChat()
+    // }
     else
     {
       // check if current user is in the same chat_id
@@ -71,18 +77,15 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket.onerror = function (error) {
     console.error("WebSocket error:", error);
+    logoutUser()
   };
 
   websocket_obj.websocket.onclose = function (event) {
     console.log("WebSocket closed:", event);
-
+    logoutUser()
   };
 }
 
-// const onMessage = async (event) => {
-//   const responseData = JSON.parse(event.data);
-//   websocket_obj.messages = responseData.message_data
-// }
 const sendError = async (error) => {
   console.error('Error: Failed to receive ws data: ', error)
 }

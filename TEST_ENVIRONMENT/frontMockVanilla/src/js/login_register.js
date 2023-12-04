@@ -3,10 +3,10 @@ function addEventListenersNotAuth() {
 
   function initUserData(data, username, password, age) {
     const notAuth = document.getElementById('userIsNotAuth');
+    notAuth.classList.add('hidden');
     const isAuth = document.getElementById('userIsAuth');
+    isAuth.classList.remove('hidden');
 
-    notAuth.classList.toggle('hidden');
-    isAuth.classList.toggle('hidden');
     websocket_obj.username = username
     websocket_obj.password = password
     websocket_obj.age = age

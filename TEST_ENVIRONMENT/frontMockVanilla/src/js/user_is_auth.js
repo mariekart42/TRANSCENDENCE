@@ -7,11 +7,7 @@ function addEventListenersIsAuth() {
 
     document.getElementById('messageInput').value = ''
     await getOnlineStats()
-    // await getMessageData()
-    // await renderChat();
   });
-
-
 
   document.getElementById('invite_user_button').addEventListener('click', async function () {
     const invited_user_name = document.getElementById('invite_user').value
@@ -19,6 +15,18 @@ function addEventListenersIsAuth() {
     document.getElementById('invite_user').value = ''
     await inviteUser(invited_user_name)
   })
+
+  document.getElementById('logoutButton').addEventListener('click', async function () {
+    await logoutUser()
+  })
+}
+
+async function logoutUser() {
+  let websocket_obj = null
+  const notAuth = document.getElementById('userIsNotAuth');
+  notAuth.classList.remove('hidden');
+  const isAuth = document.getElementById('userIsAuth');
+  isAuth.classList.add('hidden');
 }
 
 
@@ -98,7 +106,7 @@ async function renderProfile() {
   chatDiv.classList.remove('hidden');
 
   let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
-  fetch(url)
+  await fetch(url)
     .then(response => {
       if (!response.ok) {
         throw new Error('Could not get Users Chats Data');
@@ -119,7 +127,7 @@ async function renderProfile() {
   const friendsDiv = document.getElementById('userFriendsList');
   friendsDiv.classList.remove('hidden');
   url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
-  fetch(url)
+  await fetch(url)
     .then(response => {
       if (!response.ok) {
         throw new Error('Could not get all Users');
@@ -130,7 +138,7 @@ async function renderProfile() {
       // console.log('GOT USER CHAT LIST: ', data)
       // DO HERE
       websocket_obj.all_user = data.all_user
-      console.log('GOT USER LIST: ', websocket_obj.all_user)
+      // console.log('GOT USER LIST: ', websocket_obj.all_user)
       renderAllUsersList()
     })
     .catch(error => {
@@ -147,12 +155,8 @@ async function handleButtonClickChats(chatId, chatName) {
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
-console.log('BEEF')
-  // await getMessageData() // change later to only this back
-  // console.log('BEFORE')
+
   await getOnlineStats()
-  // console.log('LOL: ', websocket_obj.onlineStats)
-  // await renderChat();
 }
 
 async function renderUsersChatList() {
@@ -187,20 +191,11 @@ async function renderUsersChatList() {
   }
 }
 
+// DELETE LATER
 async function handleButtonClickUser(user_id, user_name) {
   const chatDiv = document.getElementById('tempTextInfo');
   chatDiv.classList.remove('hidden');
   chatDiv.textContent = 'Yeah something should happen now lol'
-
-
-//   websocket_obj.chat_id = chatId;
-//   websocket_obj.chat_name = chatName;
-// console.log('BEEF')
-  // await getMessageData() // change later to only this back
-  // console.log('BEFORE')
-  // await getOnlineStats()
-  // console.log('LOL: ', websocket_obj.onlineStats)
-  // await renderChat();
 }
 
 

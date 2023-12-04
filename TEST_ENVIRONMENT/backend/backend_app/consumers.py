@@ -27,21 +27,11 @@ class test(AsyncWebsocketConsumer):
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
         await self.accept()
-        # await self.chat_online_stats()# ??
+        # await self.handle_send_chat_online_stats()# ??
 
     async def disconnect(self, close_code):
-        print('DISCONNECT TO TEST CONSUMER')
-        # Remove the consumer from the group when the WebSocket disconnects
-        # await self.channel_layer.group_discard(
-        #     self.my_group_id,
-        #     self.channel_name,
-        # )
-        # await self.channel_layer.group_add(
-        #     self.my_group_id,
-        #     self.channel_name,
-        # )
-        await self.handle_send_chat_online_stats()
         self.connections.remove(self.user)
+        await self.handle_send_chat_online_stats()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -65,11 +55,6 @@ class test(AsyncWebsocketConsumer):
 
     # ---------------------------- UFF FUNCTIONS ----------------------------
     async def send_chat_messages(self, event):
-        # This method is called when the group receives a message
-        # chat_id = event["data"]['val_1']
-        # message_data = event["data"]['val_2']
-
-        # Send the message back to the WebSocket
         await self.send(text_data=json.dumps({
             'type': 'chat.message',
             'chat_id': event['data']['chat_id'],
@@ -89,9 +74,34 @@ class test(AsyncWebsocketConsumer):
             'online_stats': event['data']['online_stats']
         }))
 
+    # async def send_chat_online_stats_onClose(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'chat.online.stats.onClose',
+    #         'online_stats': event['data']['online_stats']
+    #     }))
+    #
 
 
-# ---------------------------- HANDLE FUNCTIONS ----------------------------
+# ---------------------------- HANDLE FUNCTIONS ---------------------------
+#     async def handle_send_chat_online_stats_onClose(self):
+#         online_stats = [
+#             {
+#                 'user_id': instance['user_id'],
+#                 'stat': instance['is_online']
+#             }
+#             for instance in self.connections
+#         ]
+#
+#         # await self.send_user(user_id, response_data)
+#         await self.channel_layer.group_send(
+#             self.my_group_id,
+#             {
+#                 'type': 'send.chat.online.stats.onClose',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
+#                 'data': {
+#                     'online_stats': online_stats
+#                 },
+#             }
+#         )
     async def handle_send_chat_online_stats(self):
         online_stats = [
             {
@@ -111,12 +121,6 @@ class test(AsyncWebsocketConsumer):
                 },
             }
         )
-
-        # # # Send the message back to the WebSocket
-        # await self.send(text_data=json.dumps({
-        #     'type': 'chat.online.stats',
-        #     'online_stats': online_stats
-        # }))
 
 
     async def handle_send_chat_messages(self, text_data_json):
