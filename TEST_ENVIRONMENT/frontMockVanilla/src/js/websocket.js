@@ -54,18 +54,15 @@ async function establishWebsocketConnection() {
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
 
-    if (data.type === 'chat.online.stats') {
-      websocket_obj.onlineStats = data.online_stats
-      await getMessageData()
-    }
-    // else if (data.type === 'chat.online.stats.onClose') {
+    // if (data.type === 'chat.online.stats')
+    // {
     //   websocket_obj.onlineStats = data.online_stats
-    //   await renderProfile()
-    //     // websocket_obj.messages = data
-    //     await renderChat()
+    //   // await sendMessage()
     // }
-    else
-    {
+    // else
+    // {
+
+    if (data.type === 'all_chat_messages') {
       // check if current user is in the same chat_id
       if (data.chat_id === websocket_obj.chat_id) {
         await renderProfile()
@@ -90,14 +87,13 @@ const sendError = async (error) => {
   console.error('Error: Failed to receive ws data: ', error)
 }
 
-async function sendWsMessageDataRequest(request_type) {
+async function sendDataToBackend(request_type) {
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
-      if (request_type === 'chat.message') {
-        // console.log('WS REQUEST MESSAGE DATA')
+      if (request_type === 'send_chat_message_to_backend') {
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
-          'type': 'chat.message',
+          'type': 'save_message_in_db',
           'data': {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
@@ -106,22 +102,30 @@ async function sendWsMessageDataRequest(request_type) {
           },
         }));
       }
-      else {
-        // console.log('WS REQUEST ONLINE STATS')
+      else if (request_type === 'get_chat_messages_from_backend') {
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
-          'type': 'chat.online.stats',
+          'type': 'send_chat_messages',
           'data': {
-            // 'user_id': websocket_obj.user_id,
+            'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           },
         }));
       }
+      //   websocket_obj.websocket.send(JSON.stringify({
+      //     'status': 'ok',
+      //     'type': 'chat.online.stats',
+      //     'data': {
+      //       'chat_id': websocket_obj.chat_id,
+      //     },
+      //   }));
 
 
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
+      resolve() // WITHOUT this we don't return to prev functions!!
+
     } else {
       console.error("WebSocket connection is not open.");
       reject(new Error("WebSocket connection is not open."));
@@ -134,26 +138,36 @@ async function sendWsMessageDataRequest(request_type) {
 // ASYNC because we want to get a Promise that we got the response
 // of the ws request before continuing with further functions where
 // we're dependent on the data
-async function getMessageData() {
+async function sendMessageToBackend() {
   try
   {
-    const request_type = 'chat.message'
-    await sendWsMessageDataRequest(request_type);
+    const request_type = 'send_chat_message_to_backend'
+    await sendDataToBackend(request_type);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+async function getMessagesFromBackend() {
+  try
+  {
+    const request_type = 'get_chat_messages_from_backend'
+    await sendDataToBackend(request_type);
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
 
-async function getOnlineStats() {
-  try
-  {
-    const request_type = 'chat.online.stats'
-    await sendWsMessageDataRequest(request_type);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
+// async function getOnlineStats() {
+//   try
+//   {
+//     const request_type = 'chat.online.stats'
+//     await sendWsMessageDataRequest(request_type);
+//   } catch (error) {
+//     console.error("Error:", error);
+//   }
+// }
 
 
 async function renderChat() {
@@ -198,13 +212,8 @@ async function renderChat() {
     {
       contentDiv.classList.add('other-message-text');
       const currentUserId = myArray[i].sender_id
-      // const onlineStatData = websocket_obj.onlineStats
-      // console.log('ONLINE STATS: ', onlineStatData)
-      // const isCurrentUserOnline = websocket_obj.onlineStats.some(user => user.user_id === currentUserId);
       function hasMatchingUserId(user) {
-        console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
-        // console.log('USER : ', user)
-        // console.log('OTHER USER NAME: ', user.user_id)
+        // console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
         return user.user_id === currentUserId;
       }
       const isCurrentUserOnline = websocket_obj.onlineStats.some(hasMatchingUserId);

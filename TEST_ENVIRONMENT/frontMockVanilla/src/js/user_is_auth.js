@@ -6,7 +6,8 @@ function addEventListenersIsAuth() {
     websocket_obj.sender = websocket_obj.username
 
     document.getElementById('messageInput').value = ''
-    await getOnlineStats()
+    await sendMessageToBackend()
+    await getMessagesFromBackend()
   });
 
   document.getElementById('invite_user_button').addEventListener('click', async function () {
@@ -27,6 +28,8 @@ async function logoutUser() {
   notAuth.classList.remove('hidden');
   const isAuth = document.getElementById('userIsAuth');
   isAuth.classList.add('hidden');
+  const chatDiv = document.getElementById('showChat');
+  chatDiv.classList.add('hidden');
 }
 
 
@@ -88,8 +91,6 @@ async function createChat() {
     })
     .then(data => {
       renderProfile()
-      // getMessageData()
-      // renderChat()
     })
     .catch(error => {
       console.error('Error during creating new Chat:', error);
@@ -114,9 +115,7 @@ async function renderProfile() {
       return response.json();
     })
     .then(data => {
-      // console.log('GOT USER CHAT LIST: ', data)
       websocket_obj.chat_data = data.chat_data
-      console.log('GOT USER CHAT LIST: ', websocket_obj.chat_data)
       renderUsersChatList()
     })
     .catch(error => {
@@ -135,17 +134,12 @@ async function renderProfile() {
       return response.json();
     })
     .then(data => {
-      // console.log('GOT USER CHAT LIST: ', data)
-      // DO HERE
       websocket_obj.all_user = data.all_user
-      // console.log('GOT USER LIST: ', websocket_obj.all_user)
       renderAllUsersList()
     })
     .catch(error => {
       console.error('Error during getAllUser:', error);
     });
-
-  console.log('YES YSR YSRXDGS')
 }
 
 
@@ -155,8 +149,9 @@ async function handleButtonClickChats(chatId, chatName) {
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
-
-  await getOnlineStats()
+console.log('-----------------BEFORE')
+  await getMessagesFromBackend()
+  console.log('-----------------EVER?')
 }
 
 async function renderUsersChatList() {

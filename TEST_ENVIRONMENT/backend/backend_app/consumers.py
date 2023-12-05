@@ -27,11 +27,10 @@ class test(AsyncWebsocketConsumer):
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
         await self.accept()
-        # await self.handle_send_chat_online_stats()# ??
 
     async def disconnect(self, close_code):
         self.connections.remove(self.user)
-        await self.handle_send_chat_online_stats()
+        # await self.handle_send_chat_online_stats()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -42,21 +41,20 @@ class test(AsyncWebsocketConsumer):
             self.my_group_id,
             self.channel_name,
         )
-        if what_type == 'chat.message':
-            await self.handle_send_chat_messages(text_data_json)
-        elif what_type == 'chat.online.stats':
-            await self.handle_send_chat_online_stats()
+        if what_type == 'save_message_in_db':
+            await self.save_message_in_db(text_data_json)
+        elif what_type == 'send_chat_messages':
+            await self.send_chat_messages(text_data_json)
+        # elif what_type == 'chat.online.stats':
+        #     await self.handle_send_chat_online_stats()
         else:
             print('IS SOMETHING ELSE')
 
 
-
-
-
-    # ---------------------------- UFF FUNCTIONS ----------------------------
-    async def send_chat_messages(self, event):
+# ---------------------------- UFF FUNCTIONS ----------------------------
+    async def send_chat_messages_to_frontend(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'chat.message',
+            'type': 'all_chat_messages',
             'chat_id': event['data']['chat_id'],
             'message_data': event['data']['message_data'],
         }))
@@ -68,80 +66,70 @@ class test(AsyncWebsocketConsumer):
             **message,
         }))
 
-    async def send_chat_online_stats(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'chat.online.stats',
-            'online_stats': event['data']['online_stats']
-        }))
-
-    # async def send_chat_online_stats_onClose(self, event):
+    # async def send_chat_online_stats(self, event):
     #     await self.send(text_data=json.dumps({
-    #         'type': 'chat.online.stats.onClose',
+    #         'type': 'chat.online.stats',
     #         'online_stats': event['data']['online_stats']
     #     }))
-    #
 
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
-#     async def handle_send_chat_online_stats_onClose(self):
-#         online_stats = [
-#             {
-#                 'user_id': instance['user_id'],
-#                 'stat': instance['is_online']
-#             }
-#             for instance in self.connections
-#         ]
-#
-#         # await self.send_user(user_id, response_data)
-#         await self.channel_layer.group_send(
-#             self.my_group_id,
-#             {
-#                 'type': 'send.chat.online.stats.onClose',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
-#                 'data': {
-#                     'online_stats': online_stats
-#                 },
-#             }
-#         )
-    async def handle_send_chat_online_stats(self):
-        online_stats = [
-            {
-                'user_id': instance['user_id'],
-                'stat': instance['is_online']
-            }
-            for instance in self.connections
-        ]
 
-        # await self.send_user(user_id, response_data)
-        await self.channel_layer.group_send(
-            self.my_group_id,
-            {
-                'type': 'send.chat.online.stats',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
-                'data': {
-                    'online_stats': online_stats
-                },
-            }
-        )
+    # async def handle_send_chat_online_stats(self):
+    #     online_stats = [
+    #         {
+    #             'user_id': instance['user_id'],
+    #             'stat': instance['is_online']
+    #         }
+    #         for instance in self.connections
+    #     ]
+    #     await self.channel_layer.group_send(
+    #         self.my_group_id,
+    #         {
+    #             'type': 'send.chat.online.stats',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
+    #             'data': {
+    #                 'online_stats': online_stats
+    #             },
+    #         }
+    #     )
 
-
-    async def handle_send_chat_messages(self, text_data_json):
+    async def save_message_in_db(self, text_data_json):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
         message = text_data_json["data"]["message"]
         # Use await to call the async method in the synchronous context
         await self.create_message(user_id, chat_id, message)
+        # message_data = await self.get_chat_messages(chat_id)
+        #
+        # await self.channel_layer.group_send(
+        #     self.my_group_id,
+        #     {
+        #         'type': 'send.chat.messages.to.frontend',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
+        #         'data': {
+        #             'chat_id': chat_id,
+        #             'message_data': message_data,
+        #         },
+        #     }
+        # )
+
+    async def send_chat_messages(self, text_data_json):
+        chat_id = text_data_json["data"]["chat_id"]
+        # user_id = text_data_json["data"]["user_id"]
+        # message = text_data_json["data"]["message"]
+        # Use await to call the async method in the synchronous context
+        # await self.create_message(user_id, chat_id, message)
         message_data = await self.get_chat_messages(chat_id)
 
         await self.channel_layer.group_send(
             self.my_group_id,
             {
-                'type': 'send.chat.messages',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
+                'type': 'send.chat.messages.to.frontend',  # THIS triggers send_chat_messages function!! (ik fuggin weird)
                 'data': {
                     'chat_id': chat_id,
                     'message_data': message_data,
                 },
             }
         )
-
 
 
 
