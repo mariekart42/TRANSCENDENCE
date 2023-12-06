@@ -30,6 +30,8 @@ function addEventListenersNotAuth() {
       })
       .then(data => {
         initUserData(data, username, password, 69)
+        const showProfile = document.getElementById('showUserProfile');
+        showProfile.classList.remove('hidden');
         establishWebsocketConnection()
       })
       .catch(error => {
@@ -55,6 +57,8 @@ function addEventListenersNotAuth() {
       })
       .then(data => {
         initUserData(data, username, password, age)
+        const showProfile = document.getElementById('showUserProfile');
+        showProfile.classList.remove('hidden');
         establishWebsocketConnection()
       })
       .catch(error => {
@@ -66,21 +70,21 @@ function addEventListenersNotAuth() {
   // BUTTON TO CHANGE TO LOGIN PAGE
   document.getElementById('changeToLoginPageButton').addEventListener('click', function () {
     const loginPage = document.getElementById('loginPage');
+    loginPage.classList.remove('hidden');
     const registerPage = document.getElementById('registerPage');
+    registerPage.classList.add('hidden');
     document.getElementById('registerUsername').value = null;
     document.getElementById('registerAge').value  = null;
     document.getElementById('registerPassword').value  = null;
-    loginPage.classList.remove('hidden');
-    registerPage.classList.add('hidden');
   });
 
   // BUTTON TO CHANGE TO REGISTER PAGE
   document.getElementById('changeToRegisterPageButton').addEventListener('click', function () {
     const loginPage = document.getElementById('loginPage');
+    loginPage.classList.add('hidden');
     const registerPage = document.getElementById('registerPage');
+    registerPage.classList.remove('hidden');
     document.getElementById('loginUsername').value = null;
     document.getElementById('loginPassword').value  = null;
-    loginPage.classList.add('hidden');
-    registerPage.classList.remove('hidden');
   });
 }

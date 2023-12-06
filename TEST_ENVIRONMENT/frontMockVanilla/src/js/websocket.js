@@ -171,10 +171,10 @@ async function getOnlineStatsFromBackend() {
 
 async function renderChat() {
 
-  const chatDiv = document.getElementById('userChatsList');
-  chatDiv.classList.add('hidden');
-  const userDiv = document.getElementById('userFriendsList');
-  userDiv.classList.add('hidden');
+  // const chatDiv = document.getElementById('userChatsList');
+  // chatDiv.classList.add('hidden');
+  // const userDiv = document.getElementById('userFriendsList');
+  // userDiv.classList.add('hidden');
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
 

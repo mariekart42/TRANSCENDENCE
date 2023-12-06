@@ -21,6 +21,13 @@ function addEventListenersIsAuth() {
   document.getElementById('logoutButton').addEventListener('click', async function () {
     await logoutUser()
   })
+
+  document.getElementById('goBackToProfileButton').addEventListener('click', async function () {
+    const chatDiv = document.getElementById('showChat');
+    chatDiv.classList.add('hidden');
+    const profileDiv = document.getElementById('showUserProfile');
+    profileDiv.classList.remove('hidden');
+  })
 }
 
 async function logoutUser() {
@@ -31,6 +38,8 @@ async function logoutUser() {
   isAuth.classList.add('hidden');
   const chatDiv = document.getElementById('showChat');
   chatDiv.classList.add('hidden');
+  const profileDiv = document.getElementById('showUserProfile');
+  profileDiv.classList.add('hidden');
 }
 
 
@@ -104,8 +113,8 @@ async function renderProfile() {
   let sender_title = document.getElementById('displayUserName');
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 
-  const chatDiv = document.getElementById('userChatsList');
-  chatDiv.classList.remove('hidden');
+  // const chatDiv = document.getElementById('showUserProfile');
+  // chatDiv.classList.remove('hidden');
 
   let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
   await fetch(url)
@@ -124,8 +133,8 @@ async function renderProfile() {
     });
 
 
-  const friendsDiv = document.getElementById('userFriendsList');
-  friendsDiv.classList.remove('hidden');
+  // const friendsDiv = document.getElementById('userFriendsList');
+  // friendsDiv.classList.remove('hidden');
   url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
   await fetch(url)
     .then(response => {
@@ -146,6 +155,8 @@ async function renderProfile() {
 async function handleButtonClickChats(chatId, chatName) {
   const chatDiv = document.getElementById('showChat');
   chatDiv.classList.remove('hidden');
+  const showProfile = document.getElementById('showUserProfile');
+  showProfile.classList.add('hidden');
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
