@@ -73,6 +73,11 @@ async function establishWebsocketConnection() {
     else if (data.type === 'online_stats') {
       websocket_obj.onlineStats = data.online_stats
     }
+    else if (data.type === 'online_stats_on_disconnect') {
+      websocket_obj.onlineStats = data.online_stats
+      // await renderProfile()//?
+      await renderChat()
+    }
   };
 
   websocket_obj.websocket.onerror = function (error) {

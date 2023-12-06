@@ -30,7 +30,7 @@ class test(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.connections.remove(self.user)
-        # await self.handle_send_chat_online_stats()
+        await self.handle_send_online_stats_on_disconnect()
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -72,6 +72,12 @@ class test(AsyncWebsocketConsumer):
             'online_stats': event['data']['online_stats']
         }))
 
+    async def send_online_stats_on_disconnect(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'online_stats_on_disconnect',
+            'online_stats': event['data']['online_stats']
+        }))
+
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
 
@@ -87,6 +93,24 @@ class test(AsyncWebsocketConsumer):
             self.my_group_id,
             {
                 'type': 'send.online.stats',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
+                'data': {
+                    'online_stats': online_stats
+                },
+            }
+        )
+
+    async def handle_send_online_stats_on_disconnect(self):
+        online_stats = [
+            {
+                'user_id': instance['user_id'],
+                'stat': instance['is_online']
+            }
+            for instance in self.connections
+        ]
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.online.stats.on.disconnect',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
                 'data': {
                     'online_stats': online_stats
                 },
