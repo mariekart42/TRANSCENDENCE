@@ -47,6 +47,8 @@ class test(AsyncWebsocketConsumer):
             await self.handle_send_chat_messages(text_data_json)
         elif what_type == 'send_online_stats':
             await self.handle_send_online_stats()
+        elif what_type == 'send_user_in_current_chat':
+            await self.handle_send_user_in_current_chat(chat_id)
         else:
             print('IS SOMETHING ELSE')
 
@@ -76,6 +78,13 @@ class test(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'online_stats_on_disconnect',
             'online_stats': event['data']['online_stats']
+        }))
+
+
+    async def send_user_in_current_chat(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'user_in_current_chat',
+            'user_in_chat': event['data']['user_in_chat']
         }))
 
 
@@ -140,6 +149,19 @@ class test(AsyncWebsocketConsumer):
         )
 
 
+    async def handle_send_user_in_current_chat(self, chat_id):
+        user_in_chat = await self.get_user_in_chat(chat_id)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.user.in.current.chat',
+                'data': {
+                    'chat_id': chat_id,
+                    'user_in_chat': user_in_chat,
+                },
+            }
+        )
+
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
     @database_sync_to_async
@@ -176,3 +198,19 @@ class test(AsyncWebsocketConsumer):
     def group_exists(self, group_name):
         channel_layer = get_channel_layer()
         return channel_layer.group_exists(group_name)
+
+    @database_sync_to_async
+    def get_user_in_chat(request, chat_id):
+        chat_instance = Chat.objects.get(id=chat_id)
+        all_user_in_current_chat = MyUser.objects.filter(chats=chat_instance)
+
+        print('USER IN CHAT: ', all_user_in_current_chat)
+
+        user_in_chat = [
+            {
+                'user_name': user.name,
+                'user_id': user.id
+            }
+            for user in all_user_in_current_chat
+        ]
+        return user_in_chat

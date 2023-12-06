@@ -36,6 +36,12 @@ websocket_obj = {
       timestamp: 0,
     }
   ],
+  userInCurrentChat: [
+    {
+      user_name: null,
+      user_id: null
+    }
+  ],
 
   message: null,
   sender: null,
@@ -68,6 +74,11 @@ async function establishWebsocketConnection() {
       websocket_obj.onlineStats = data.online_stats
       // await renderProfile()//?
       await renderChat()
+    }
+    else if (data.type === 'user_in_current_chat') {
+      console.log('DATA: ', data.user_in_chat)
+      websocket_obj.userInCurrentChat = data.user_in_chat // NEW
+      console.log('WEBSOCKET DATa before: ', websocket_obj.userInCurrentChat)
     }
   };
 
@@ -121,6 +132,17 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
+      else if (request_type === 'get_user_in_current_chat') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_user_in_current_chat',
+          'data': {
+            'chat_id': websocket_obj.chat_id,
+          },
+        }));
+      }
+
+
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
@@ -168,17 +190,25 @@ async function getOnlineStatsFromBackend() {
   }
 }
 
+async function getAllUserInChatFromBackend() {
+  try
+  {
+    const request_type = 'get_user_in_current_chat'
+    await sendDataToBackend(request_type);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 
 async function renderChat() {
 
-  // const chatDiv = document.getElementById('userChatsList');
-  // chatDiv.classList.add('hidden');
-  // const userDiv = document.getElementById('userFriendsList');
-  // userDiv.classList.add('hidden');
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
 
   let myArray = websocket_obj.messages.message_data;
+  let lol = websocket_obj.userInCurrentChat
+  renderUserInChatList()
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';
 
@@ -234,5 +264,31 @@ async function renderChat() {
       mainContainer.appendChild(document.createElement('br'));
     }
   }
+}
+
+
+function renderUserInChatList() {
+  let mainContainer = document.getElementById('userInChatList');
+  mainContainer.innerHTML = '';
+
+  // CHANGE ALL_USER WITH user in chat
+  console.log('WEBSOCKET DATa in func: ', websocket_obj.userInCurrentChat)
+  let myArray = websocket_obj.userInCurrentChat
+  console.log('MyArray: ', myArray)
+
+  let title = document.createElement('h2');
+  title.textContent = 'User in Chat:'
+  mainContainer.appendChild(title);
+
+  for (let i = 0; i < myArray.length; i++) {
+
+    let textDiv = document.createElement('div');
+      textDiv.textContent = myArray[i].user_name;
+    // get array of all user in that cyrrent chat
+
+      mainContainer.appendChild(textDiv)
+  }
+
+
 }
 

@@ -65,6 +65,8 @@ async function inviteUser(invited_user_name){
 async function leaveChat() {
   const chatDiv = document.getElementById('showChat');
   chatDiv.classList.add('hidden');
+  const profileDiv = document.getElementById('showUserProfile');
+  profileDiv.classList.remove('hidden');
   console.log('USER_ID | CHAT_ID: ', websocket_obj.user_id, websocket_obj.chat_id)
   const url = `http://127.0.0.1:6969/user/leaveChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/`
   fetch(url)
@@ -113,9 +115,6 @@ async function renderProfile() {
   let sender_title = document.getElementById('displayUserName');
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 
-  // const chatDiv = document.getElementById('showUserProfile');
-  // chatDiv.classList.remove('hidden');
-
   let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
   await fetch(url)
     .then(response => {
@@ -161,6 +160,7 @@ async function handleButtonClickChats(chatId, chatName) {
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
   await getOnlineStatsFromBackend()
+  await getAllUserInChatFromBackend()
   await getMessagesFromBackend()
 }
 
