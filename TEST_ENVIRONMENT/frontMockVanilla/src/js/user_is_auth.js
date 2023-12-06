@@ -7,6 +7,7 @@ function addEventListenersIsAuth() {
 
     document.getElementById('messageInput').value = ''
     await sendMessageToBackend()
+    await getOnlineStatsFromBackend()//NEW
     await getMessagesFromBackend()
   });
 
@@ -150,7 +151,11 @@ async function handleButtonClickChats(chatId, chatName) {
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
 console.log('-----------------BEFORE')
+  await getOnlineStatsFromBackend()
   await getMessagesFromBackend()
+  // await renderProfile()
+  //       // websocket_obj.messages = data
+  //   await renderChat()
   console.log('-----------------EVER?')
 }
 

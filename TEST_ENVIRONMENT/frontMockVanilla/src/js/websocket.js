@@ -70,6 +70,9 @@ async function establishWebsocketConnection() {
         await renderChat()
       }
     }
+    else if (data.type === 'online_stats') {
+      websocket_obj.onlineStats = data.online_stats
+    }
   };
 
   websocket_obj.websocket.onerror = function (error) {
@@ -90,7 +93,7 @@ const sendError = async (error) => {
 async function sendDataToBackend(request_type) {
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
-      if (request_type === 'send_chat_message_to_backend') {
+      if (request_type === 'send_chat_message') {
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'save_message_in_db',
@@ -102,7 +105,7 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
-      else if (request_type === 'get_chat_messages_from_backend') {
+      else if (request_type === 'get_chat_messages') {
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'send_chat_messages',
@@ -112,6 +115,18 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
+      else if (request_type === 'get_online_stats') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_online_stats',
+          'data': {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          },
+        }));
+      }
+
+
       //   websocket_obj.websocket.send(JSON.stringify({
       //     'status': 'ok',
       //     'type': 'chat.online.stats',
@@ -141,7 +156,7 @@ async function sendDataToBackend(request_type) {
 async function sendMessageToBackend() {
   try
   {
-    const request_type = 'send_chat_message_to_backend'
+    const request_type = 'send_chat_message'
     await sendDataToBackend(request_type);
   } catch (error) {
     console.error("Error:", error);
@@ -151,23 +166,22 @@ async function sendMessageToBackend() {
 async function getMessagesFromBackend() {
   try
   {
-    const request_type = 'get_chat_messages_from_backend'
+    const request_type = 'get_chat_messages'
     await sendDataToBackend(request_type);
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-
-// async function getOnlineStats() {
-//   try
-//   {
-//     const request_type = 'chat.online.stats'
-//     await sendWsMessageDataRequest(request_type);
-//   } catch (error) {
-//     console.error("Error:", error);
-//   }
-// }
+async function getOnlineStatsFromBackend() {
+  try
+  {
+    const request_type = 'get_online_stats'
+    await sendDataToBackend(request_type);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 
 
 async function renderChat() {
@@ -216,6 +230,7 @@ async function renderChat() {
         // console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
         return user.user_id === currentUserId;
       }
+
       const isCurrentUserOnline = websocket_obj.onlineStats.some(hasMatchingUserId);
       if (isCurrentUserOnline) {
         strongElement.textContent = myArray[i].sender + ' 🟢';
