@@ -143,20 +143,14 @@ async function renderProfile() {
     });
 }
 
-
 async function handleButtonClickChats(chatId, chatName) {
   const chatDiv = document.getElementById('showChat');
   chatDiv.classList.remove('hidden');
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
-console.log('-----------------BEFORE')
   await getOnlineStatsFromBackend()
   await getMessagesFromBackend()
-  // await renderProfile()
-  //       // websocket_obj.messages = data
-  //   await renderChat()
-  console.log('-----------------EVER?')
 }
 
 async function renderUsersChatList() {

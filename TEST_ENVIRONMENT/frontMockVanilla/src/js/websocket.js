@@ -54,16 +54,7 @@ async function establishWebsocketConnection() {
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
 
-    // if (data.type === 'chat.online.stats')
-    // {
-    //   websocket_obj.onlineStats = data.online_stats
-    //   // await sendMessage()
-    // }
-    // else
-    // {
-
     if (data.type === 'all_chat_messages') {
-      // check if current user is in the same chat_id
       if (data.chat_id === websocket_obj.chat_id) {
         await renderProfile()
         websocket_obj.messages = data
@@ -131,17 +122,6 @@ async function sendDataToBackend(request_type) {
         }));
       }
 
-
-      //   websocket_obj.websocket.send(JSON.stringify({
-      //     'status': 'ok',
-      //     'type': 'chat.online.stats',
-      //     'data': {
-      //       'chat_id': websocket_obj.chat_id,
-      //     },
-      //   }));
-
-
-
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
       resolve() // WITHOUT this we don't return to prev functions!!
@@ -198,10 +178,6 @@ async function renderChat() {
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
 
-// console.log('HEEEERE1: ', websocket_obj.all_user)
-//   console.log('HEEEERE2: ', websocket_obj.onlineStats)
-  // let leaveChatButton = document.createElement('button')
-
   let myArray = websocket_obj.messages.message_data;
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';
@@ -243,12 +219,10 @@ async function renderChat() {
         strongElement.textContent = myArray[i].sender + ' 🔴';
       }
     }
-
     contentDiv.appendChild(strongElement);
     contentDiv.appendChild(lineBreakElement);
     contentDiv.appendChild(textDiv);
     contentDiv.appendChild(timestampDiv);
-
     messageDiv.appendChild(contentDiv);
     tmpDiv.push(messageDiv);
   }

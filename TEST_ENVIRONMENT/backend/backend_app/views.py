@@ -20,9 +20,6 @@ def inviteUser(request, invited_user_name):
         return JsonResponse({'error': 'something big in inviteUser'}, status=500)
 
 
-
-
-# @require_GET
 def checkUserCredentials(request, username, password):
     try:
         print('IN BACKEND loginUser')
@@ -49,7 +46,6 @@ def getUserData(request, username, provided_password):
         user = MyUser.objects.filter(name=username).exists()
         if not user:
             return JsonResponse({'error': 'User not found'}, status=404)
-
         user = MyUser.objects.get(name=username)
 
         if provided_password == user.password:
@@ -75,8 +71,6 @@ def updateUserAge(request, user_id):
         if not user_exists:
             return JsonResponse({'error': 'User not found'}, status=404)
         user = MyUser.objects.get(id=user_id)
-
-        # Extract the new age from the request body
         data = json.loads(request.body.decode('utf-8'))
         new_age = data.get('newAge')
         user.age = new_age
@@ -85,8 +79,6 @@ def updateUserAge(request, user_id):
         return JsonResponse({'message': 'Age updated successfully'}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in updateUserAge'}, status=500)
-
-
 
 
 @require_POST
@@ -98,8 +90,6 @@ def updateUserName(request, user_id):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         user = MyUser.objects.get(id=user_id)
-
-        # Extract the new username from the request body
         data = json.loads(request.body.decode('utf-8'))
         new_name = data.get('newName')
 
@@ -123,7 +113,6 @@ def updateUserPassword(request, user_id):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         user = MyUser.objects.get(id=user_id)
-        # Extract the new username from the request body
         data = json.loads(request.body.decode('utf-8'))
         new_password = data.get('newPassword')
         user.password = new_password
@@ -153,7 +142,6 @@ def createAccount(request, username, password, age):
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
 
 
-# @require_POST
 def createChat(request, user_id, chat_name):
     try:
         chat_exists = Chat.objects.filter(chatName=chat_name).exists()
@@ -161,7 +149,6 @@ def createChat(request, user_id, chat_name):
             return JsonResponse({'error': 'Chatname already exist'}, status=409)
 
         new_chat = Chat.objects.create(chatName=chat_name)
-
         user_instance = MyUser.objects.get(id=user_id)
 
         user_instance.chats.add(new_chat.id)
@@ -179,10 +166,7 @@ def getUserChats(request, user_id):
     try:
         user_instance = MyUser.objects.get(id=user_id)
         user_chats = user_instance.chats.all()
-
-        # Convert user_chats to a list of dictionaries for JSON response
         chat_data = [{'chat_id': chat.id, 'chat_name': chat.chatName} for chat in user_chats]
-
         return JsonResponse({'chat_data': chat_data})
     except MyUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
@@ -216,8 +200,6 @@ def getChatData(request, user_id, chat_id):
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
 
 
-
-
 def leaveChat(request, user_id, chat_id):
     try:
         user_exists = MyUser.objects.filter(id=user_id).exists()
@@ -229,7 +211,6 @@ def leaveChat(request, user_id, chat_id):
 
         chat_instance = Chat.objects.get(id=chat_id)
         user_instance = MyUser.objects.get(id=user_id)
-
         user_instance.chats.remove(chat_instance)
         user_instance.save()
 
@@ -240,63 +221,15 @@ def leaveChat(request, user_id, chat_id):
 
 
 # gettin user_id cause dis function should later only
-# return hat users friends and not all user
+# return users friends and not all user
 def getAllUser(request, user_id):
     try:
         all_users_info = MyUser.objects.values('id', 'name')
-
-        # Convert QuerySet to a list of dictionaries
         all_user = list(all_users_info)
-        print('ALL USER: ', all_user)
-
         return JsonResponse({'all_user': all_user}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
 
-
-
-# moved to utils file
-# @require_POST
-# def createMessage(request, user_id, chat_id):
-#     try:
-#         user_instance = MyUser.objects.get(id=user_id)
-#         specific_timestamp = timezone.now()
-#
-#         data = json.loads(request.body.decode('utf-8'))
-#         text = data.get('text')
-#
-#         new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
-#
-#         # add new_message to chat:
-#         chat_instance = Chat.objects.get(id=chat_id)
-#         chat_instance.messages.add(new_message.id)
-#         new_message.save()
-#
-#         return JsonResponse({'message': "Message created successfully"})
-#     except Exception as e:
-#         return JsonResponse({'error': 'something big in createMessage'}, status=500)
-#
-#
-# def getChatMessages(request, chat_id):
-#     try:
-#         chat_instance = Chat.objects.get(id=chat_id)
-#         messages_in_chat = chat_instance.messages.all()
-#
-#         message_data = [
-#             {
-#                 'id': message.id,
-#                 'sender': message.sender,
-#                 'text': message.text,
-#                 'timestamp': message.formatted_timestamp(),
-#             }
-#             for message in messages_in_chat
-#         ]
-#
-#         return JsonResponse({'message_data': message_data}, status=200)
-#     except Exception as e:
-#             return JsonResponse({'error': 'something big in createMessage'}, status=500)
-#
-#
 
 def inviteUserToChat(request, user_id, chat_id, invited_user):
     try:
@@ -304,14 +237,10 @@ def inviteUserToChat(request, user_id, chat_id, invited_user):
         if not invited_user_exists:
             return JsonResponse({'error': 'User you want to invite doesnt exists'}, status=404)
 
-        # get instance of both users
         inviting_user = MyUser.objects.get(id=user_id)
         invited_user = MyUser.objects.get(name=invited_user)
-
-        # get instance of chat that the user is inviting the other user to
         chat = inviting_user.chats.get(id=chat_id)
 
-        # add chat to invited user instance
         invited_user.chats.add(chat)
         return JsonResponse({"message": "Invite was send successfully"})
     except inviting_user.DoesNotExist:
