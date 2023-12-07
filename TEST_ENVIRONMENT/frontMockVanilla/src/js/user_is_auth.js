@@ -1,3 +1,9 @@
+// let tmp = {
+//   active_game: null,  // Make sure to initialize the name property
+// }
+
+
+
 
 // BUTTON TO SEND MESSAGE IN CHAT
 function addEventListenersIsAuth() {
@@ -13,6 +19,69 @@ function addEventListenersIsAuth() {
 }
 
 
+
+async function renderInvites() {
+
+  console.log('In renderInvites:');
+
+
+  const username = "k";
+  
+  // console.log(element); // Check the console for the result
+    
+    
+
+  var theButton = document.getElementById('createGameButton');
+  theButton.style.display = 'none';
+  try {
+
+// _+_+_+_+_+_+_
+
+//     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+//     const htmlContent = await response.text();
+    
+//     // Assuming you have a container element with the id 'htmlContainer'
+//     const container = document.getElementById('game-session-container');
+//     container.innerHTML = htmlContent;
+// _+_+_+_+_+_+_
+
+const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+console.log(response);
+
+// try {
+    const data = await response.json();
+
+    // Check if data.game_sessions is an array
+    if (Array.isArray(data.game_sessions)) {
+        console.log(data.game_sessions);
+        const gameSessions = data.game_sessions;
+
+        const container = document.getElementById('game-session-container');
+
+        // Loop through each game session and create a button
+        gameSessions.forEach(session => {
+            const button = document.createElement('button');
+            button.textContent = `Join ${session.id}`;
+
+            // Add a click event listener to handle the button click
+            button.addEventListener('click', () => {
+                joinGame(session.id); // Replace with your logic
+            });
+
+            // Append the button to the container
+            container.appendChild(button);
+        });
+    } else {
+        console.error("Invalid data structure: game_sessions is not an array");
+    }
+} catch (error) {
+    console.error('There was a problem with the fetch operation:', error);
+}
+
+
+
+
+  }
 
 
 async function sendGameInvitation() {
@@ -32,7 +101,7 @@ async function sendGameInvitation() {
   theButton.style.display = 'none';  
   var username = "k"  
   var game_id = active_game;
-  var guest_user_name = "test";
+  var guest_user_name = guestUser;
   try {
     const response = await fetch(`http://127.0.0.1:6969/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
     const data = await response.json();
@@ -40,6 +109,8 @@ async function sendGameInvitation() {
     if (response.ok) {
     displayError(null);
     // Perform actions on successful login, e.g., set isLoggedIn and userData
+      active_game = null;
+
         console.log(data);
     } else {
     displayError(data.error);
@@ -49,6 +120,7 @@ async function sendGameInvitation() {
     displayError('Error fetching user data');
   }
 }
+
 async function createGame() {
 
   console.log('In createGame:');
@@ -70,6 +142,7 @@ async function createGame() {
     const response = await fetch(`http://127.0.0.1:6969/user/game/create/${username}/`);
     const data = await response.json();
     console.log(data.id); // Check the console for the result
+    active_game = data.id;
 
     if (response.ok) {
     displayError(null);
