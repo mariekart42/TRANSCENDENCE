@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MyUser, Chat, Message
+from .models import MyUser, Chat, Message, Game
 
 
 
@@ -7,3 +7,5 @@ from .models import MyUser, Chat, Message
 admin.site.register(MyUser)
 admin.site.register(Chat)
 admin.site.register(Message)
+admin.site.register(Game)
+

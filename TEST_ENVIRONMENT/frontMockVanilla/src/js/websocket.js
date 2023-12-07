@@ -7,6 +7,8 @@ websocket_obj = {
   chat_name: null,
   chat_id: null,
 
+  active_game: null,
+
   chat_data: [
     {
       chat_id: null,

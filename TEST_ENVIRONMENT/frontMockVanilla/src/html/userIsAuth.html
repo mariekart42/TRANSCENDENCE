@@ -7,6 +7,18 @@
   Create New Chat
 </button>
 
+<button id="createGameButton">Create a new Game</button>
+
+<div id="gameInvitation" >
+  
+  <label for="userName">Enter the name of the user to challenge to a game:</label>
+    <input type="text" id="guestUser" placeholder="Enter name">
+  
+    <button onclick="sendGameInvitation()">Send Invitation</button>
+
+</div>
+
+
 <!-- Create New Chat Modal -->
 <div class="modal fade" id="createChatModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
   <div class="modal-dialog">

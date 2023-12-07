@@ -23,6 +23,9 @@ urlpatterns = [
 
 
     # GAME
+    path('user/game/create/<str:username>/', views.createGame),
+    path('user/game/invite/<str:username>/<int:game_id>/<str:guest_user_name>/', views.inviteUserToGame),
+
 
 
     # path('user/update-avatar/<int:id>/', views.updateAvatar, name='userAvatar')

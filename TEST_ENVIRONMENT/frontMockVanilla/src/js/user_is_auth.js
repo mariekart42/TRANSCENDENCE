@@ -9,6 +9,84 @@ function addEventListenersIsAuth() {
     await getMessageData()
     await renderChat();
   });
+  document.getElementById('createGameButton').addEventListener('click', createGame);
+}
+
+
+
+
+async function sendGameInvitation() {
+
+
+  console.log('In invite user to game');
+
+  var userNameInput = document.getElementById("guestUser");
+
+  // Access the value property to get the entered data
+  var guestUser = userNameInput.value;
+
+  console.log("User Name: " + guestUser);
+    
+
+  var theButton = document.getElementById('createGameButton');
+  theButton.style.display = 'none';  
+  var username = "k"  
+  var game_id = active_game;
+  var guest_user_name = "test";
+  try {
+    const response = await fetch(`http://127.0.0.1:6969/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
+    const data = await response.json();
+
+    if (response.ok) {
+    displayError(null);
+    // Perform actions on successful login, e.g., set isLoggedIn and userData
+        console.log(data);
+    } else {
+    displayError(data.error);
+    }
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    displayError('Error fetching user data');
+  }
+}
+async function createGame() {
+
+  console.log('In createGame:');
+
+
+  const username = "k";
+
+    console.log("IN CREATEGAME"); // Check the console for the result
+
+
+    var element = document.getElementById('createGameButton');
+    console.log(element); // Check the console for the result
+    
+    
+
+  var theButton = document.getElementById('createGameButton');
+  theButton.style.display = 'none';    
+  try {
+    const response = await fetch(`http://127.0.0.1:6969/user/game/create/${username}/`);
+    const data = await response.json();
+    console.log(data.id); // Check the console for the result
+
+    if (response.ok) {
+    displayError(null);
+    active_game = data.id;
+    // console.log(data.id); // Check the console for the result
+
+    // Perform actions on successful login, e.g., set isLoggedIn and userData
+        console.log(data);
+    } else {
+    displayError(data.error);
+    }
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    displayError('Error fetching user data');
+  }
+
+
 }
 
 async function leaveChat() {
