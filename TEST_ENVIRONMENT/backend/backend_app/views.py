@@ -142,13 +142,13 @@ def createAccount(request, username, password, age):
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
 
 
-def createChat(request, user_id, chat_name):
+def createPublicChat(request, user_id, chat_name):
     try:
         chat_exists = Chat.objects.filter(chatName=chat_name).exists()
         if chat_exists:
-            return JsonResponse({'error': 'Chatname already exist'}, status=409)
+            return JsonResponse({'error': 'lol'}, status=409)
 
-        new_chat = Chat.objects.create(chatName=chat_name)
+        new_chat = Chat.objects.create(chatName=chat_name, isPrivate=False)
         user_instance = MyUser.objects.get(id=user_id)
 
         user_instance.chats.add(new_chat.id)

@@ -7,7 +7,7 @@ function addEventListenersIsAuth() {
 
     document.getElementById('messageInput').value = ''
     await sendMessageToBackend()
-    await getOnlineStatsFromBackend()//NEW
+    await getOnlineStatsFromBackend()
     await getMessagesFromBackend()
   });
 
@@ -28,7 +28,22 @@ function addEventListenersIsAuth() {
     const profileDiv = document.getElementById('showUserProfile');
     profileDiv.classList.remove('hidden');
   })
+
+  document.getElementById('create_chat_button').addEventListener('click', async function() {
+    await createChat()
+  })
 }
+
+
+function setErrorWithTimout(element_id, error_message, timout) {
+  const obj = document.getElementById(element_id)
+  obj.textContent = error_message;
+  obj.style.display = 'block';
+  setTimeout(function() {
+    obj.remove();
+  }, timout);
+}
+
 
 async function logoutUser() {
   let websocket_obj = null
@@ -49,7 +64,11 @@ async function inviteUser(invited_user_name){
   fetch(url)
     .then(response => {
       if (!response.ok) {
-        throw new Error('Could not get Users Chats Data');
+        if (response.status === 404) {
+          throw new Error('This User does not exists');
+        } else {
+          throw new Error('Could not get Users Chats Data');
+        }
       }
       return response.json();
     })
@@ -57,6 +76,7 @@ async function inviteUser(invited_user_name){
       renderProfile()
     })
     .catch(error => {
+      setErrorWithTimout('error_message_2', error, 5000)
       console.error('Error during getUserChats:', error);
     });
 }
@@ -86,18 +106,21 @@ async function leaveChat() {
 
 
 async function createChat() {
-
   const chat_name = document.getElementById('new_chat_name').value
   if (!chat_name.trim()) {
-    console.error('CHAT NAME CANT BE EMPTY ')
-    return
+    setErrorWithTimout('error_message', 'Chat name cannot be empty',  5000)
+    return;
   }
 
-  const url = `http://127.0.0.1:6969/user/createChat/${websocket_obj.user_id}/${chat_name}/`
+  const url = `http://127.0.0.1:6969/user/createPublicChat/${websocket_obj.user_id}/${chat_name}/`
   fetch(url)
     .then(response => {
       if (!response.ok) {
-        throw new Error('Could not create new Chat');
+        if (response.status === 409) {
+          throw new Error('Chat '+chat_name+' already exists');
+        } else {
+          throw new Error('Could not create new Chat');
+        }
       }
       return response.json();
     })
@@ -105,6 +128,7 @@ async function createChat() {
       renderProfile()
     })
     .catch(error => {
+      setErrorWithTimout('error_message', error,  5000)
       console.error('Error during creating new Chat:', error);
     });
 }
@@ -132,8 +156,7 @@ async function renderProfile() {
     });
 
 
-  // const friendsDiv = document.getElementById('userFriendsList');
-  // friendsDiv.classList.remove('hidden');
+
   url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
   await fetch(url)
     .then(response => {
@@ -208,9 +231,6 @@ async function renderAllUsersList() {
   let array_of_users = websocket_obj.all_user
   let userFriendsList = document.getElementById('userFriendsList');
   userFriendsList.innerHTML = '';
-
-  console.log('USER LIST: ', websocket_obj.all_user)
-
 
   let title = document.createElement('h2');
   title.textContent = 'All User:'

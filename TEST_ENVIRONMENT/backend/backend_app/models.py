@@ -13,6 +13,7 @@ class MyUser(models.Model):
 
 class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)
+    isPrivate = models.BooleanField(default=False)
     messages = models.ManyToManyField('Message', blank=True)
 
 
@@ -26,5 +27,5 @@ class Message(models.Model):
         return self.timestamp.strftime('%H:%M %d.%m.%Y')
 
 
-class Test(models.Model):
-    test = models.CharField("test", max_length=69)
+# class Test(models.Model):
+#     test = models.CharField("test", max_length=69)

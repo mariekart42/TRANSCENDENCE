@@ -33,7 +33,7 @@ urlpatterns = [
 
 
     # path('user/update-avatar/<int:id>/', views.updateAvatar, name='userAvatar')
-    path('user/createChat/<int:user_id>/<str:chat_name>/', views.createChat, name='create-chat'),
+    path('user/createPublicChat/<int:user_id>/<str:chat_name>/', views.createPublicChat, name='create-chat'),
     path('user/getUserChats/<int:user_id>/', views.getUserChats, name='getUserChats'),
     path('user/getChatData/<int:user_id>/<int:chat_id>/', views.getChatData, name='getChatData'),
     path('user/inviteUserToChat/<int:user_id>/<int:chat_id>/<str:invited_user>/', views.inviteUserToChat, name='inviteUserToChat'),

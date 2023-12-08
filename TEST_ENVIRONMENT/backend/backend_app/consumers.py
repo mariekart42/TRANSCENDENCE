@@ -49,9 +49,12 @@ class test(AsyncWebsocketConsumer):
             await self.handle_send_online_stats()
         elif what_type == 'send_user_in_current_chat':
             await self.handle_send_user_in_current_chat(chat_id)
+        elif what_type == 'send_current_users_chats':
+            await self.handle_send_current_users_chats(text_data_json)
+        elif what_type == 'send_all_user':
+            await self.handle_send_all_user()
         else:
             print('IS SOMETHING ELSE')
-
 
 # ---------------------------- UFF FUNCTIONS ----------------------------
     async def send_chat_messages(self, event):
@@ -59,6 +62,12 @@ class test(AsyncWebsocketConsumer):
             'type': 'all_chat_messages',
             'chat_id': event['data']['chat_id'],
             'message_data': event['data']['message_data'],
+        }))
+
+    async def send_message_save_success(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'message_save_success',
+            'message': event['data']['message'],
         }))
 
     async def send_user(self, user_id, message):
@@ -80,13 +89,23 @@ class test(AsyncWebsocketConsumer):
             'online_stats': event['data']['online_stats']
         }))
 
-
     async def send_user_in_current_chat(self, event):
         await self.send(text_data=json.dumps({
             'type': 'user_in_current_chat',
             'user_in_chat': event['data']['user_in_chat']
         }))
 
+    async def send_current_users_chats(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'current_users_chats',
+            'users_chats': event['data']['users_chats']
+        }))
+
+    async def send_all_user(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'all_user',
+            'all_user': event['data']['all_user']
+        }))
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
 
@@ -132,6 +151,16 @@ class test(AsyncWebsocketConsumer):
         message = text_data_json["data"]["message"]
         # Use await to call the async method in the synchronous context
         await self.create_message(user_id, chat_id, message)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.message.save.success',
+                'data': {
+                    'message': 'ok',
+                },
+
+            }
+        )
 
     async def handle_send_chat_messages(self, text_data_json):
         chat_id = text_data_json["data"]["chat_id"]
@@ -148,7 +177,6 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
-
     async def handle_send_user_in_current_chat(self, chat_id):
         user_in_chat = await self.get_user_in_chat(chat_id)
         await self.channel_layer.group_send(
@@ -158,6 +186,34 @@ class test(AsyncWebsocketConsumer):
                 'data': {
                     'chat_id': chat_id,
                     'user_in_chat': user_in_chat,
+                },
+            }
+        )
+
+    async def handle_send_current_users_chats(self, text_data_json):
+        chat_id = text_data_json["data"]["chat_id"]
+        user_id = text_data_json["data"]["user_id"]
+        users_chats = await self.get_users_chats(user_id)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.current.users.chats',
+                'data': {
+                    'chat_id': chat_id,
+                    'users_chats': users_chats,
+                },
+            }
+        )
+
+    async def handle_send_all_user(self):
+        all_user = await self.get_all_user()
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.all.user',
+                'data': {
+                    # 'chat_id': chat_id,
+                    'all_user': all_user,
                 },
             }
         )
@@ -203,9 +259,6 @@ class test(AsyncWebsocketConsumer):
     def get_user_in_chat(request, chat_id):
         chat_instance = Chat.objects.get(id=chat_id)
         all_user_in_current_chat = MyUser.objects.filter(chats=chat_instance)
-
-        print('USER IN CHAT: ', all_user_in_current_chat)
-
         user_in_chat = [
             {
                 'user_name': user.name,
@@ -214,3 +267,23 @@ class test(AsyncWebsocketConsumer):
             for user in all_user_in_current_chat
         ]
         return user_in_chat
+
+    @database_sync_to_async
+    def get_users_chats(self, user_id):
+        user_instance = MyUser.objects.get(id=user_id)
+        all_chats = user_instance.chats.all()
+        user_chats = [
+            {
+                'chat_id': chat.id,
+                'chat_name': chat.chatName
+            }
+            for chat in all_chats
+        ]
+        return user_chats
+
+    @database_sync_to_async
+    def get_all_user(self):
+        all_users_info = MyUser.objects.values('id', 'name')
+        all_user = list(all_users_info)
+        return all_user
+

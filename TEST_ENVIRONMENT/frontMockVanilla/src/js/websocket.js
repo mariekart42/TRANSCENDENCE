@@ -25,6 +25,7 @@ websocket_obj = {
     {
       chat_id: null,
       chat_name: null,
+      isPrivate: false,
     }
   ],
   messages: [

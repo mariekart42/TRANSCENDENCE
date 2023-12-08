@@ -16,10 +16,11 @@
         <div class="modal-body">
           <label for="new_chat_name" class="form-label">Chat Name</label>
           <input type="text" class="form-control" id="new_chat_name">
+          <div id="error_message" style="color: red;"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="createChat()">Create Chat</button>
+          <button type="button" class="btn btn-primary" id="create_chat_button">Create Chat</button>
         </div>
       </div>
     </div>
@@ -54,17 +55,17 @@
             <!-- Body -->
             <div class="modal-body">
                 <!-- Content of the outer modal -->
-
                 <div id="userInChatList"></div><br>
                 <div class="input-group mb-3">
                     <input type="text" class="form-control" placeholder="Invite User..." aria-label="Recipient's username" id="invite_user" aria-describedby="invite_user_button">
                     <button class="btn btn-outline-success" type="button" id="invite_user_button">Invite</button>
                 </div>
+                <div id="error_message_2" style="color: red;"></div><br>
                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Leave Chat</button><br><br>
             </div>
             <!-- Footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
