@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    canvas {
+      border: 1px solid #000;
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+  <title>Two Player Ping Pong Game</title>
+</head>
+<body>
+  <canvas id="pingPongCanvas" width="800" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById("pingPongCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Initial positions and sizes
+    let paddleWidth = 10;
+    let paddleHeight = 60;
+    let paddleSpeed = 5;
+
+    let leftPaddle = { x: 10, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
+    let rightPaddle = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
+
+    let ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 5, dy: 5, radius: 5 };
+
+    // Input handling
+    document.addEventListener("keydown", keyDownHandler);
+    document.addEventListener("keyup", keyUpHandler);
+
+    function keyDownHandler(e) {
+      if (e.key == "ArrowUp") {
+        rightPaddle.dy = -paddleSpeed;
+      } else if (e.key == "ArrowDown") {
+        rightPaddle.dy = paddleSpeed;
+      }
+
+      if (e.key == "w") {
+        leftPaddle.dy = -paddleSpeed;
+      } else if (e.key == "s") {
+        leftPaddle.dy = paddleSpeed;
+      }
+    }
+
+    function keyUpHandler(e) {
+      if (e.key == "ArrowUp" || e.key == "ArrowDown") {
+        rightPaddle.dy = 0;
+      }
+
+      if (e.key == "w" || e.key == "s") {
+        leftPaddle.dy = 0;
+      }
+    }
+
+    // Update game objects
+    function update() {
+      // Update paddles
+      leftPaddle.y += leftPaddle.dy;
+      rightPaddle.y += rightPaddle.dy;
+
+      // Keep paddles within the canvas
+      leftPaddle.y = Math.max(0, Math.min(canvas.height - paddleHeight, leftPaddle.y));
+      rightPaddle.y = Math.max(0, Math.min(canvas.height - paddleHeight, rightPaddle.y));
+
+      // Update ball position
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      // Bounce off the top and bottom edges
+      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
+        ball.dy = -ball.dy;
+      }
+
+      // Bounce off left paddle
+      if (
+        ball.x - ball.radius < leftPaddle.x + paddleWidth &&
+        ball.y > leftPaddle.y &&
+        ball.y < leftPaddle.y + paddleHeight
+      ) {
+        ball.dx = -ball.dx;
+      }
+
+      // Bounce off right paddle
+      if (
+        ball.x + ball.radius > rightPaddle.x &&
+        ball.y > rightPaddle.y &&
+        ball.y < rightPaddle.y + paddleHeight
+      ) {
+        ball.dx = -ball.dx;
+      }
+
+      // Reset ball if it goes out of bounds
+      if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+      }
+    }
+
+    // Draw game objects
+    function draw() {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw paddles
+      ctx.fillStyle = "#000";
+      ctx.fillRect(leftPaddle.x, leftPaddle.y, paddleWidth, paddleHeight);
+      ctx.fillRect(rightPaddle.x, rightPaddle.y, paddleWidth, paddleHeight);
+
+      // Draw ball
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Game loop
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Start the game loop
+    gameLoop();
+  </script>
+</body>
+</html>
