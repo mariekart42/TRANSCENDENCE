@@ -158,50 +158,6 @@ async function sendDataToBackend(request_type) {
 
 
 
-// ASYNC because we want to get a Promise that we got the response
-// of the ws request before continuing with further functions where
-// we're dependent on the data
-async function sendMessageToBackend() {
-  try
-  {
-    const request_type = 'send_chat_message'
-    await sendDataToBackend(request_type);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-async function getMessagesFromBackend() {
-  try
-  {
-    const request_type = 'get_chat_messages'
-    await sendDataToBackend(request_type);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-async function getOnlineStatsFromBackend() {
-  try
-  {
-    const request_type = 'get_online_stats'
-    await sendDataToBackend(request_type);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-async function getAllUserInChatFromBackend() {
-  try
-  {
-    const request_type = 'get_user_in_current_chat'
-    await sendDataToBackend(request_type);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
-
-
 async function renderChat() {
 
   const chatTitle = document.getElementById('chatTitle')

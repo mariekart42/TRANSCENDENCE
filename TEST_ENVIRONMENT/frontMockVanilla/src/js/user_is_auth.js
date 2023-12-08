@@ -6,9 +6,9 @@ function addEventListenersIsAuth() {
     websocket_obj.sender = websocket_obj.username
 
     document.getElementById('messageInput').value = ''
-    await sendMessageToBackend()
-    await getOnlineStatsFromBackend()
-    await getMessagesFromBackend()
+    await sendDataToBackend('send_chat_message')
+    await sendDataToBackend('get_online_stats')
+    await sendDataToBackend('get_chat_messages')
   });
 
   document.getElementById('invite_user_button').addEventListener('click', async function () {
@@ -182,9 +182,9 @@ async function handleButtonClickChats(chatId, chatName) {
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
-  await getOnlineStatsFromBackend()
-  await getAllUserInChatFromBackend()
-  await getMessagesFromBackend()
+  await sendDataToBackend('get_online_stats')
+  await sendDataToBackend('get_user_in_current_chat')
+  await sendDataToBackend('get_chat_messages')
 }
 
 async function renderUsersChatList() {
