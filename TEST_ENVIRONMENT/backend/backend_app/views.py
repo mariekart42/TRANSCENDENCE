@@ -349,28 +349,6 @@ def inviteUserToGame(request, username, game_id, guest_user_name):
         return JsonResponse({'error': str(e)}, status=500)
 
 
-def renderInvites(request, username):
-    try:
-        print(f"Entering renderInvites function with username: {username}")
-        user = MyUser.objects.get(name=username)
-        print(f"22222")
-        print(f" {user}")
-
-        game_sessions = Game.objects.all()
-
-        serialized_data = serialize('json', game_sessions)
-        # You can also use a custom serializer if needed
-
-        print(f"333333")
-        print(f" {game_sessions}")
-
-        return JsonResponse({"game_sessions": serialized_data}, safe=False)
-    except MyUser.DoesNotExist:
-        return JsonResponse({"error": f"User with username '{username}' not found"}, status=404)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
-
-
 # def renderInvites(request, username):
 #     try:
 #         print(f"Entering renderInvites function with username: {username}")
@@ -378,18 +356,40 @@ def renderInvites(request, username):
 #         print(f"22222")
 #         print(f" {user}")
 
-#         # game_sessions = user.new_matches.all()
-#         # game_sessions = user.new_matches.get(id=2)
 #         game_sessions = Game.objects.all()
+
+#         serialized_data = serialize('json', game_sessions)
+#         # You can also use a custom serializer if needed
 
 #         print(f"333333")
 #         print(f" {game_sessions}")
 
-#         return render(request, 'openGameSessions.html', {'game_sessions': game_sessions})    
-#     # except ValueError:
-#     #     return JsonResponse({"error": "Invalid username"}, status=400)
+#         return JsonResponse({"game_sessions": serialized_data}, safe=False)
+#     except MyUser.DoesNotExist:
+#         return JsonResponse({"error": f"User with username '{username}' not found"}, status=404)
 #     except Exception as e:
 #         return JsonResponse({"error": str(e)}, status=500)
+
+
+def renderInvites(request, username):
+    try:
+        print(f"Entering renderInvites function with username: {username}")
+        user = MyUser.objects.get(name=username)
+        print(f"22222")
+        print(f" {user}")
+
+        # game_sessions = user.new_matches.all()
+        # game_sessions = user.new_matches.get(id=2)
+        game_sessions = Game.objects.all()
+
+        print(f"333333")
+        print(f" {game_sessions}")
+
+        return render(request, 'openGameSessions.html', {'game_sessions': game_sessions})    
+    # except ValueError:
+    #     return JsonResponse({"error": "Invalid username"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 
