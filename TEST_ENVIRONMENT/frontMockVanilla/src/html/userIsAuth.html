@@ -1,8 +1,29 @@
 <h1 id="displayUserName"></h1><br>
 
 <div id="showUserProfile">
+
+
+
   <p id="tempTextInfo" class="hidden">
   <div id="userFriendsList"></div><br>
+<!--MODAL TEMPLATE FOR EACH USER-->
+  <div class="modal" id="userProfileModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <p class="modal-title" id="userModalLabel"></p>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="userProfileModalBody">
+          <!-- User data goes here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="userChatsList"></div><br>
   <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#createChatModal">Create New Chat</button>
   <!-- Create New Chat Modal -->

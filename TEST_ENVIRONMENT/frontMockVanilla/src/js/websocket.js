@@ -73,13 +73,10 @@ async function establishWebsocketConnection() {
     }
     else if (data.type === 'online_stats_on_disconnect') {
       websocket_obj.onlineStats = data.online_stats
-      // await renderProfile()//?
       await renderChat()
     }
     else if (data.type === 'user_in_current_chat') {
-      console.log('DATA: ', data.user_in_chat)
-      websocket_obj.userInCurrentChat = data.user_in_chat // NEW
-      console.log('WEBSOCKET DATa before: ', websocket_obj.userInCurrentChat)
+      websocket_obj.userInCurrentChat = data.user_in_chat
     }
   };
 
@@ -142,8 +139,6 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
-
-
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);

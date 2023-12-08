@@ -155,8 +155,6 @@ async function renderProfile() {
       console.error('Error during getUserChats:', error);
     });
 
-
-
   url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
   await fetch(url)
     .then(response => {
@@ -220,10 +218,18 @@ async function renderUsersChatList() {
 }
 
 // DELETE LATER
-async function handleButtonClickUser(user_id, user_name) {
-  const chatDiv = document.getElementById('tempTextInfo');
-  chatDiv.classList.remove('hidden');
-  chatDiv.textContent = 'Yeah something should happen now lol'
+async function handleButtonClickUser(userId, userName) {
+  const userModal = new bootstrap.Modal(document.getElementById('userProfileModal'));
+
+  const label = document.getElementById('userModalLabel');
+  label.innerHTML = `<h5>${userName}</h5>`;
+
+  // Populate the modal body with user data
+  const modalBody = document.getElementById('userProfileModalBody');
+  modalBody.innerHTML = `<p>Name: ${userName}</p><p>ID: ${userId}</p>`;
+
+  // Show the modal
+  userModal.show();
 }
 
 
@@ -251,7 +257,8 @@ async function renderAllUsersList() {
     button.classList.add('btn-outline-success');
 
     button.addEventListener('click', async function () {
-      await handleButtonClickUser(array_of_users[i].user_id, array_of_users[i].user_name);
+      console.log('LOL: ', array_of_users[i])
+      await handleButtonClickUser(array_of_users[i].id, array_of_users[i].name);
     });
 
     userFriendsList.appendChild(paragraph);
