@@ -8,6 +8,8 @@ class MyUser(models.Model):
     age = models.IntegerField("age")
     avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
     chats = models.ManyToManyField('Chat', blank=True)
+    new_matches = models.ManyToManyField('Game', blank=True)
+
     # can hold multiple Chat instances
 
 
@@ -27,5 +29,9 @@ class Message(models.Model):
         return self.timestamp.strftime('%H:%M %d.%m.%Y')
 
 
-# class Test(models.Model):
-#     test = models.CharField("test", max_length=69)
+class Test(models.Model):
+    test = models.CharField("test", max_length=69)
+
+class Game(models.Model):
+    hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
+    guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)

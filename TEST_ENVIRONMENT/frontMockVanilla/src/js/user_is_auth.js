@@ -79,14 +79,161 @@ async function inviteUser(invited_user_name){
       setErrorWithTimout('error_message_2', error, 5000)
       console.error('Error during getUserChats:', error);
     });
+  // document.getElementById('createGameButton').addEventListener('click', createGame);
 }
 
+
+
+// async function renderInvites() {
+
+//   console.log('In renderInvites:');
+
+
+//   const username = "k";
+
+//   // console.log(element); // Check the console for the result
+
+
+
+//   var theButton = document.getElementById('createGameButton');
+//   theButton.style.display = 'none';
+//   try {
+
+// // _+_+_+_+_+_+_
+
+//     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+//     const htmlContent = await response.text();
+
+//     // Assuming you have a container element with the id 'htmlContainer'
+//     const container = document.getElementById('game-session-container');
+//     container.innerHTML = htmlContent;
+// // _+_+_+_+_+_+_
+
+// // const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+// // console.log(response);
+
+// // // try {
+// //     const data = await response.json();
+
+// //     // Check if data.game_sessions is an array
+// //     if (Array.isArray(data.game_sessions)) {
+// //         console.log(data.game_sessions);
+// //         const gameSessions = data.game_sessions;
+
+// //         const container = document.getElementById('game-session-container');
+
+// //         // Loop through each game session and create a button
+// //         gameSessions.forEach(session => {
+// //             const button = document.createElement('button');
+// //             button.textContent = `Join ${session.id}`;
+
+// //             // Add a click event listener to handle the button click
+// //             button.addEventListener('click', () => {
+// //                 joinGame(session.id); // Replace with your logic
+// //             });
+
+// //             // Append the button to the container
+// //             container.appendChild(button);
+// //         });
+// //     } else {
+// //         console.error("Invalid data structure: game_sessions is not an array");
+// //     }
+// } catch (error) {
+//     console.error('There was a problem with the fetch operation:', error);
+// }
+
+
+
+
+//   }
+
+//   async function  displayError(){
+//     console.log('hi');
+
+//   }
+
+
+// async function sendGameInvitation() {
+
+
+//   console.log('In invite user to game');
+
+//   var userNameInput = document.getElementById("guestUser");
+
+//   // Access the value property to get the entered data
+//   var guestUser = userNameInput.value;
+
+//   console.log("User Name: " + guestUser);
+
+
+//   var theButton = document.getElementById('createGameButton');
+//   theButton.style.display = 'none';
+//   var username = "k"
+//   var game_id = active_game;
+//   var guest_user_name = guestUser;
+//   try {
+//     const response = await fetch(`http://127.0.0.1:6969/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
+//     const data = await response.json();
+
+//     if (response.ok) {
+//     displayError(null);
+//     // Perform actions on successful login, e.g., set isLoggedIn and userData
+//       active_game = null;
+
+//         console.log(data);
+//     } else {
+//     displayError(data.error);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching user data:', error);
+//     displayError('Error fetching user data');
+//   }
+// }
+
+// async function createGame() {
+
+//   console.log('In createGame:');
+
+
+//   // const username = "k";
+
+//     console.log("IN CREATEGAME"); // Check the console for the result
+
+
+//     var element = document.getElementById('createGameButton');
+//     console.log(element); // Check the console for the result
+
+
+
+//   var theButton = document.getElementById('createGameButton');
+//   theButton.style.display = 'none';
+//   try {
+//     const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
+//     const data = await response.json();
+//     console.log(data.id); // Check the console for the result
+//     active_game = data.id;
+
+//     if (response.ok) {
+//     displayError(null);
+//     active_game = data.id;
+//     // console.log(data.id); // Check the console for the result
+
+//     // Perform actions on successful login, e.g., set isLoggedIn and userData
+//         console.log(data);
+//     } else {
+//     displayError(data.error);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching user data:', error);
+//     displayError('Error fetching user data');
+//   }
+
+
+// }
 
 async function leaveChat() {
   const chatDiv = document.getElementById('showChat');
   chatDiv.classList.add('hidden');
-  const profileDiv = document.getElementById('showUserProfile');
-  profileDiv.classList.remove('hidden');
   console.log('USER_ID | CHAT_ID: ', websocket_obj.user_id, websocket_obj.chat_id)
   const url = `http://127.0.0.1:6969/user/leaveChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/`
   fetch(url)
@@ -106,6 +253,7 @@ async function leaveChat() {
 
 
 async function createChat() {
+
   const chat_name = document.getElementById('new_chat_name').value
   if (!chat_name.trim()) {
     setErrorWithTimout('error_message', 'Chat name cannot be empty',  5000)
