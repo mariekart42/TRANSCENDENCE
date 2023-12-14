@@ -15,15 +15,7 @@ function addEventListenersIsAuth() {
 
   document.getElementById('showChatButton').addEventListener('click', function () {
     const chat = document.getElementById('chat')
-    const button_label = document.getElementById('showChatButton')
-
-    if (chat.classList.contains('hidden')) {
-      chat.classList.remove('hidden')
-      button_label.textContent = 'go back'
-    } else {
-      chat.classList.add('hidden')
-      button_label.textContent = 'go to chat'
-    }
+    chat.classList.remove('hidden')
   })
 }
 
