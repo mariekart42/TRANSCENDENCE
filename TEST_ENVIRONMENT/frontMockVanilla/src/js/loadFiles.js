@@ -24,4 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   loadContentIsAuth('html/userIsAuth.html', 'userIsAuth');
 
+
+  // function loadContentChat(file, targetId) {
+  // fetch(file)
+  //   .then(response => response.text())
+  //   .then(html => {
+  //     document.getElementById(targetId).innerHTML = html;
+  //     chatDom();
+  //   })
+  //   .catch(error => console.error('Error loading content:', error));
+  // }
+  // loadContentChat('html/chat.html', 'userIsAuth');
 });
