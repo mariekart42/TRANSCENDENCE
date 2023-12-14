@@ -125,6 +125,7 @@ async function createChat() {
 
 async function renderProfile() {
 
+  console.log('rendering profile')
   let sender_title = document.getElementById('displayUserName');
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 
