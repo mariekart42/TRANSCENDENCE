@@ -53,6 +53,8 @@ class test(AsyncWebsocketConsumer):
             await self.handle_send_current_users_chats(text_data_json)
         elif what_type == 'send_all_user':
             await self.handle_send_all_user()
+        elif what_type == 'send_game_scene':
+            await self.handle_send_game_scene()
         else:
             print('IS SOMETHING ELSE')
 
@@ -102,6 +104,12 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_all_user(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'all_user',
+            'all_user': event['data']['all_user']
+        }))
+
+    async def send_game_scene(self, event):
         await self.send(text_data=json.dumps({
             'type': 'all_user',
             'all_user': event['data']['all_user']
@@ -211,6 +219,19 @@ class test(AsyncWebsocketConsumer):
             self.my_group_id,
             {
                 'type': 'send.all.user',
+                'data': {
+                    # 'chat_id': chat_id,
+                    'all_user': all_user,
+                },
+            }
+        )
+
+    async def handle_send_game_scene(self):
+        all_user = await self.get_all_user()
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.game.scene',
                 'data': {
                     # 'chat_id': chat_id,
                     'all_user': all_user,

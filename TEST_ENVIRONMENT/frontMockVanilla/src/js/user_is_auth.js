@@ -32,6 +32,8 @@ function addEventListenersIsAuth() {
   document.getElementById('create_chat_button').addEventListener('click', async function() {
     await createChat()
   })
+    document.getElementById('createGameButton').addEventListener('click', createGame);
+
 }
 
 
@@ -79,7 +81,7 @@ async function inviteUser(invited_user_name){
       setErrorWithTimout('error_message_2', error, 5000)
       console.error('Error during getUserChats:', error);
     });
-  document.getElementById('createGameButton').addEventListener('click', createGame);
+  // document.getElementById('createGameButton').addEventListener('click', createGame);
 }
 
 

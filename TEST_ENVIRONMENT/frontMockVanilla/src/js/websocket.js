@@ -44,6 +44,13 @@ websocket_obj = {
     }
   ],
 
+  game: [
+    {
+      game_id: null,
+      key_code: null
+    }
+  ],
+
   message: null,
   sender: null,
   websocket: null,
@@ -77,6 +84,10 @@ async function establishWebsocketConnection() {
     }
     else if (data.type === 'user_in_current_chat') {
       websocket_obj.userInCurrentChat = data.user_in_chat
+    }
+    else if (data.type === 'init_game') {
+      await renderGame()
+
     }
   };
 
@@ -136,6 +147,18 @@ async function sendDataToBackend(request_type) {
           'type': 'send_user_in_current_chat',
           'data': {
             'chat_id': websocket_obj.chat_id,
+          },
+        }));
+      }
+
+      else if (request_type === 'game_new_move') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_game_scene',
+          'data': {
+            'game_id': websocket_obj.game.game_id,
+            'key_code': websocket_obj.game.key_code,
+
           },
         }));
       }
