@@ -1,25 +1,55 @@
 
-
-
- <ul class="navbar navbar-expand-lg cc">
-  <button id="home" class="btn btn-dark btn-lg mx-2 xx">HOME</button>
-  <button id="showChatButton" class="btn btn-dark btn-lg mx-2 xx">CHAT</button>
+<ul class="nav nav-tabs btn-dark" style="background-color: #696969">
+  <li class="nav-item">
+    <button id="home" type="button" class="nav-link active">HOME</button>
+  </li>
+  <li class="nav-item">
+    <button id="showChatButton" type="button" class="nav-link active">CHAT</button>
+  </li>
+  <li class="nav-item">
+    <button id="nothingButton" type="button" class="nav-link active">nothing</button>
+  </li>
+  <li class="nav-item" style="margin-left: auto">
+    <button id="profileButton" type="button" class="nav-link active">PROFILE</button>
+    <!--MODAL TEMPLATE FOR EACH USER-->
+    <div class="modal" id="userProfileModal2" tabindex="-1" aria-labelledby="userModalLabel2" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content" style="color: #1b1b1b">
+          <div class="modal-header">
+            <p class="modal-title" id="userModalLabel2"></p>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="userProfileModalBody2">
+            <!-- User data goes here -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
 </ul>
 
-  <h1 id="displayUserName"></h1><br>
 
 
 
+
+<br><h1 id="displayUserName"></h1><br>
 
 <div id="chat" class="hidden"></div>
 
+<div id="nothingSite" class="hidden">
+  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Chats</button>
 
-<style>
-  /* Custom style to remove list item marker */
-  .cc {
-      background-color: #0c0c0c;
-  }
-  .xx {
-      background-color: #3f3f3f;
-  }
-</style>
+  <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasScrollingLabel">Chats</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body" style="background-color: #afc8f0">
+      <p>here chats</p>
+    </div>
+  </div>
+</div>
+
