@@ -40,7 +40,7 @@
 <div id="chat" class="hidden"></div>
 
 <div id="nothingSite" class="hidden">
-  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Chats</button>
+  <button id="users_chats_button" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">Chats</button>
 
   <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
     <div class="offcanvas-header">
@@ -48,8 +48,14 @@
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body" style="background-color: #afc8f0">
-      <p>here chats</p>
+<!--      <div id="listOfChats"></div>-->
     </div>
   </div>
+      <!-- MESSAGES
+      <div id="messageContainer"></div><br>
+      <div class="input-group mb-6">
+        <input type="text" class="form-control" placeholder="Type your message..." id="messageInput"/>
+        <button id="sendMessageButton" class="btn btn-primary">Send</button>
+      </div>-->
 </div>
 
