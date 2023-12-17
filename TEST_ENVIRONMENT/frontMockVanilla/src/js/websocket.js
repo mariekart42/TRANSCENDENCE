@@ -47,7 +47,8 @@ websocket_obj = {
   game: [
     {
       game_id: null,
-      key_code: null
+      key_code: null,
+      left_pedal: null
     }
   ],
 
@@ -152,6 +153,8 @@ async function sendDataToBackend(request_type) {
       }
 
       else if (request_type === 'game_new_move') {
+        console.log("in game_new_move");
+
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'send_game_scene',

@@ -85,6 +85,34 @@ async function inviteUser(invited_user_name){
 }
 
 
+async function joinGame(gameId) {
+  document.getElementById("showGameField").style.display = "block";
+
+  const canvas = document.getElementById("pongCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // Draw paddles
+  ctx.fillStyle = "black";
+  ctx.fillRect(10, canvas.height / 2 - 50, 10, 100);
+
+  // Draw the ball
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.closePath();
+
+  document.addEventListener("keydown", function(event) {
+      // Log the key code to the console
+      console.log("Key pressed: " + event.keyCode);
+      websocket_obj.game.key_code = event.keyCode;
+      sendDataToBackend('game_new_move');
+
+
+
+  });
+
+}
+
 
 async function renderInvites() {
 
