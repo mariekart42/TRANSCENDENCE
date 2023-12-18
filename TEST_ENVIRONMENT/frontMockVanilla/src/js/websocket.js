@@ -66,6 +66,7 @@ async function establishWebsocketConnection() {
         await renderProfile()
         websocket_obj.messages = data
         await renderChat()
+        // await renderNewChat()
       }
     }
     else if (data.type === 'online_stats') {
@@ -74,6 +75,7 @@ async function establishWebsocketConnection() {
     else if (data.type === 'online_stats_on_disconnect') {
       websocket_obj.onlineStats = data.online_stats
       await renderChat()
+      // await renderNewChat()
     }
     else if (data.type === 'user_in_current_chat') {
       websocket_obj.userInCurrentChat = data.user_in_chat
@@ -190,7 +192,7 @@ async function renderChat() {
       contentDiv.classList.add('other-message-text');
       const currentUserId = myArray[i].sender_id
       function hasMatchingUserId(user) {
-        // console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
+        console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
         return user.user_id === currentUserId;
       }
 
@@ -216,6 +218,8 @@ async function renderChat() {
       mainContainer.appendChild(document.createElement('br'));
     }
   }
+  // THIS scrolls to the bottom of messageDiv by default (user sees last messages first)
+  mainContainer.scrollTo(0, mainContainer.scrollHeight);
 }
 
 
@@ -241,6 +245,6 @@ function renderUserInChatList() {
       mainContainer.appendChild(textDiv)
   }
 
-
+  // mainContainer.scrollTop = mainContainer.scrollHeight;
 }
 

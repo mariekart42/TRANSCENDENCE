@@ -31,6 +31,25 @@ function chatDom() {
   document.getElementById('create_chat_button').addEventListener('click', async function() {
     await createChat()
   })
+
+  // document.getElementById('users_chats_button').addEventListener('click', async function() {
+  //
+  //   let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
+  //   await fetch(url)
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error('Could not get Users Chats Data');
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       websocket_obj.chat_data = data.chat_data
+  //       renderUsersChatList()
+  //     })
+  //     .catch(error => {
+  //       console.error('Error during getUserChats:', error);
+  //     });
+  // })
 }
 
 
@@ -129,44 +148,45 @@ async function renderProfile() {
   let sender_title = document.getElementById('displayUserName');
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 
-  let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
-  await fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Could not get Users Chats Data');
-      }
-      return response.json();
-    })
-    .then(data => {
-      websocket_obj.chat_data = data.chat_data
-      renderUsersChatList()
-    })
-    .catch(error => {
-      console.error('Error during getUserChats:', error);
-    });
-
-  url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
-  await fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Could not get all Users');
-      }
-      return response.json();
-    })
-    .then(data => {
-      websocket_obj.all_user = data.all_user
-      renderAllUsersList()
-    })
-    .catch(error => {
-      console.error('Error during getAllUser:', error);
-    });
+  // let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
+  // await fetch(url)
+  //   .then(response => {
+  //     if (!response.ok) {
+  //       throw new Error('Could not get Users Chats Data');
+  //     }
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     websocket_obj.chat_data = data.chat_data
+  //     // renderUsersChatList()
+  //     renderNewChat()
+  //   })
+  //   .catch(error => {
+  //     console.error('Error during getUserChats:', error);
+  //   });
+  //
+  // url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
+  // await fetch(url)
+  //   .then(response => {
+  //     if (!response.ok) {
+  //       throw new Error('Could not get all Users');
+  //     }
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     websocket_obj.all_user = data.all_user
+  //     renderAllUsersList()
+  //   })
+  //   .catch(error => {
+  //     console.error('Error during getAllUser:', error);
+  //   });
 }
 
 async function handleButtonClickChats(chatId, chatName) {
-  const chatDiv = document.getElementById('showChat');
+  const chatDiv = document.getElementById('messageSide');
   chatDiv.classList.remove('hidden');
-  const showProfile = document.getElementById('showUserProfile');
-  showProfile.classList.add('hidden');
+  // const showProfile = document.getElementById('showUserProfile');
+  // showProfile.classList.add('hidden');
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
@@ -177,17 +197,17 @@ async function handleButtonClickChats(chatId, chatName) {
 
 async function renderUsersChatList() {
   let array_of_chats = websocket_obj.chat_data
-  let userChatsList = document.getElementById('userChatsList');
-  userChatsList.innerHTML = '';
+  let listOfChats = document.getElementById('listOfChats');
+  listOfChats.innerHTML = '';
 
   let title = document.createElement('h2');
   title.textContent = 'Your Chats:'
-  userChatsList.appendChild(title);
+  listOfChats.appendChild(title);
 
   if (array_of_chats.length === 0) {
     let paragraph = document.createElement('p');
     paragraph.textContent = 'Damn, pretty empty here...'
-    userChatsList.appendChild(paragraph);
+    listOfChats.appendChild(paragraph);
   }
 
   for (let i = 0; i < array_of_chats.length; i++)
@@ -202,8 +222,8 @@ async function renderUsersChatList() {
       await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
     });
 
-    userChatsList.appendChild(paragraph);
-    userChatsList.appendChild(button);
+    listOfChats.appendChild(paragraph);
+    listOfChats.appendChild(button);
   }
 }
 
@@ -254,4 +274,70 @@ async function renderAllUsersList() {
     userFriendsList.appendChild(paragraph);
     userFriendsList.appendChild(button);
   }
+}
+
+
+async function renderNewChat() {
+  // render user list on the left side
+  const chats_container = document.getElementById('chatsLeftSide')
+  chats_container.innerHTML = ''
+
+  let myArray = websocket_obj.chat_data
+  console.log('MY ARRAY: ', myArray)
+  myArray.forEach(chat => {
+    const chat_element = document.createElement('div');
+    chat_element.classList.add('row', 'sideBar-body');
+
+    console.log('CHAT: ', chat)
+
+    const avatarCol = document.createElement('div');
+    avatarCol.classList.add('col-sm-3', 'col-xs-3', 'sideBar-avatar');
+
+    const avatarIcon = document.createElement('div');
+    avatarIcon.classList.add('avatar-icon');
+
+    const avatarImg = document.createElement('img');
+    avatarImg.src = "https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg";
+
+    avatarIcon.appendChild(avatarImg);
+    avatarCol.appendChild(avatarIcon);
+
+    const mainCol = document.createElement('div');
+    mainCol.classList.add('col-sm-9', 'col-xs-9', 'sideBar-main');
+
+    const rowDiv = document.createElement('div');
+    rowDiv.classList.add('row');
+
+    const nameCol = document.createElement('div');
+    nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
+
+    let button = document.createElement('button');
+    button.textContent = chat.chat_name;
+    button.classList.add('btn');
+    button.classList.add('btn-outline-success');
+
+    button.addEventListener('click', async function () {
+      await handleButtonClickChats(chat.chat_id, chat.chat_name);
+    });
+
+    nameCol.appendChild(button);
+
+    const timeCol = document.createElement('div');
+    timeCol.classList.add('col-sm-4', 'col-xs-4', 'pull-right', 'sideBar-time');
+
+    const timeSpan = document.createElement('span');
+    timeSpan.classList.add('time-meta', 'pull-right');
+    timeSpan.textContent = '69:69';
+
+    timeCol.appendChild(timeSpan);
+
+    rowDiv.appendChild(nameCol);
+    rowDiv.appendChild(timeCol);
+
+    mainCol.appendChild(rowDiv);
+
+    chat_element.appendChild(avatarCol);
+    chat_element.appendChild(mainCol);
+    chats_container.appendChild(chat_element);
+  });
 }
