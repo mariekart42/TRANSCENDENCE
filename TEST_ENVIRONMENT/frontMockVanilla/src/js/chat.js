@@ -216,7 +216,7 @@ async function renderUsersChatList() {
     let button = document.createElement('button');
     button.textContent = array_of_chats[i].chat_name;
     button.classList.add('btn');
-    button.classList.add('btn-outline-success');
+    button.classList.add('btn-outline-dark');
 
     button.addEventListener('click', async function () {
       await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
@@ -264,7 +264,7 @@ async function renderAllUsersList() {
     let button = document.createElement('button');
     button.textContent = array_of_users[i].name;
     button.classList.add('btn');
-    button.classList.add('btn-outline-success');
+    button.classList.add('btn-outline-dark');
 
     button.addEventListener('click', async function () {
       console.log('LOL: ', array_of_users[i])
@@ -314,7 +314,7 @@ async function renderNewChat() {
     let button = document.createElement('button');
     button.textContent = chat.chat_name;
     button.classList.add('btn');
-    button.classList.add('btn-outline-success');
+    button.classList.add('btn-outline-dark');
 
     button.addEventListener('click', async function () {
       await handleButtonClickChats(chat.chat_id, chat.chat_name);

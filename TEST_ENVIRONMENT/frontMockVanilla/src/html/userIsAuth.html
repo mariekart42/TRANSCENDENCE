@@ -45,7 +45,7 @@
 
         <div class="row left-heading">
           <div class="col-sm-3 col-xs-3 heading-avatar">
-            <button class="btn btn-outline-success profile-button"></button>
+            <button class="btn btn-outline-dark profile-button"></button>
           </div>
         </div>
 
@@ -62,20 +62,17 @@
             </div>
           </div>
           <div class="col-sm-8 col-xs-7 heading-name">
-            <a class="heading-name-meta">John Doe
-            </a>
+            <div class="heading-name-meta">John Doe
+            </div>
             <span class="heading-online">Online</span>
-          </div>
-          <div class="col-sm-1 col-xs-1  heading-dot pull-right">
-            <i class="fa fa-ellipsis-v fa-2x pull-right" aria-hidden="true"></i>
           </div>
         </div>
 
         <div id="messageSide" class="row hidden">
           <div id="messageContainer" class="scroll-messages"></div>
           <div class="input-group mb-6">
-            <input type="text" class="form-control" placeholder="Type your message..." id="messageInput"/>
-            <button id="sendMessageButton" class="btn btn-success">Send</button>
+            <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
+            <button id="sendMessageButton" class="btn btn-dark" style="right: 10px">Send</button>
           </div>
         </div>
       </div>
@@ -98,12 +95,18 @@
   /*.row {
     --bs-gutter-x: 0rem; !important;
   }*/
+  .lel {
+      left: 20px
+  }
+  .lel::placeholder {
+      color: #aaaaaa; !important;
+  }
 
   .heading {
     padding: 10px 0 10px 7px;
     margin: auto;
     width: 100%;
-    background-color: #1a8754;
+    background-color: #212121;
     z-index: 1000;
   }
 
@@ -112,7 +115,7 @@
     padding: 5px 0 5px 5px;
     margin: auto;
     width: 100%;
-    /*background-color: #1a8754;*/
+    background-color: #212121;
     z-index: 1000;
   }
 
@@ -174,7 +177,8 @@
       display: none;
     }
     .conversation {
-     width: 100% !important;
+      background: url("https://wallpapers.com/images/high/elegant-marble-iphone-background-yrxe6nr2078p1qex.webp");
+      width: 100% !important;
     }
     .sideBar-time {
        position: relative;
@@ -196,10 +200,9 @@
 
 
 
-
   .heading-name {
     padding: 0 !important;
-    cursor: pointer;
+    {#cursor: pointer;#}
   }
 
   .heading-name-meta {
@@ -210,7 +213,7 @@
     text-align: left;
     text-overflow: ellipsis;
     white-space: nowrap;
-    color: #000;
+    color: #ffffff;
     display: block;
   }
   .heading-online {
@@ -291,7 +294,7 @@
   }
 
 .sideBar-body:hover {
-  background-color: rgba(25, 135, 84, 0.16);
+  background-color: rgba(0, 0, 0, 0.16);
     border-radius: 10px
 }
 
@@ -421,8 +424,10 @@
     padding: 0 !important;
     margin: 0 !important;
     height: 100%;
+      background: url("https://www.androidauthority.com/wp-content/uploads/2023/07/Nothing-Phone-2-wallpaper-previews-5-540w-1200h.jpg.webp") no-repeat;
     /*width: 100%;*/
-    border-left: 1px solid rgba(0, 0, 0, .08);
+      background-size: cover;
+    /*border-left: 1px solid rgba(0, 0, 0, .08);*/
     /*overflow-y: auto;*/
   }
 
@@ -583,7 +588,7 @@
   }
 
   .scroll-contacts {
-    height: 840px;  /*!! for my laptop! somehow figure out dynamical prolly in js*/
+    height: 89vh;  /*!! for my laptop! somehow figure out dynamical prolly in js*/
     overflow-y: scroll;
     overflow-x: hidden;
     scroll-padding-bottom: 100%;
@@ -592,13 +597,17 @@
     pointer-events: auto;
   }
   .scroll-messages {
-    height: 790px;  /*!! for my laptop! somehow figure out dynamical prolly in js*/
+    height: 83vh;  /*!! for my laptop! somehow figure out dynamical prolly in js*/
     overflow-y: scroll;
     overflow-x: hidden;
     scroll-padding-bottom: 100%;
+      left: 12px;
+      position: relative;
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 25px;
+    padding-right: 25px;
+    background: url("https://wallpapers.com/images/high/elegant-marble-iphone-background-yrxe6nr2078p1qex.webp");
   }
 
 </style>
