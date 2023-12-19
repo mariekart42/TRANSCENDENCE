@@ -170,26 +170,28 @@ async function renderChat() {
   for (let i = 0; i < myArray.length; i++) {
     let messageDiv = document.createElement('div');
     let contentDiv = document.createElement('div');
-    let strongElement = document.createElement('strong');
+    let titleElement = document.createElement('div');
+    let timestampElement = document.createElement('div');
     let lineBreakElement = document.createElement('br');
-
     let textDiv = document.createElement('div');
+
     textDiv.classList.add('text-break');
     textDiv.textContent = myArray[i].text;
-
-    let timestampDiv = document.createElement('div');
-    timestampDiv.classList.add('timestamp');
-    timestampDiv.textContent = myArray[i].timestamp;
+    timestampElement.textContent = myArray[i].timestamp;
 
     if (websocket_obj.username === myArray[i].sender)
     {
-      strongElement.textContent = 'You';
+      titleElement.classList.add('sender-title')
+      titleElement.textContent = 'You';
       messageDiv.style.textAlign = 'right';
-      contentDiv.classList.add('own-message-text');
+      contentDiv.classList.add('sender-message-content');
+      timestampElement.classList.add('sender-timestamp');
     }
     else
     {
-      contentDiv.classList.add('other-message-text');
+      titleElement.classList.add('receiver-title')
+      contentDiv.classList.add('receiver-message-content');
+      timestampElement.classList.add('receiver-timestamp');
       const currentUserId = myArray[i].sender_id
       function hasMatchingUserId(user) {
         console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
@@ -198,15 +200,15 @@ async function renderChat() {
 
       const isCurrentUserOnline = websocket_obj.onlineStats.some(hasMatchingUserId);
       if (isCurrentUserOnline) {
-        strongElement.textContent = myArray[i].sender + ' 🟢';
+        titleElement.textContent = myArray[i].sender + ' 🟢';
       } else {
-        strongElement.textContent = myArray[i].sender + ' 🔴';
+        titleElement.textContent = myArray[i].sender + ' 🔴';
       }
     }
-    contentDiv.appendChild(strongElement);
-    contentDiv.appendChild(lineBreakElement);
+    contentDiv.appendChild(titleElement);
+    // contentDiv.appendChild(lineBreakElement);
     contentDiv.appendChild(textDiv);
-    contentDiv.appendChild(timestampDiv);
+    contentDiv.appendChild(timestampElement);
     messageDiv.appendChild(contentDiv);
     tmpDiv.push(messageDiv);
   }

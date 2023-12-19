@@ -72,7 +72,7 @@
           <div id="messageContainer" class="scroll-messages"></div>
           <div class="input-group mb-6">
             <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
-            <button id="sendMessageButton" class="btn btn-dark" style="right: 10px">Send</button>
+            <button id="sendMessageButton" class="btn btn-dark" style="margin-right: 28px;">Send</button>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
     --bs-gutter-x: 0rem; !important;
   }*/
   .lel {
-      left: 20px
+    margin-left: 20px;
   }
   .lel::placeholder {
       color: #aaaaaa; !important;
@@ -106,8 +106,13 @@
     padding: 10px 0 10px 7px;
     margin: auto;
     width: 100%;
-    background-color: #212121;
+    background-color: currentColor;
+    border-bottom-right-radius: 10px;
     z-index: 1000;
+  }
+
+  #chat-area {
+    {#background-color: currentColor;#}
   }
 
   .left-heading {
@@ -115,7 +120,8 @@
     padding: 5px 0 5px 5px;
     margin: auto;
     width: 100%;
-    background-color: #212121;
+    background-color: currentColor;
+    border-bottom-left-radius: 10px;
     z-index: 1000;
   }
 
@@ -176,8 +182,11 @@
     #chat-area {
       display: none;
     }
+      .heading{
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+      }
     .conversation {
-      background: url("https://wallpapers.com/images/high/elegant-marble-iphone-background-yrxe6nr2078p1qex.webp");
       width: 100% !important;
     }
     .sideBar-time {
@@ -196,6 +205,8 @@
     position: static;
     overflow: hidden;
     margin: auto;
+    background: url("https://www.androidauthority.com/wp-content/uploads/2023/07/Nothing-Phone-2-wallpaper-previews-5-540w-1200h.jpg.webp") no-repeat center;
+  background-size: cover;
   }
 
 
@@ -280,21 +291,22 @@
 
   }
 
-
+/*uncomment border-bottom and background-color to get old design*/
   .sideBar-body {
     position: relative;
 
     padding: 15px 5px !important; /*centers the avatar vertically*/
-    border-bottom: 1px solid #bdbdbd; /*line color between contacts*/
+    {#border-bottom: 1px solid #bdbdbd; /*line color between contacts*/#}
     height: 100px; /*height of contact box*/
     margin: 0 !important;
     cursor: pointer;
-    background-color: #ffffff;
+    {#background-color: #ffffff;#}
+      background: transparent;
 
   }
 
 .sideBar-body:hover {
-  background-color: rgba(0, 0, 0, 0.16);
+  background-color: rgba(255, 255, 255, 0.22);
     border-radius: 10px
 }
 
@@ -424,7 +436,6 @@
     padding: 0 !important;
     margin: 0 !important;
     height: 100%;
-      background: url("https://www.androidauthority.com/wp-content/uploads/2023/07/Nothing-Phone-2-wallpaper-previews-5-540w-1200h.jpg.webp") no-repeat;
     /*width: 100%;*/
       background-size: cover;
     /*border-left: 1px solid rgba(0, 0, 0, .08);*/
@@ -606,8 +617,20 @@
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 25px;
-    padding-right: 25px;
-    background: url("https://wallpapers.com/images/high/elegant-marble-iphone-background-yrxe6nr2078p1qex.webp");
+    padding-right: 50px;
   }
+
+
+
+  /* width */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.43);
+}
 
 </style>
