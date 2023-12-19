@@ -42,6 +42,7 @@ class test(AsyncWebsocketConsumer):
         # self.my_group_id = 'group_%s' % chat_id
         self.my_group_id = 'group_%s' % game_id
         self.key_code = text_data_json["data"]["key_code"]
+        self.prev_pos = text_data_json["data"]["prev_pos"]
 
         await self.channel_layer.group_add(
             self.my_group_id,
@@ -116,9 +117,17 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_game_scene(self, event):
+        new_pedal_pos = 0
+        if self.key_code == 38:
+            new_pedal_pos = self.prev_pos - 10
+        elif self.key_code == 40:
+            new_pedal_pos = self.prev_pos + 10
         await self.send(text_data=json.dumps({
-            'type': 'all_user',
-            'all_user': event['data']['all_user']
+            'type': 'render_game_scene',
+            'all_user': event['data']['all_user'],
+            'new_pedal_pos': new_pedal_pos,
+
+
         }))
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
@@ -222,6 +231,7 @@ class test(AsyncWebsocketConsumer):
     async def handle_send_all_user(self):
         all_user = await self.get_all_user()
 
+        print("in handle_send_all_user\n")
 
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -236,19 +246,20 @@ class test(AsyncWebsocketConsumer):
 
     async def handle_send_game_scene(self):
         all_user = await self.get_all_user()
+
+        new_pedal_pos = 0
         if self.key_code == 38:
-            new_pedal_pos = -10
+            new_pedal_pos = self.prev_pos - 10
         elif self.key_code == 40:
-            new_pedal_pos = 10
+            new_pedal_pos = self.prev_pos + 10
+
         await self.channel_layer.group_send(
             self.my_group_id,
             {
                 'type': 'send.game.scene',
                 'data': {
                     # 'chat_id': chat_id,
-                    'all_user': all_user,
-                                        
-                                        
+                    'all_user': all_user,            
                     'new_pedal_pos': new_pedal_pos,
 
                 },

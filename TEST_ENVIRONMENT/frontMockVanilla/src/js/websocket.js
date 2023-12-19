@@ -48,7 +48,8 @@ websocket_obj = {
     {
       game_id: null,
       key_code: null,
-      left_pedal: null
+      left_pedal: null,
+
     }
   ],
 
@@ -86,7 +87,18 @@ async function establishWebsocketConnection() {
     else if (data.type === 'user_in_current_chat') {
       websocket_obj.userInCurrentChat = data.user_in_chat
     }
-    else if (data.type === 'init_game') {
+    else if (data.type === 'render_game_scene') {
+      console.log("in render_game_scene");
+      console.log(data.new_pedal_pos);
+      console.log(data);
+
+
+
+      // websocket_obj.game.left_pedal = websocket_obj.game.left_pedal + data.new_pedal_pos
+      // websocket_obj.game.left_pedal = websocket_obj.game.left_pedal + 10
+      websocket_obj.game.left_pedal = data.new_pedal_pos
+
+
       await renderGame()
 
     }
@@ -154,6 +166,10 @@ async function sendDataToBackend(request_type) {
 
       else if (request_type === 'game_new_move') {
         console.log("in game_new_move");
+        console.log(websocket_obj.game.game_id);
+        prev_pos =  websocket_obj.game.left_pedal;
+        console.log(prev_pos);
+
 
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
@@ -161,6 +177,8 @@ async function sendDataToBackend(request_type) {
           'data': {
             'game_id': websocket_obj.game.game_id,
             'key_code': websocket_obj.game.key_code,
+            'prev_pos': prev_pos,
+
 
           },
         }));
@@ -177,7 +195,26 @@ async function sendDataToBackend(request_type) {
   });
 }
 
+async function renderGame() {
 
+  const canvas = document.getElementById("pongCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // Clear the canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Draw paddles at the updated position
+  ctx.fillStyle = "black";
+  ctx.fillRect(10, websocket_obj.game.left_pedal, 10, 100);
+
+  // Draw the ball
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.closePath();
+
+
+}
 
 async function renderChat() {
 
