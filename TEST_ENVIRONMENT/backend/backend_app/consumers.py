@@ -22,6 +22,8 @@ class test(AsyncWebsocketConsumer):
         self.my_group_id = None
         self.isOnline = 0
         self.key_code = 0
+        self.prev_pos = 0
+
 
     async def connect(self):
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
