@@ -62,8 +62,7 @@
             </div>
           </div>
           <div class="col-sm-8 col-xs-7 heading-name">
-            <div class="heading-name-meta">John Doe
-            </div>
+            <div id="right-heading-name" class="heading-name-meta"></div>
             <span class="heading-online">Online</span>
           </div>
         </div>
@@ -72,7 +71,7 @@
           <div id="messageContainer" class="scroll-messages"></div>
           <div class="input-group mb-6">
             <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
-            <button id="sendMessageButton" class="btn btn-dark" style="margin-right: 28px;">Send</button>
+            <button id="sendMessageButton" class="btn btn-dark">Send</button>
           </div>
         </div>
       </div>
@@ -95,19 +94,28 @@
   /*.row {
     --bs-gutter-x: 0rem; !important;
   }*/
+
+  #sendMessageButton {
+    margin-right: 128px; !important;
+  }
+
   .lel {
-    margin-left: 20px;
+    margin-left: 120px;
   }
   .lel::placeholder {
       color: #aaaaaa; !important;
   }
 
   .heading {
+    white-space: nowrap;
+   /*"nowrap" removes elements while
+    rezising instead of newlining them*/
+    flex-wrap: nowrap;
     padding: 10px 0 10px 7px;
     margin: auto;
     width: 100%;
-    background-color: currentColor;
-    border-bottom-right-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.71);
+    {#border-bottom-right-radius: 10px;#}
     z-index: 1000;
   }
 
@@ -115,13 +123,20 @@
     {#background-color: currentColor;#}
   }
 
+
+  .clicked_contact_div {
+      background-color: red;
+      padding: 100px;
+  }
+
+
   .left-heading {
     /*padding: 10px 0 10px 7px;*/
     padding: 5px 0 5px 5px;
     margin: auto;
     width: 100%;
-    background-color: currentColor;
-    border-bottom-left-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.71);
+    {#border-bottom-left-radius: 10px;#}
     z-index: 1000;
   }
 
@@ -198,6 +213,21 @@
   @media screen and (max-width: 1200px) {
     .sideBar-time {
        display: none;
+    }
+    .scroll-messages {
+      height: 83vh;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      scroll-padding-bottom: 100%;
+      left: 12px;
+      position: relative;
+      padding: 10px 50px 10px 25px !important; /* Correct placement of !important */
+    }
+    .lel {
+      margin-left: 20px;
+    }
+    #sendMessageButton {
+        margin-right: 28px; !important;
     }
   }
 
@@ -296,17 +326,17 @@
     position: relative;
 
     padding: 15px 5px !important; /*centers the avatar vertically*/
-    {#border-bottom: 1px solid #bdbdbd; /*line color between contacts*/#}
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5); /*line color between contacts*/
     height: 100px; /*height of contact box*/
     margin: 0 !important;
     cursor: pointer;
-    {#background-color: #ffffff;#}
-      background: transparent;
+    background-color: rgba(255, 255, 255, 0.29);
+      {#background: transparent;#}
 
   }
 
 .sideBar-body:hover {
-  background-color: rgba(255, 255, 255, 0.22);
+  background-color: rgba(255, 255, 255, 0.45);
     border-radius: 10px
 }
 
@@ -616,8 +646,8 @@
       position: relative;
     padding-top: 10px;
     padding-bottom: 10px;
-    padding-left: 25px;
-    padding-right: 50px;
+    padding-left: 125px;
+    padding-right: 150px;
   }
 
 

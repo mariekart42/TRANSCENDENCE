@@ -185,8 +185,10 @@ async function renderProfile() {
 async function handleButtonClickChats(chatId, chatName) {
   const chatDiv = document.getElementById('messageSide');
   chatDiv.classList.remove('hidden');
-  // const showProfile = document.getElementById('showUserProfile');
-  // showProfile.classList.add('hidden');
+
+  console.log('CHAT NAME: ', chatName)
+  const right_heading_name = document.getElementById('right-heading-name')
+  right_heading_name.textContent = chatName
 
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
@@ -219,6 +221,7 @@ async function renderUsersChatList() {
     button.classList.add('btn-outline-dark');
 
     button.addEventListener('click', async function () {
+
       await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
     });
 
@@ -311,16 +314,18 @@ async function renderNewChat() {
     const nameCol = document.createElement('div');
     nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
 
-    let button = document.createElement('button');
-    button.textContent = chat.chat_name;
-    button.classList.add('btn');
-    button.classList.add('btn-outline-dark');
+    let chatName = document.createElement('div');
+    chatName.textContent = chat.chat_name;
 
-    button.addEventListener('click', async function () {
+
+    chat_element.addEventListener('click', async function () {
+
+      chat_element.style.backgroundColor = 'red';
+      console.log('should be red lol')
       await handleButtonClickChats(chat.chat_id, chat.chat_name);
     });
 
-    nameCol.appendChild(button);
+    nameCol.appendChild(chatName);
 
     const timeCol = document.createElement('div');
     timeCol.classList.add('col-sm-4', 'col-xs-4', 'pull-right', 'sideBar-time');

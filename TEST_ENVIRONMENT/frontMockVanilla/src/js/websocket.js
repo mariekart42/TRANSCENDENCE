@@ -161,7 +161,8 @@ async function renderChat() {
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
 
   let myArray = websocket_obj.messages.message_data;
-  let lol = websocket_obj.userInCurrentChat
+  // let lol = websocket_obj.userInCurrentChat
+  // console.log('KEK: ', lol)
   renderUserInChatList()
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';
