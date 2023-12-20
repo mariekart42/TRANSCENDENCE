@@ -40,14 +40,14 @@ websocket_obj = {
   userInCurrentChat: [
     {
       user_name: null,
-      user_id: null
+      user_id: null,
     }
   ],
 
   game: [
     {
       game_id: null,
-      key_code: null,
+      key_code: 0,
       left_pedal: null,
 
     }
@@ -88,7 +88,9 @@ async function establishWebsocketConnection() {
       websocket_obj.userInCurrentChat = data.user_in_chat
     }
     else if (data.type === 'render_game_scene') {
-      console.log("in render_game_scene");
+      console.log("in render_game_scene")
+      console.log("new pedal position:");
+
       console.log(data.new_pedal_pos);
       console.log(data);
 
@@ -97,6 +99,8 @@ async function establishWebsocketConnection() {
       // websocket_obj.game.left_pedal = websocket_obj.game.left_pedal + data.new_pedal_pos
       // websocket_obj.game.left_pedal = websocket_obj.game.left_pedal + 10
       websocket_obj.game.left_pedal = data.new_pedal_pos
+      // websocket_obj.game.key_code = 1
+
 
 
       await renderGame()

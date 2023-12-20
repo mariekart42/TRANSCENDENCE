@@ -45,6 +45,13 @@ class test(AsyncWebsocketConsumer):
         self.my_group_id = 'group_%s' % game_id
         self.key_code = text_data_json["data"]["key_code"]
         self.prev_pos = text_data_json["data"]["prev_pos"]
+        print('IN RECIEVE. PREV_POS AND GROUP:')
+        print(self.prev_pos)
+        print(self.my_group_id)
+        print(self.user)
+        print('______________\n')
+
+
 
         await self.channel_layer.group_add(
             self.my_group_id,
@@ -124,11 +131,16 @@ class test(AsyncWebsocketConsumer):
             new_pedal_pos = self.prev_pos - 10
         elif self.key_code == 40:
             new_pedal_pos = self.prev_pos + 10
+        else:
+            new_pedal_pos = self.prev_pos
+
+        self.prev_pos = new_pedal_pos
+        # self.key_code = 0 # no movement at all
+
         await self.send(text_data=json.dumps({
             'type': 'render_game_scene',
             'all_user': event['data']['all_user'],
             'new_pedal_pos': new_pedal_pos,
-
 
         }))
 
@@ -249,11 +261,11 @@ class test(AsyncWebsocketConsumer):
     async def handle_send_game_scene(self):
         all_user = await self.get_all_user()
 
-        new_pedal_pos = 0
-        if self.key_code == 38:
-            new_pedal_pos = self.prev_pos - 10
-        elif self.key_code == 40:
-            new_pedal_pos = self.prev_pos + 10
+        # new_pedal_pos = 0
+        # if self.key_code == 38:
+        #     new_pedal_pos = self.prev_pos - 10
+        # elif self.key_code == 40:
+        #     new_pedal_pos = self.prev_pos + 10
 
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -262,7 +274,7 @@ class test(AsyncWebsocketConsumer):
                 'data': {
                     # 'chat_id': chat_id,
                     'all_user': all_user,            
-                    'new_pedal_pos': new_pedal_pos,
+                    # 'new_pedal_pos': new_pedal_pos,
 
                 },
             }

@@ -100,16 +100,25 @@ async function joinGame(gameId) {
   ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
   ctx.fill();
   ctx.closePath();
+  console.log("IN JOINGAME");
+
   websocket_obj.game.left_pedal = canvas.height / 2 - 50;
+  websocket_obj.game.game_id = gameId;
+  websocket_obj.game.key_code = 1;
+
+  sendDataToBackend('game_new_move');
 
   document.addEventListener("keydown", function(event) {
       // Log the key code to the console
       console.log("Key pressed: " + event.keyCode);
-      websocket_obj.game.key_code = event.keyCode;
-      websocket_obj.game.game_id = gameId;
-      
-      sendDataToBackend('game_new_move');
-      websocket_obj.game.key_code = null;
+      if (event.keyCode == 40 || event.keyCode == 38)
+      {
+          websocket_obj.game.key_code = event.keyCode;
+          // websocket_obj.game.game_id = gameId;
+          
+          sendDataToBackend('game_new_move');
+          websocket_obj.game.key_code = 0;
+      }
 
 
 
