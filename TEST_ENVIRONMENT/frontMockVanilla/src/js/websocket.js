@@ -89,24 +89,53 @@ async function establishWebsocketConnection() {
     else if (data.type === 'user_in_current_chat') {
       websocket_obj.userInCurrentChat = data.user_in_chat
     }
-    else if (data.type === 'render_game_scene') {
-      console.log("in render_game_scene")
-      console.log("new pedal position:");
+    // else if (data.type === 'render_game_scene') {
+    //   console.log("in render_game_scene")
+    //   console.log("new pedal position:");
+    //   console.log(data.new_pedal_pos);
+    //   console.log(data);
+    //   console.log("host status:");
+    //   console.log(websocket_obj.game.is_host);
 
-      console.log(data.new_pedal_pos);
-      console.log(data);
 
+    //   if (websocket_obj.game.is_host === true)
+    //   {
+    //     websocket_obj.game.left_pedal = data.new_pedal_pos
+    //     console.log("left_pedal = data.new_pedal_pos");
+    //   }
+    //   else
+    //     websocket_obj.game.right_pedal = data.new_pedal_pos
+    //   // websocket_obj.game.key_code = 0
+    //   await renderGame()
 
-
-      // websocket_obj.game.left_pedal = websocket_obj.game.left_pedal + data.new_pedal_pos
-      // websocket_obj.game.left_pedal = websocket_obj.game.left_pedal + 10
+    // }
+    else if (data.type === 'render_left')
+    {
       websocket_obj.game.left_pedal = data.new_pedal_pos
-      // websocket_obj.game.key_code = 1
-
-
-
       await renderGame()
 
+
+    }
+    else if (data.type === 'render_right')
+    {
+      websocket_obj.game.right_pedal = data.new_pedal_pos
+      await renderGame()
+
+    }
+    
+    else if (data.type === 'init_game') {
+      console.log(data);
+
+      if (data.is_host === 'True')
+      {
+        websocket_obj.game.is_host = true
+        console.log("game.is_host = true");
+        console.log(websocket_obj.game.is_host);
+
+
+      }
+      else
+        websocket_obj.game.is_host = false
     }
   };
 
@@ -172,8 +201,12 @@ async function sendDataToBackend(request_type) {
 
       else if (request_type === 'game_new_move') {
         console.log("in game_new_move");
-        console.log(websocket_obj.game.game_id);
+        console.log(websocket_obj.game.is_host);
         // prev_pos =  websocket_obj.game.left_pedal;
+        if (websocket_obj.game.is_host === true)
+          pedal_pos = websocket_obj.game.left_pedal
+        else
+          pedal_pos = websocket_obj.game.right_pedal
         // console.log(prev_pos);
 
 
@@ -183,8 +216,22 @@ async function sendDataToBackend(request_type) {
           'data': {
             'game_id': websocket_obj.game.game_id,
             'key_code': websocket_obj.game.key_code,
-            'prev_pos': websocket_obj.game.left_pedal,
-            'is_host': websocket_obj.game.is_host,
+            'prev_pos': pedal_pos,
+            // 'is_host': websocket_obj.game.is_host,
+
+          },
+        }));
+      }
+      else if (request_type === 'init_game') {
+        console.log("in init_game");
+
+
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_init_game',
+          'data': {
+            'game_id': websocket_obj.game.game_id,
+            'user_id': websocket_obj.user_id,
 
           },
         }));
@@ -203,6 +250,10 @@ async function sendDataToBackend(request_type) {
 
 async function renderGame() {
 
+  console.log("in ACTUAL rendering");
+  console.log(websocket_obj.game.is_host);
+
+
   const canvas = document.getElementById("pongCanvas");
   const ctx = canvas.getContext("2d");
 
@@ -213,6 +264,7 @@ async function renderGame() {
   ctx.fillStyle = "black";
   ctx.fillRect(10, websocket_obj.game.left_pedal, 10, 100);
   ctx.fillRect(canvas.width - 10, websocket_obj.game.right_pedal, 10, 100);
+
 
   // Draw the ball
   ctx.beginPath();

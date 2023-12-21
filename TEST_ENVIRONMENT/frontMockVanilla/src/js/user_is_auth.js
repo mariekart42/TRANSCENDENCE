@@ -94,6 +94,8 @@ async function joinGame(gameId) {
   // Draw paddles
   ctx.fillStyle = "black";
   ctx.fillRect(10, canvas.height / 2 - 50, 10, 100);
+  ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
+
 
   // Draw the ball
   ctx.beginPath();
@@ -107,27 +109,41 @@ async function joinGame(gameId) {
 
   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
+  websocket_obj.game.is_host = false;
+
 
 
   // sendDataToBackend('game_new_move');
-  sendDataToBackend('init_game');
+  console.log("before init:");
 
+  console.log(websocket_obj.game.is_host);
 
-  document.addEventListener("keydown", function(event) {
+  await sendDataToBackend('init_game');
+
+  console.log("after init:");
+
+  console.log(websocket_obj.game.is_host);
+
+  document.addEventListener("keydown", async function(event) {
       // Log the key code to the console
       console.log("Key pressed: " + event.keyCode);
       if (event.keyCode == 40 || event.keyCode == 38)
       {
           websocket_obj.game.key_code = event.keyCode;
           // websocket_obj.game.game_id = gameId;
-          
-          sendDataToBackend('game_new_move');
+          console.log("in key event listener:");
+
+          console.log(websocket_obj.game.is_host);
+
+          await sendDataToBackend('game_new_move');
           websocket_obj.game.key_code = 0;
       }
 
 
 
   });
+  console.log('end of JoinGame');
+
 
 }
 

@@ -1,7 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse
-from .models import MyUser, Chat, Message
+from .models import MyUser, Chat, Message, Game
 from . import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
@@ -23,12 +23,17 @@ class test(AsyncWebsocketConsumer):
         self.isOnline = 0
         self.key_code = 0
         self.prev_pos = 0
+        self.is_host = 0
+        self.game_id = 0
+
 
 
     async def connect(self):
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
+        # self.channel_name = f"user_{self.user['user_id']}"
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -43,10 +48,11 @@ class test(AsyncWebsocketConsumer):
         game_id = text_data_json["data"]["game_id"]
         # self.my_group_id = 'group_%s' % chat_id
         self.my_group_id = 'group_%s' % game_id
-        self.key_code = text_data_json["data"]["key_code"]
-        self.prev_pos = text_data_json["data"]["prev_pos"]
-        print('IN RECIEVE. PREV_POS AND GROUP:')
-        print(self.prev_pos)
+        # self.game_id = game_id
+        # self.key_code = text_data_json["data"]["key_code"]
+        # self.prev_pos = text_data_json["data"]["prev_pos"]
+        # print('IN RECIEVE. PREV_POS AND GROUP:')
+        # print(self.prev_pos)
         print(self.my_group_id)
         print(self.user)
         print('______________\n')
@@ -70,7 +76,13 @@ class test(AsyncWebsocketConsumer):
         elif what_type == 'send_all_user':
             await self.handle_send_all_user()
         elif what_type == 'send_game_scene':
+            self.key_code = text_data_json["data"]["key_code"]
+            self.prev_pos = text_data_json["data"]["prev_pos"]
+            # self.is_host = text_data_json["data"]["is_host"]
             await self.handle_send_game_scene()
+        elif what_type == 'send_init_game':
+            self.game_id = game_id
+            await self.handle_send_init_game()
         else:
             print('IS SOMETHING ELSE')
 
@@ -126,13 +138,28 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_game_scene(self, event):
+        # if (self.is_host == True):
+        #     response_type = 'render_left'
+        # else:
+        #     response_type = 'render_right'
+        # print("RESPONSE TYPE")
+
+        # print(response_type)
+        await self.send(text_data=json.dumps({
+            'type': event['data']['response_type'],
+            # 'all_user': event['data']['all_user'],
+            'new_pedal_pos': event['data']['new_pedal_pos']
+        }))
+
+    async def send_init_game(self, event):
+
+
+
 
         await self.send(text_data=json.dumps({
-            'type': 'render_game_scene',
-            'all_user': event['data']['all_user'],
-            'new_pedal_pos': event['data']['new_pedal_pos']
-
-            # 'new_pedal_pos': new_pedal_pos,
+            'type': 'init_game',
+            # 'all_user': event['data']['all_user'],
+            'is_host': event['data']['is_host'],
 
         }))
 
@@ -262,6 +289,15 @@ class test(AsyncWebsocketConsumer):
             new_pedal_pos = self.prev_pos + 10
         else:
             new_pedal_pos = self.prev_pos
+
+        if (self.is_host == True):
+            response_type = 'render_left'
+        else:
+            response_type = 'render_right'
+            
+        print("RESPONSE TYPE")
+
+        print(response_type)    
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -270,20 +306,47 @@ class test(AsyncWebsocketConsumer):
                     # 'chat_id': chat_id,
                     'all_user': all_user,            
                     'new_pedal_pos': new_pedal_pos,
+                    'response_type': response_type
 
                 },
             }
         )
-    async def handle_init_game(self):
+    
+    # async def handle_send_init_game(self):
 
-        return_val = get_host(self.game_id, self.user_id)
-        await self.channel_layer.group_send(
-            self.my_group_id,
+    #     return_val = await self.get_host(self.game_id, self.user['user_id'])
+    #     print("is host status:")
+    #     print(return_val)
+    #     user_channel_name = f"user_{self.user['user_id']}"
+    #     await self.channel_layer.send(
+    #         # self.my_group_id,
+    #         user_channel_name,
+
+    #         {
+    #             'type': 'send.init.game',
+    #             'data': {
+    #                 'is_host': return_val,        
+                    
+    #             },
+    #         }
+    #     )
+
+    async def handle_send_init_game(self):
+        return_val = await self.get_host(self.game_id, self.user['user_id'])
+        print("is host status:")
+        print(return_val)
+
+        # Get the user's channel name
+        # user_channel_name = f"{self.user['user_id']}"
+        # print(f"User channel name: {user_channel_name}")
+
+        # Send the message directly to the specific user's channel
+        await self.channel_layer.send(
+            self.channel_name,
             {
                 'type': 'send.init.game',
                 'data': {
-                    'is_host': return_val,        
-                    
+                    'is_host': return_val,
                 },
             }
         )
@@ -293,11 +356,14 @@ class test(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_host(self, game_id, user_id):
         game_instance = Game.objects.get(id=game_id)
-        user = Game.objects.get(id=user_id)
-        if(user.username == game_instance.hostId)
-            check_host = true
+        user_instance = MyUser.objects.get(id=user_id)
+        if (user_instance.name == game_instance.hostId):
+            self.is_host = True
+            check_host = 'True'
         else:
-            check_host = false
+            self.is_host = False
+            check_host = 'False'
+
 
         return check_host
 
