@@ -126,23 +126,16 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_game_scene(self, event):
-        new_pedal_pos = 0
-        if self.key_code == 38:
-            new_pedal_pos = self.prev_pos - 10
-        elif self.key_code == 40:
-            new_pedal_pos = self.prev_pos + 10
-        else:
-            new_pedal_pos = self.prev_pos
-
-        self.prev_pos = new_pedal_pos
-        # self.key_code = 0 # no movement at all
 
         await self.send(text_data=json.dumps({
             'type': 'render_game_scene',
             'all_user': event['data']['all_user'],
-            'new_pedal_pos': new_pedal_pos,
+            'new_pedal_pos': event['data']['new_pedal_pos']
+
+            # 'new_pedal_pos': new_pedal_pos,
 
         }))
+
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
 
@@ -254,6 +247,7 @@ class test(AsyncWebsocketConsumer):
                 'data': {
                     # 'chat_id': chat_id,
                     'all_user': all_user,
+
                 },
             }
         )
@@ -262,11 +256,12 @@ class test(AsyncWebsocketConsumer):
         all_user = await self.get_all_user()
 
         # new_pedal_pos = 0
-        # if self.key_code == 38:
-        #     new_pedal_pos = self.prev_pos - 10
-        # elif self.key_code == 40:
-        #     new_pedal_pos = self.prev_pos + 10
-
+        if self.key_code == 38:
+            new_pedal_pos = self.prev_pos - 10
+        elif self.key_code == 40:
+            new_pedal_pos = self.prev_pos + 10
+        else:
+            new_pedal_pos = self.prev_pos
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -274,13 +269,37 @@ class test(AsyncWebsocketConsumer):
                 'data': {
                     # 'chat_id': chat_id,
                     'all_user': all_user,            
-                    # 'new_pedal_pos': new_pedal_pos,
+                    'new_pedal_pos': new_pedal_pos,
 
+                },
+            }
+        )
+    async def handle_init_game(self):
+
+        return_val = get_host(self.game_id, self.user_id)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.init.game',
+                'data': {
+                    'is_host': return_val,        
+                    
                 },
             }
         )
 
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
+
+    @database_sync_to_async
+    def get_host(self, game_id, user_id):
+        game_instance = Game.objects.get(id=game_id)
+        user = Game.objects.get(id=user_id)
+        if(user.username == game_instance.hostId)
+            check_host = true
+        else:
+            check_host = false
+
+        return check_host
 
     @database_sync_to_async
     def create_message(self, user_id, chat_id, text):

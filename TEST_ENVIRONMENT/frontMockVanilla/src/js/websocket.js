@@ -49,6 +49,8 @@ websocket_obj = {
       game_id: null,
       key_code: 0,
       left_pedal: null,
+      right_pedal: null,
+      is_host: false,
 
     }
   ],
@@ -171,8 +173,8 @@ async function sendDataToBackend(request_type) {
       else if (request_type === 'game_new_move') {
         console.log("in game_new_move");
         console.log(websocket_obj.game.game_id);
-        prev_pos =  websocket_obj.game.left_pedal;
-        console.log(prev_pos);
+        // prev_pos =  websocket_obj.game.left_pedal;
+        // console.log(prev_pos);
 
 
         websocket_obj.websocket.send(JSON.stringify({
@@ -181,8 +183,8 @@ async function sendDataToBackend(request_type) {
           'data': {
             'game_id': websocket_obj.game.game_id,
             'key_code': websocket_obj.game.key_code,
-            'prev_pos': prev_pos,
-
+            'prev_pos': websocket_obj.game.left_pedal,
+            'is_host': websocket_obj.game.is_host,
 
           },
         }));
@@ -210,6 +212,7 @@ async function renderGame() {
   // Draw paddles at the updated position
   ctx.fillStyle = "black";
   ctx.fillRect(10, websocket_obj.game.left_pedal, 10, 100);
+  ctx.fillRect(canvas.width - 10, websocket_obj.game.right_pedal, 10, 100);
 
   // Draw the ball
   ctx.beginPath();

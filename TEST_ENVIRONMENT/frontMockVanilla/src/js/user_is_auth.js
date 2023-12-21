@@ -103,10 +103,15 @@ async function joinGame(gameId) {
   console.log("IN JOINGAME");
 
   websocket_obj.game.left_pedal = canvas.height / 2 - 50;
-  websocket_obj.game.game_id = gameId;
-  websocket_obj.game.key_code = 1;
+  websocket_obj.game.right_pedal = canvas.height / 2 - 50;
 
-  sendDataToBackend('game_new_move');
+  websocket_obj.game.game_id = gameId;
+  websocket_obj.game.key_code = 0;
+
+
+  // sendDataToBackend('game_new_move');
+  sendDataToBackend('init_game');
+
 
   document.addEventListener("keydown", function(event) {
       // Log the key code to the console
