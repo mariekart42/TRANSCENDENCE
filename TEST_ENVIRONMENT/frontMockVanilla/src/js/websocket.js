@@ -89,43 +89,20 @@ async function establishWebsocketConnection() {
     else if (data.type === 'user_in_current_chat') {
       websocket_obj.userInCurrentChat = data.user_in_chat
     }
-    // else if (data.type === 'render_game_scene') {
-    //   console.log("in render_game_scene")
-    //   console.log("new pedal position:");
-    //   console.log(data.new_pedal_pos);
-    //   console.log(data);
-    //   console.log("host status:");
-    //   console.log(websocket_obj.game.is_host);
-
-
-    //   if (websocket_obj.game.is_host === true)
-    //   {
-    //     websocket_obj.game.left_pedal = data.new_pedal_pos
-    //     console.log("left_pedal = data.new_pedal_pos");
-    //   }
-    //   else
-    //     websocket_obj.game.right_pedal = data.new_pedal_pos
-    //   // websocket_obj.game.key_code = 0
-    //   await renderGame()
-
-    // }
     else if (data.type === 'render_left')
     {
       websocket_obj.game.left_pedal = data.new_pedal_pos
-      await renderGame()
-
-
+      // await renderGame()
     }
     else if (data.type === 'render_right')
     {
       websocket_obj.game.right_pedal = data.new_pedal_pos
-      await renderGame()
-
+      // await renderGame()
     }
     
     else if (data.type === 'init_game') {
       console.log(data);
-      // document.getElementById("waitingScreen").style.display = "block";
+      document.getElementById("waitingScreen").style.display = "block";
 
       if (data.is_host === 'True')
       {
@@ -140,10 +117,12 @@ async function establishWebsocketConnection() {
     else if (data.type === 'game_start')
     {
       console.log("GAME START");
-      // document.getElementById("waitingScreen").style.display = "none";
+      document.getElementById("waitingScreen").style.display = "none";
 
       launchGame();
     }
+    
+
   };
 
   websocket_obj.websocket.onerror = function (error) {
@@ -327,6 +306,11 @@ async function launchGame()
       gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
     ) {
       gameState.ball.dx *= -1;
+    }
+    if (gameState.ball.x - gameState.ball.radius < 0 || gameState.ball.x + gameState.ball.radius > canvas.width) {
+      // Reset ball position to the center
+      gameState.ball.x = canvas.width / 2;
+      gameState.ball.y = canvas.height / 2;
     }
   }
 
