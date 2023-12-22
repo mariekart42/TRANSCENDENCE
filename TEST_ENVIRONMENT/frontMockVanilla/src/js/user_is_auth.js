@@ -231,6 +231,9 @@ async function joinGame(gameId) {
   
   // gameLoop()
 
+  // document.getElementById("waitingScreen").style.display = "block";
+
+
   console.log('end of JoinGame');
 
 

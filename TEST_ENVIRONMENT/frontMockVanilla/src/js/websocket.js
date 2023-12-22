@@ -125,6 +125,7 @@ async function establishWebsocketConnection() {
     
     else if (data.type === 'init_game') {
       console.log(data);
+      // document.getElementById("waitingScreen").style.display = "block";
 
       if (data.is_host === 'True')
       {
@@ -139,6 +140,7 @@ async function establishWebsocketConnection() {
     else if (data.type === 'game_start')
     {
       console.log("GAME START");
+      // document.getElementById("waitingScreen").style.display = "none";
 
       launchGame();
     }
@@ -255,10 +257,11 @@ async function sendDataToBackend(request_type) {
 
 async function launchGame()
 {
+  // document.getElementById("waitingScreen").style.display = "none";
 
   const canvas = document.getElementById("pongCanvas");
   const ctx = canvas.getContext("2d");
-  
+
   const gameState = {
     // leftPedal: web,
     // rightPedal: canvas.height / 2 - 50,
