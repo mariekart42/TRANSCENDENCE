@@ -96,20 +96,107 @@ async function joinGame(gameId) {
   ctx.fillRect(10, canvas.height / 2 - 50, 10, 100);
   ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
 
-
-  // Draw the ball
-  ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.closePath();
-  console.log("IN JOINGAME");
-
   websocket_obj.game.left_pedal = canvas.height / 2 - 50;
   websocket_obj.game.right_pedal = canvas.height / 2 - 50;
 
   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
   websocket_obj.game.is_host = false;
+
+
+  // Draw the ball
+  // ctx.beginPath();
+  // ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
+  // ctx.fill();
+  // ctx.closePath();
+
+  // const gameState = {
+  //   // leftPedal: web,
+  //   // rightPedal: canvas.height / 2 - 50,
+  //   ball: {
+  //     x: canvas.width / 2,
+  //     y: canvas.height / 2,
+  //     radius: 10,
+  //     speed: 5,
+  //     dx: 5,
+  //     dy: 5,
+  //   },
+  //   // game_id: gameId,
+  //   // key_code: 0,
+  //   // is_host: false,
+  // };
+
+  // function drawPaddles() {
+  //   ctx.fillStyle = "black";
+  //   ctx.fillRect(
+  //     10,
+  //     websocket_obj.game.left_pedal,
+  //     10,
+  //     100
+  //   );
+  //   ctx.fillRect(
+  //     canvas.width - 10,
+  //     websocket_obj.game.right_pedal,
+  //     10,
+  //     100
+  //   );
+  // }
+
+  // // Draw the ball
+  // function drawBall() {
+  //   ctx.beginPath();
+  //   ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
+  //   ctx.fill();
+  //   ctx.closePath();
+  // }
+
+  // // Move the ball
+  // function moveBall() {
+  //   gameState.ball.x += gameState.ball.dx;
+  //   gameState.ball.y += gameState.ball.dy;
+
+  //   // Handle ball-wall collisions
+  //   if (gameState.ball.y - gameState.ball.radius < 0 || gameState.ball.y + gameState.ball.radius > canvas.height) {
+  //     gameState.ball.dy *= -1;
+  //   }
+
+  //   // Handle ball-paddle collisions
+  //   if (
+  //     gameState.ball.x - gameState.ball.radius < 20 && // Adjust the value based on paddle width
+  //     gameState.ball.y > websocket_obj.game.left_pedal &&
+  //     gameState.ball.y < websocket_obj.game.left_pedal + 100 // Adjust the value based on paddle height
+  //   ) {
+  //     gameState.ball.dx *= -1;
+  //   }
+
+  //   if (
+  //     gameState.ball.x + gameState.ball.radius > canvas.width - 20 && // Adjust the value based on paddle width
+  //     gameState.ball.y > websocket_obj.game.right_pedal &&
+  //     gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
+  //   ) {
+  //     gameState.ball.dx *= -1;
+  //   }
+  // }
+
+  // function update() {
+
+  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  //   moveBall();
+  //   drawPaddles();
+  //   drawBall();
+  // }
+  // function gameLoop() {
+  //   update();
+  //   requestAnimationFrame(gameLoop);
+  // }
+
+
+
+
+  console.log("IN JOINGAME");
+
+
 
 
 
@@ -139,9 +226,11 @@ async function joinGame(gameId) {
           websocket_obj.game.key_code = 0;
       }
 
-
-
   });
+
+  
+  // gameLoop()
+
   console.log('end of JoinGame');
 
 

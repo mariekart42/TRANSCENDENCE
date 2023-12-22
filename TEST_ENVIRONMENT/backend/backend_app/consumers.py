@@ -15,6 +15,7 @@ class test(AsyncWebsocketConsumer):
             'is_online': ''
         }
     ]
+    joined_players = 0 
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -25,6 +26,9 @@ class test(AsyncWebsocketConsumer):
         self.prev_pos = 0
         self.is_host = 0
         self.game_id = 0
+        self.game_id = 0
+
+
 
 
 
@@ -153,13 +157,19 @@ class test(AsyncWebsocketConsumer):
 
     async def send_init_game(self, event):
 
-
-
-
         await self.send(text_data=json.dumps({
             'type': 'init_game',
-            # 'all_user': event['data']['all_user'],
             'is_host': event['data']['is_host'],
+            # 'joined_players': event['data']['joined_players']
+
+        }))
+
+    async def send_game_start(self, event):
+
+        await self.send(text_data=json.dumps({
+            'type': 'game_start',
+            # 'is_host': event['data']['is_host'],
+            # 'joined_players': event['data']['joined_players']
 
         }))
 
@@ -311,30 +321,16 @@ class test(AsyncWebsocketConsumer):
                 },
             }
         )
-    
-    # async def handle_send_init_game(self):
-
-    #     return_val = await self.get_host(self.game_id, self.user['user_id'])
-    #     print("is host status:")
-    #     print(return_val)
-    #     user_channel_name = f"user_{self.user['user_id']}"
-    #     await self.channel_layer.send(
-    #         # self.my_group_id,
-    #         user_channel_name,
-
-    #         {
-    #             'type': 'send.init.game',
-    #             'data': {
-    #                 'is_host': return_val,        
-                    
-    #             },
-    #         }
-    #     )
 
     async def handle_send_init_game(self):
         return_val = await self.get_host(self.game_id, self.user['user_id'])
         print("is host status:")
         print(return_val)
+
+        self.joined_players += 1
+
+        print("self.joined_players")
+        print(self.joined_players)
 
         # Get the user's channel name
         # user_channel_name = f"{self.user['user_id']}"
@@ -347,9 +343,21 @@ class test(AsyncWebsocketConsumer):
                 'type': 'send.init.game',
                 'data': {
                     'is_host': return_val,
+                    'joined_players': self.joined_players
                 },
             }
         )
+        if (self.joined_players == 2):
+            await self.channel_layer.group_send(
+                self.my_group_id,
+                {
+                    'type': 'send.game.start',
+                    'data': {
+                        # 'new_pedal_pos': new_pedal_pos,
+                        # 'response_type': response_type
+                    },
+                }
+            )
 
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 

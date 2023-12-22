@@ -131,11 +131,16 @@ async function establishWebsocketConnection() {
         websocket_obj.game.is_host = true
         console.log("game.is_host = true");
         console.log(websocket_obj.game.is_host);
-
-
       }
       else
-        websocket_obj.game.is_host = false
+        websocket_obj.game.is_host = false      
+    }
+
+    else if (data.type === 'game_start')
+    {
+      console.log("GAME START");
+
+      launchGame();
     }
   };
 
@@ -246,6 +251,98 @@ async function sendDataToBackend(request_type) {
       reject(new Error("WebSocket connection is not open."));
     }
   });
+}
+
+async function launchGame()
+{
+
+  const canvas = document.getElementById("pongCanvas");
+  const ctx = canvas.getContext("2d");
+  
+  const gameState = {
+    // leftPedal: web,
+    // rightPedal: canvas.height / 2 - 50,
+    ball: {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      radius: 10,
+      speed: 5,
+      dx: 5,
+      dy: 5,
+    },
+    // game_id: gameId,
+    // key_code: 0,
+    // is_host: false,
+  };
+
+  function drawPaddles() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(
+      10,
+      websocket_obj.game.left_pedal,
+      10,
+      100
+    );
+    ctx.fillRect(
+      canvas.width - 10,
+      websocket_obj.game.right_pedal,
+      10,
+      100
+    );
+  }
+
+  // Draw the ball
+  function drawBall() {
+    ctx.beginPath();
+    ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  // Move the ball
+  function moveBall() {
+    gameState.ball.x += gameState.ball.dx;
+    gameState.ball.y += gameState.ball.dy;
+
+    // Handle ball-wall collisions
+    if (gameState.ball.y - gameState.ball.radius < 0 || gameState.ball.y + gameState.ball.radius > canvas.height) {
+      gameState.ball.dy *= -1;
+    }
+
+    // Handle ball-paddle collisions
+    if (
+      gameState.ball.x - gameState.ball.radius < 20 && // Adjust the value based on paddle width
+      gameState.ball.y > websocket_obj.game.left_pedal &&
+      gameState.ball.y < websocket_obj.game.left_pedal + 100 // Adjust the value based on paddle height
+    ) {
+      gameState.ball.dx *= -1;
+    }
+
+    if (
+      gameState.ball.x + gameState.ball.radius > canvas.width - 20 && // Adjust the value based on paddle width
+      gameState.ball.y > websocket_obj.game.right_pedal &&
+      gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
+    ) {
+      gameState.ball.dx *= -1;
+    }
+  }
+
+  function update() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    moveBall();
+    drawPaddles();
+    drawBall();
+  }
+  function gameLoop() {
+    update();
+    requestAnimationFrame(gameLoop);
+  }
+
+
+  gameLoop()
+
 }
 
 async function renderGame() {
