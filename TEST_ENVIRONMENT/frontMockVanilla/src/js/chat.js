@@ -92,34 +92,19 @@ async function inviteUser(invited_user_name){
 
 
 async function leaveChat() {
-  const chatDiv = document.getElementById('showChat');
-  chatDiv.classList.add('hidden');
-  const profileDiv = document.getElementById('showUserProfile');
-  profileDiv.classList.remove('hidden');
-  console.log('USER_ID | CHAT_ID: ', websocket_obj.user_id, websocket_obj.chat_id)
-  const url = `http://127.0.0.1:6969/user/leaveChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/`
-  fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Could not get Users Chats Data');
-      }
-      return response.json();
-    })
-    .then(data => {
-      renderProfile()
-    })
-    .catch(error => {
-      console.error('Error during getUserChats:', error);
-    });
+  await sendDataToBackend('set_user_left_chat')
+  await sendDataToBackend('get_current_users_chats')
 }
 
 
 async function createChat() {
   const chat_name = document.getElementById('new_chat_name').value
   if (!chat_name.trim()) {
-    setErrorWithTimout('error_message', 'Chat name cannot be empty',  5000)
+    setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
+
+
 
   const url = `http://127.0.0.1:6969/user/createPublicChat/${websocket_obj.user_id}/${chat_name}/`
   fetch(url)
@@ -134,53 +119,23 @@ async function createChat() {
       return response.json();
     })
     .then(data => {
-      renderProfile()
+      // renderProfile()
+      renderChat()
+      setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
     })
     .catch(error => {
-      setErrorWithTimout('error_message', error,  5000)
+      setErrorWithTimout('info_create_chat', error,  5000)
       console.error('Error during creating new Chat:', error);
     });
+
+
 }
 
 
 async function renderProfile() {
-
   console.log('rendering profile')
   let sender_title = document.getElementById('displayUserName');
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
-
-  // let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
-  // await fetch(url)
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       throw new Error('Could not get Users Chats Data');
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     websocket_obj.chat_data = data.chat_data
-  //     // renderUsersChatList()
-  //     renderNewChat()
-  //   })
-  //   .catch(error => {
-  //     console.error('Error during getUserChats:', error);
-  //   });
-  //
-  // url = `http://127.0.0.1:6969/user/getAllUser/${websocket_obj.user_id}/`
-  // await fetch(url)
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       throw new Error('Could not get all Users');
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     websocket_obj.all_user = data.all_user
-  //     renderAllUsersList()
-  //   })
-  //   .catch(error => {
-  //     console.error('Error during getAllUser:', error);
-  //   });
 }
 
 async function handleButtonClickChats(chatId, chatName) {
@@ -204,92 +159,75 @@ async function handleButtonClickChats(chatId, chatName) {
   await sendDataToBackend('get_chat_messages')
 }
 
-async function renderUsersChatList() {
-  let array_of_chats = websocket_obj.chat_data
-  let listOfChats = document.getElementById('listOfChats');
-  listOfChats.innerHTML = '';
-
-  let title = document.createElement('h2');
-  title.textContent = 'Your Chats:'
-  listOfChats.appendChild(title);
-
-  if (array_of_chats.length === 0) {
-    let paragraph = document.createElement('p');
-    paragraph.textContent = 'Damn, pretty empty here...'
-    listOfChats.appendChild(paragraph);
-  }
-
-  for (let i = 0; i < array_of_chats.length; i++)
-  {
-    let paragraph = document.createElement('p');
-    let button = document.createElement('button');
-    button.textContent = array_of_chats[i].chat_name;
-    button.classList.add('btn');
-    button.classList.add('btn-outline-dark');
-
-    button.addEventListener('click', async function () {
-
-  const edit_profile_button = document.getElementById('edit-profile-button')
-  edit_profile_button.textContent = 'TEST'
-      await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
-    });
-
-    listOfChats.appendChild(paragraph);
-    listOfChats.appendChild(button);
-  }
-}
+// async function renderUsersChatList() {
+//   let array_of_chats = websocket_obj.chat_data
+//   let listOfChats = document.getElementById('listOfChats');
+//   listOfChats.innerHTML = '';
+//   let title = document.createElement('h2');
+//   title.textContent = 'Your Chats:'
+//   listOfChats.appendChild(title);
+//   if (array_of_chats.length === 0) {
+//     let paragraph = document.createElement('p');
+//     paragraph.textContent = 'Damn, pretty empty here...'
+//     listOfChats.appendChild(paragraph);
+//   }
+//   for (let i = 0; i < array_of_chats.length; i++)
+//   {
+//     let paragraph = document.createElement('p');
+//     let button = document.createElement('button');
+//     button.textContent = array_of_chats[i].chat_name;
+//     button.classList.add('btn');
+//     button.classList.add('btn-outline-dark');
+//     button.addEventListener('click', async function () {
+//     const edit_profile_button = document.getElementById('edit-profile-button')
+//     edit_profile_button.textContent = 'TEST'
+//       await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
+//     });
+//     listOfChats.appendChild(paragraph);
+//     listOfChats.appendChild(button);
+//   }
+// }
 
 // USER PROFILE
-async function handleButtonClickUser(userId, userName) {
-  const userModal = new bootstrap.Modal(document.getElementById('userProfileModal'));
+// async function handleButtonClickUser(userId, userName) {
+//   const userModal = new bootstrap.Modal(document.getElementById('userProfileModal'));
+//   const label = document.getElementById('userModalLabel');
+//   label.innerHTML = `<h5>${userName}</h5>`;
+//   // Populate the modal body with user data
+//   const modalBody = document.getElementById('userProfileModalBody');
+//   modalBody.innerHTML = `<p>Name: ${userName}</p><p>ID: ${userId}</p>`;
+//   userModal.show();
+// }
 
-  const label = document.getElementById('userModalLabel');
-  label.innerHTML = `<h5>${userName}</h5>`;
-
-  // Populate the modal body with user data
-  const modalBody = document.getElementById('userProfileModalBody');
-  modalBody.innerHTML = `<p>Name: ${userName}</p><p>ID: ${userId}</p>`;
-
-  // Show the modal
-  userModal.show();
-}
-
-
-async function renderAllUsersList() {
-  let array_of_users = websocket_obj.all_user
-  let userFriendsList = document.getElementById('userFriendsList');
-  userFriendsList.innerHTML = '';
-
-  let title = document.createElement('h2');
-  title.textContent = 'All User:'
-  userFriendsList.appendChild(title);
-
-  if (array_of_users.length === 0) {
-    let paragraph = document.createElement('p');
-    paragraph.textContent = 'Damn, pretty empty here...'
-    userFriendsList.appendChild(paragraph);
-  }
-
-  for (let i = 0; i < array_of_users.length; i++)
-  {
-    let paragraph = document.createElement('p');
-    let button = document.createElement('button');
-    button.textContent = array_of_users[i].name;
-    // button.classList.add('btn');
-    // button.classList.add('btn-outline-dark');
-
-    button.addEventListener('click', async function () {
-      console.log('LOL: ', array_of_users[i])
-      await handleButtonClickUser(array_of_users[i].id, array_of_users[i].name);
-    });
-
-    userFriendsList.appendChild(paragraph);
-    userFriendsList.appendChild(button);
-  }
-}
+// async function renderAllUsersList() {
+//   let array_of_users = websocket_obj.all_user
+//   let userFriendsList = document.getElementById('userFriendsList');
+//   userFriendsList.innerHTML = '';
+//   let title = document.createElement('h2');
+//   title.textContent = 'All User:'
+//   userFriendsList.appendChild(title);
+//   if (array_of_users.length === 0) {
+//     let paragraph = document.createElement('p');
+//     paragraph.textContent = 'Damn, pretty empty here...'
+//     userFriendsList.appendChild(paragraph);
+//   }
+//   for (let i = 0; i < array_of_users.length; i++)
+//   {
+//     let paragraph = document.createElement('p');
+//     let button = document.createElement('button');
+//     button.textContent = array_of_users[i].name;
+//     button.addEventListener('click', async function () {
+//       console.log('LOL: ', array_of_users[i])
+//       await handleButtonClickUser(array_of_users[i].id, array_of_users[i].name);
+//     });
+//     userFriendsList.appendChild(paragraph);
+//     userFriendsList.appendChild(button);
+//   }
+// }
 
 
-async function renderNewChat() {
+async function renderChat() {
+  console.log('render new chat, chats: ', websocket_obj.chat_data)
   // render user list on the left side
   const chats_container = document.getElementById('chatsLeftSide')
   chats_container.innerHTML = ''
@@ -326,11 +264,7 @@ async function renderNewChat() {
     let chatName = document.createElement('div');
     chatName.textContent = chat.chat_name;
 
-
     chat_element.addEventListener('click', async function () {
-
-      // chat_element.style.backgroundColor = 'red';
-      console.log('should be red lol')
       await handleButtonClickChats(chat.chat_id, chat.chat_name);
     });
 
@@ -341,15 +275,13 @@ async function renderNewChat() {
 
     const timeSpan = document.createElement('span');
     timeSpan.classList.add('time-meta', 'pull-right');
-    timeSpan.textContent = '69:69';
+    timeSpan.textContent = '69:69'; // HERE extract actual timestamp from last message
 
     timeCol.appendChild(timeSpan);
 
     rowDiv.appendChild(nameCol);
     rowDiv.appendChild(timeCol);
-
     mainCol.appendChild(rowDiv);
-
     chat_element.appendChild(avatarCol);
     chat_element.appendChild(mainCol);
     chats_container.appendChild(chat_element);

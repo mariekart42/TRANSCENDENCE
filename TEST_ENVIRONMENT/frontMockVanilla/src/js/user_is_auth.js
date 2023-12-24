@@ -39,7 +39,7 @@ function addEventListenersIsAuth() {
       .then(data => {
         websocket_obj.chat_data = data.chat_data
         // renderUsersChatList()
-        renderNewChat()
+        renderChat()
       })
       .catch(error => {
         console.error('Error during getUserChats:', error);

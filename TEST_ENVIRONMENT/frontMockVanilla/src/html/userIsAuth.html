@@ -50,27 +50,32 @@
 
 
             <button class="btn btn-outline-dark profile-button" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile_OLD"></button>
-<!--?            <div class="modal fade" id="staticBackdropProfile_OLD" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel_OLD" aria-hidden="true">-->
-<!--?              <div class="modal-dialog modal-dialog-scrollable">-->
-<!--?                <div class="modal-content">-->
-<!--?                  <div class="modal-header">-->
-<!--?                    <h1 class="modal-title fs-1" id="staticBackdropLabel_OLD">Profile</h1>-->
-<!--?                  </div>-->
-<!--?                  <div class="modal-body">-->
-<!--?                    <div id="userInChatList_OLD"></div><br>-->
-<!--?                    <div class="input-group mb-3">-->
-<!--?                      <input type="text" class="form-control" placeholder="Invite User..." aria-label="Recipient's username" id="invite_user_OLD" aria-describedby="invite_user_button">-->
-<!--?                      <button class="btn btn-outline-success" type="button" id="invite_user_button_OLD">Invite</button>-->
-<!--?                    </div>-->
-<!--?                    <div id="error_message_2_OLD" style="color: red;"></div><br>-->
-<!--?                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Leave Chat</button><br><br>-->
-<!--?                  </div>-->
-<!--?                  <div class="modal-footer">-->
-<!--?                    <button type="button" class="btn btn-secondary" id="close_button_OLD" data-bs-dismiss="modal">Close</button>-->
-<!--?                  </div>-->
-<!--?                </div>-->
-<!--?              </div>-->
-<!--?            </div>-->
+            <div id="userChatsList"></div>
+<!--?            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile_OLD"></button>-->
+            <!-- Create New Chat Modal-->
+            <div class="modal fade" id="staticBackdropProfile_OLD" data-bs-backdrop="static" data-bs-keyboard="false"
+                 tabindex="-1" aria-labelledby="createChatModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="createChatModalLabel">Settings</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <label for="new_chat_name" class="form-label">Create new chat</label>
+                    <input type="text" class="form-control" placeholder="New Chat..."
+                           aria-label="Chat Name" id="new_chat_name" aria-describedby="create_chat_button">
+                    <button class="btn btn-outline-success" type="button" id="create_chat_button">Create</button>
+                    <div id="info_create_chat"></div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+<!--?                    <button type="button" class="btn btn-primary" id="create_chat_button">Create Chat</button>-->
+                  </div>
+                </div>
+              </div>
+            </div>
+<!--?            <br><br>-->
 <!--?            <div class="modal fade" id="staticBackdrop2_OLD" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">-->
 <!--?              <div class="modal-dialog">-->
 <!--?                <div class="modal-content">-->

@@ -53,6 +53,8 @@ class test(AsyncWebsocketConsumer):
             await self.handle_send_current_users_chats(text_data_json)
         elif what_type == 'send_all_user':
             await self.handle_send_all_user()
+        elif what_type == 'send_user_left_chat':
+            await self.handle_current_user_left_chat(text_data_json)
         else:
             print('IS SOMETHING ELSE')
 
@@ -105,6 +107,12 @@ class test(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'all_user',
             'all_user': event['data']['all_user']
+        }))
+
+    async def send_user_left_chat(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'user_left_chat_info',
+            'message': event['data']['message'],
         }))
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
@@ -218,6 +226,20 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
+    async def handle_current_user_left_chat(self, text_data_json):
+        chat_id = text_data_json["data"]["chat_id"]
+        user_id = text_data_json["data"]["user_id"]
+        info = await self.leaveChat(user_id, chat_id)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.user.left.chat',
+                'data': {
+                    'message': info
+                },
+            }
+        )
+
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
     @database_sync_to_async
@@ -286,4 +308,23 @@ class test(AsyncWebsocketConsumer):
         all_users_info = MyUser.objects.values('id', 'name')
         all_user = list(all_users_info)
         return all_user
+
+    @database_sync_to_async
+    def leaveChat(self, user_id, chat_id):
+        try:
+            user_exists = MyUser.objects.filter(id=user_id).exists()
+            if not user_exists:
+                return 'User in leaveChat not found'
+            chat_exists = Chat.objects.filter(id=chat_id).exists()
+            if not chat_exists:
+                return 'Chat in leaveChat not found'
+
+            chat_instance = Chat.objects.get(id=chat_id)
+            user_instance = MyUser.objects.get(id=user_id)
+            user_instance.chats.remove(chat_instance)
+            user_instance.save()
+
+            return 'ok'
+        except Exception as e:
+            return 'something big in leaveChat'
 

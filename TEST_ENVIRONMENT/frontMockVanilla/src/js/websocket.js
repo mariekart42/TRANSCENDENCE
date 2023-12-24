@@ -65,22 +65,32 @@ async function establishWebsocketConnection() {
       if (data.chat_id === websocket_obj.chat_id) {
         await renderProfile()
         websocket_obj.messages = data
-        await renderChat()
-        // await renderNewChat()
+        // await renderChat()
+        await renderMessages()
       }
     }
     else if (data.type === 'online_stats') {
       websocket_obj.onlineStats = data.online_stats
     }
+    else if (data.type === 'user_left_chat_info') {
+      console.log('user removed from chat info: ', data.message)
+    }
     else if (data.type === 'online_stats_on_disconnect') {
       websocket_obj.onlineStats = data.online_stats
-      await renderChat()
-      // await renderNewChat()
+      await renderMessages()
     }
     else if (data.type === 'user_in_current_chat') {
       websocket_obj.userInCurrentChat = data.user_in_chat
     }
+    else if (data.type === 'current_users_chats') {
+      websocket_obj.chat_data = data.users_chats
+      await renderChat()
+    }
   };
+
+
+
+
 
   websocket_obj.websocket.onerror = function (error) {
     console.error("WebSocket error:", error);
@@ -141,6 +151,26 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
+      else if (request_type === 'get_current_users_chats') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_current_users_chats',
+          'data': {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          },
+        }));
+      }
+      else if (request_type === 'set_user_left_chat') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_user_left_chat',
+          'data': {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          },
+        }));
+      }
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
@@ -155,7 +185,7 @@ async function sendDataToBackend(request_type) {
 
 
 
-async function renderChat() {
+async function renderMessages() {
 
   const chatTitle = document.getElementById('chatTitle')
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
@@ -173,7 +203,6 @@ async function renderChat() {
     let contentDiv = document.createElement('div');
     let titleElement = document.createElement('div');
     let timestampElement = document.createElement('div');
-    let lineBreakElement = document.createElement('br');
     let textDiv = document.createElement('div');
 
     textDiv.classList.add('text-break');
@@ -207,7 +236,6 @@ async function renderChat() {
       }
     }
     contentDiv.appendChild(titleElement);
-    // contentDiv.appendChild(lineBreakElement);
     contentDiv.appendChild(textDiv);
     contentDiv.appendChild(timestampElement);
     messageDiv.appendChild(contentDiv);
@@ -216,7 +244,6 @@ async function renderChat() {
 
   for (let i = 0; i < myArray.length; i++) {
     mainContainer.appendChild(tmpDiv[i]);
-
     if (i < tmpDiv.length - 1) {
       mainContainer.appendChild(document.createElement('br'));
     }
@@ -231,7 +258,6 @@ function renderUserInChatList() {
   mainContainer.innerHTML = '';
 
   // CHANGE ALL_USER WITH user in chat
-  console.log('WEBSOCKET DATa in func: ', websocket_obj.userInCurrentChat)
   let myArray = websocket_obj.userInCurrentChat
   console.log('MyArray: ', myArray)
 
@@ -240,14 +266,9 @@ function renderUserInChatList() {
   mainContainer.appendChild(title);
 
   for (let i = 0; i < myArray.length; i++) {
-
     let textDiv = document.createElement('div');
       textDiv.textContent = myArray[i].user_name;
-    // get array of all user in that cyrrent chat
-
       mainContainer.appendChild(textDiv)
   }
-
-  // mainContainer.scrollTop = mainContainer.scrollHeight;
 }
 
