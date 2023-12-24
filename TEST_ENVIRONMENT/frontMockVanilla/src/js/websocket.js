@@ -61,44 +61,41 @@ async function establishWebsocketConnection() {
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
 
-    if (data.type === 'all_chat_messages') {
-      if (data.chat_id === websocket_obj.chat_id) {
-        await renderProfile()
-        websocket_obj.messages = data
-        // await renderChat()
+    switch (data.type) {
+      case 'all_chat_messages':
+         if (data.chat_id === websocket_obj.chat_id) {
+          await renderProfile()
+          websocket_obj.messages = data
+          await renderMessages()
+        }
+        break
+      case 'online_stats':
+        websocket_obj.onlineStats = data.online_stats
+        break
+      case 'user_left_chat_info':
+        console.log('user removed from chat info: ', data.message)
+        break
+      case 'online_stats_on_disconnect':
+        websocket_obj.onlineStats = data.online_stats
         await renderMessages()
-      }
+        break
+      case 'user_in_current_chat':
+        websocket_obj.userInCurrentChat = data.user_in_chat
+        break
+      case 'current_users_chats':
+        websocket_obj.chat_data = data.users_chats
+        await renderChat()
+        break
+      case 'created_chat':
+        console.log('Created new chat info: ', data.message)
+        break
+      case 'invited_user_to_chat':
+        console.log('Invited user to chat info: ', data.message)
+        break
+      default:
+        console.log('SOMETHING ELSE [something wrong in onmessage type]')
     }
-    else if (data.type === 'online_stats') {
-      websocket_obj.onlineStats = data.online_stats
-    }
-    else if (data.type === 'user_left_chat_info') {
-      console.log('user removed from chat info: ', data.message)
-    }
-    else if (data.type === 'online_stats_on_disconnect') {
-      websocket_obj.onlineStats = data.online_stats
-      await renderMessages()
-    }
-    else if (data.type === 'user_in_current_chat') {
-      websocket_obj.userInCurrentChat = data.user_in_chat
-    }
-    else if (data.type === 'current_users_chats') {
-      console.log('HERE BEFORE: ', websocket_obj.chat_data)
-      websocket_obj.chat_data = data.users_chats
-      console.log('HERE AFTER: ', websocket_obj.chat_data)
-      await renderChat()
-    }
-    else if (data.type === 'created_chat') {
-      console.log('Created new chat info: ', data.message)
-    }
-    else if (data.type === 'invited_user_to_chat') {
-      console.log('Invited user to chat info: ', data.message)
-    }
-
   };
-
-
-
 
 
   websocket_obj.websocket.onerror = function (error) {
@@ -119,92 +116,78 @@ const sendError = async (error) => {
 async function sendDataToBackend(request_type) {
   return new Promise((resolve, reject) => {
     if (websocket_obj.websocket.readyState === WebSocket.OPEN) {
-      if (request_type === 'send_chat_message') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'save_message_in_db',
-          'data': {
+      let type = 'none'
+      let data = 'none'
+
+      switch (request_type) {
+        case 'send_chat_message':
+          type = 'save_message_in_db'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
             'sender': websocket_obj.sender,
             'message': websocket_obj.message,
-          },
-        }));
-      }
-      else if (request_type === 'get_chat_messages') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'send_chat_messages',
-          'data': {
+          }
+          break
+        case 'get_chat_messages':
+          type = 'send_chat_messages'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-          },
-        }));
-      }
-      else if (request_type === 'get_online_stats') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'send_online_stats',
-          'data': {
+          }
+          break
+        case 'get_online_stats':
+          type = 'send_online_stats'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-          },
-        }));
-      }
-      else if (request_type === 'get_user_in_current_chat') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'send_user_in_current_chat',
-          'data': {
+          }
+          break
+        case 'get_user_in_current_chat':
+          type = 'send_user_in_current_chat'
+          data = {
             'chat_id': websocket_obj.chat_id,
-          },
-        }));
-      }
-      else if (request_type === 'get_current_users_chats') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'send_current_users_chats',
-          'data': {
+          }
+          break
+        case 'get_current_users_chats':
+          type = 'send_current_users_chats'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-          },
-        }));
-      }
-      else if (request_type === 'set_user_left_chat') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'send_user_left_chat',
-          'data': {
+          }
+          break
+        case 'set_user_left_chat':
+          type = 'send_user_left_chat'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-          },
-        }));
-      }
-      else if (request_type === 'set_new_chat') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'send_created_new_chat',
-          'data': {
+          }
+          break
+        case 'set_new_chat':
+          type = 'send_created_new_chat'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
             'chat_name': document.getElementById('new_chat_name').value,
-          },
-        }));
-      }
-      else if (request_type === 'set_invited_user_to_chat') {
-        websocket_obj.websocket.send(JSON.stringify({
-          'status': 'ok',
-          'type': 'set_invited_user_to_chat',
-          'data': {
+          }
+          break
+        case 'set_invited_user_to_chat':
+          type = 'set_invited_user_to_chat'
+          data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
             'invited_user_name': websocket_obj.invited_user_name
-          },
-        }));
+          }
+          break
+        default:
+          console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }
 
-
-
+      websocket_obj.websocket.send(JSON.stringify({
+        'status': 'ok',
+        'type': type,
+        'data': data
+      }));
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
@@ -225,8 +208,6 @@ async function renderMessages() {
   chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
 
   let myArray = websocket_obj.messages.message_data;
-  // let lol = websocket_obj.userInCurrentChat
-  // console.log('KEK: ', lol)
   renderUserInChatList()
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';

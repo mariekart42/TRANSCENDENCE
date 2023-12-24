@@ -23,25 +23,6 @@ function chatDom() {
   document.getElementById('create_chat_button').addEventListener('click', async function() {
     await createChat()
   })
-
-  // document.getElementById('users_chats_button').addEventListener('click', async function() {
-  //
-  //   let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
-  //   await fetch(url)
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error('Could not get Users Chats Data');
-  //       }
-  //       return response.json();
-  //     })
-  //     .then(data => {
-  //       websocket_obj.chat_data = data.chat_data
-  //       renderUsersChatList()
-  //     })
-  //     .catch(error => {
-  //       console.error('Error during getUserChats:', error);
-  //     });
-  // })
 }
 
 
@@ -130,74 +111,6 @@ async function handleButtonClickChats(chatId, chatName) {
   await sendDataToBackend('get_user_in_current_chat')
   await sendDataToBackend('get_chat_messages')
 }
-
-
-
-// async function renderUsersChatList() {
-//   let array_of_chats = websocket_obj.chat_data
-//   let listOfChats = document.getElementById('listOfChats');
-//   listOfChats.innerHTML = '';
-//   let title = document.createElement('h2');
-//   title.textContent = 'Your Chats:'
-//   listOfChats.appendChild(title);
-//   if (array_of_chats.length === 0) {
-//     let paragraph = document.createElement('p');
-//     paragraph.textContent = 'Damn, pretty empty here...'
-//     listOfChats.appendChild(paragraph);
-//   }
-//   for (let i = 0; i < array_of_chats.length; i++)
-//   {
-//     let paragraph = document.createElement('p');
-//     let button = document.createElement('button');
-//     button.textContent = array_of_chats[i].chat_name;
-//     button.classList.add('btn');
-//     button.classList.add('btn-outline-dark');
-//     button.addEventListener('click', async function () {
-//     const edit_profile_button = document.getElementById('edit-profile-button')
-//     edit_profile_button.textContent = 'TEST'
-//       await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
-//     });
-//     listOfChats.appendChild(paragraph);
-//     listOfChats.appendChild(button);
-//   }
-// }
-
-// USER PROFILE
-// async function handleButtonClickUser(userId, userName) {
-//   const userModal = new bootstrap.Modal(document.getElementById('userProfileModal'));
-//   const label = document.getElementById('userModalLabel');
-//   label.innerHTML = `<h5>${userName}</h5>`;
-//   // Populate the modal body with user data
-//   const modalBody = document.getElementById('userProfileModalBody');
-//   modalBody.innerHTML = `<p>Name: ${userName}</p><p>ID: ${userId}</p>`;
-//   userModal.show();
-// }
-
-// async function renderAllUsersList() {
-//   let array_of_users = websocket_obj.all_user
-//   let userFriendsList = document.getElementById('userFriendsList');
-//   userFriendsList.innerHTML = '';
-//   let title = document.createElement('h2');
-//   title.textContent = 'All User:'
-//   userFriendsList.appendChild(title);
-//   if (array_of_users.length === 0) {
-//     let paragraph = document.createElement('p');
-//     paragraph.textContent = 'Damn, pretty empty here...'
-//     userFriendsList.appendChild(paragraph);
-//   }
-//   for (let i = 0; i < array_of_users.length; i++)
-//   {
-//     let paragraph = document.createElement('p');
-//     let button = document.createElement('button');
-//     button.textContent = array_of_users[i].name;
-//     button.addEventListener('click', async function () {
-//       console.log('LOL: ', array_of_users[i])
-//       await handleButtonClickUser(array_of_users[i].id, array_of_users[i].name);
-//     });
-//     userFriendsList.appendChild(paragraph);
-//     userFriendsList.appendChild(button);
-//   }
-// }
 
 
 async function renderChat() {
