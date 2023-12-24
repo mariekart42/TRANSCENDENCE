@@ -39,13 +39,57 @@
 <div id="chat" class="hidden"></div>
 
 <div id="nothingSite" class="hidden">
-    <div class="row app g-0" style="height: 1200px">
+
+<!--?  style="height: 1200px" deleted this style from next line-->
+    <div class="row app g-0">
 
       <div id="chat-area" class="col-sm-4">
 
         <div class="row left-heading">
           <div class="col-sm-3 col-xs-3 heading-avatar">
-            <button class="btn btn-outline-dark profile-button"></button>
+
+
+            <button class="btn btn-outline-dark profile-button" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile_OLD"></button>
+<!--?            <div class="modal fade" id="staticBackdropProfile_OLD" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel_OLD" aria-hidden="true">-->
+<!--?              <div class="modal-dialog modal-dialog-scrollable">-->
+<!--?                <div class="modal-content">-->
+<!--?                  <div class="modal-header">-->
+<!--?                    <h1 class="modal-title fs-1" id="staticBackdropLabel_OLD">Profile</h1>-->
+<!--?                  </div>-->
+<!--?                  <div class="modal-body">-->
+<!--?                    <div id="userInChatList_OLD"></div><br>-->
+<!--?                    <div class="input-group mb-3">-->
+<!--?                      <input type="text" class="form-control" placeholder="Invite User..." aria-label="Recipient's username" id="invite_user_OLD" aria-describedby="invite_user_button">-->
+<!--?                      <button class="btn btn-outline-success" type="button" id="invite_user_button_OLD">Invite</button>-->
+<!--?                    </div>-->
+<!--?                    <div id="error_message_2_OLD" style="color: red;"></div><br>-->
+<!--?                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Leave Chat</button><br><br>-->
+<!--?                  </div>-->
+<!--?                  <div class="modal-footer">-->
+<!--?                    <button type="button" class="btn btn-secondary" id="close_button_OLD" data-bs-dismiss="modal">Close</button>-->
+<!--?                  </div>-->
+<!--?                </div>-->
+<!--?              </div>-->
+<!--?            </div>-->
+<!--?            <div class="modal fade" id="staticBackdrop2_OLD" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">-->
+<!--?              <div class="modal-dialog">-->
+<!--?                <div class="modal-content">-->
+<!--?                  <div class="modal-header">-->
+<!--?                    <h1 class="modal-title fs-5" id="staticBackdropLabel2">Leave Chat</h1>-->
+<!--?                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--?                  </div>-->
+<!--?                  <div class="modal-body">-->
+<!--?                    Are you sure you want to leave the Chat?-->
+<!--?                  </div>-->
+<!--?                  <div class="modal-footer">-->
+<!--?                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>-->
+<!--?                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="leaveChat()">Yes, I want to leave</button>-->
+<!--?                  </div>-->
+<!--?                </div>-->
+<!--?              </div>-->
+<!--?            </div>-->
+
+
           </div>
         </div>
 
@@ -65,11 +109,75 @@
             <div id="right-heading-name" class="heading-name-meta"></div>
             <span class="heading-online">Online</span>
           </div>
+          <div class="col">
+
+            <button id="profile-in-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile">Profile</button>
+            <!-- PROFILE IN CHAT -->
+            <!-- Outer Modal (Profile) -->
+            <div class="modal fade" id="staticBackdropProfile" data-bs-backdrop="static" data-bs-keyboard="false"
+                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <!-- Header -->
+                  <div class="modal-header">
+                    <h1 class="modal-title" id="staticBackdropLabel"></h1>
+                  </div>
+                  <!-- Body -->
+                  <div class="modal-body">
+                    <!-- Content of the outer modal -->
+                    <div id="userInChatList"></div>
+                    <br>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" placeholder="Invite User..."
+                             aria-label="Recipient's username" id="invite_user" aria-describedby="invite_user_button">
+                      <button class="btn btn-outline-success" type="button" id="invite_user_button">Invite</button>
+                    </div>
+                    <div id="message_with_timeout"></div>
+                      <br>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop2">Leave Chat
+                    </button>
+                    <br><br>
+                  </div>
+                  <!-- Footer -->
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Inner Modal (Leave Chat) -->
+            <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false"
+                 tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <!-- Header -->
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel2">Leave Chat</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <!-- Body -->
+                  <div class="modal-body">
+                    Are you sure you want to leave the Chat?
+                  </div>
+                  <!-- Footer -->
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="leaveChat()">Yes, I
+                      want to leave
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         <div id="messageSide" class="row hidden">
           <div id="messageContainer" class="scroll-messages"></div>
-          <div class="input-group mb-6">
+          <div class="input-group format-input-group">
             <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
             <button id="sendMessageButton" class="btn btn-dark">Send</button>
           </div>
@@ -82,9 +190,18 @@
 
 <style>
 
-  body, html{
+  html {
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    min-width: 100%;
+    min-height: 100vh;
     overflow: hidden;
     padding: 0;
     margin: 0;
@@ -106,6 +223,13 @@
       color: #aaaaaa; !important;
   }
 
+  .format-input-group {
+    position: absolute;
+    width: 69%;
+    bottom: 20px;
+    margin-top: 10px;
+  }
+
   .heading {
     white-space: nowrap;
    /*"nowrap" removes elements while
@@ -115,12 +239,21 @@
     margin: auto;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.71);
-    {#border-bottom-right-radius: 10px;#}
+    /*border-bottom-right-radius: 10px;*/
     z-index: 1000;
   }
 
+  .right-heading-settings {
+    position: absolute;
+    right: 10px;
+    /*margin-left: auto;*/
+    /*width: max-content;*/
+    /*margin-right: 10px;*/
+    /*position: sticky;*/
+  }
+
   #chat-area {
-    {#background-color: currentColor;#}
+    /*background-color: currentColor;*/
   }
 
 
@@ -136,7 +269,7 @@
     margin: auto;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.71);
-    {#border-bottom-left-radius: 10px;#}
+    /*border-bottom-left-radius: 10px;*/
     z-index: 1000;
   }
 
@@ -191,6 +324,11 @@
 	display: block;
 }
 
+  @media screen and (max-height: 400px) {
+    .format-input-group {
+      display: none;
+    }
+  }
 
  /*conditions that happen if max-width is not possible to display anymore*/
   @media screen and (max-width: 900px) {
@@ -203,6 +341,7 @@
       }
     .conversation {
       width: 100% !important;
+      min-height: 100vh;
     }
     .sideBar-time {
        position: relative;
@@ -215,7 +354,8 @@
        display: none;
     }
     .scroll-messages {
-      height: 83vh;
+      /*height: 83vh;*/
+      height: calc(100vh - 169px);
       overflow-y: scroll;
       overflow-x: hidden;
       scroll-padding-bottom: 100%;
@@ -243,7 +383,7 @@
 
   .heading-name {
     padding: 0 !important;
-    {#cursor: pointer;#}
+    /*cursor: pointer;*/
   }
 
   .heading-name-meta {
@@ -315,9 +455,9 @@
     padding: 0 !important;
     margin: 0 !important;
     background-color: #2c93b9;
-    {#overflow-y: auto;#}
+    /*overflow-y: auto;*/
     border: 1px solid #198754;
-    height: 100%;
+    /*height: 100%;*/
 
   }
 
@@ -331,7 +471,7 @@
     margin: 0 !important;
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.29);
-      {#background: transparent;#}
+      /*background: transparent;*/
 
   }
 
@@ -455,7 +595,7 @@
     padding: 0 !important;
     margin: 0 !important;
     background-color: #fff;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     border: 1px solid #f7f7f7;
     /*height: calc(100% - 160px);*/
   }
@@ -466,10 +606,12 @@
     padding: 0 !important;
     margin: 0 !important;
     height: 100%;
+    min-height: 100vh;
+    /*background-color: red;*/
     /*width: 100%;*/
       background-size: cover;
     /*border-left: 1px solid rgba(0, 0, 0, .08);*/
-    /*overflow-y: auto;*/
+    overflow-y: auto;
   }
 
   .message {
@@ -638,7 +780,8 @@
     pointer-events: auto;
   }
   .scroll-messages {
-    height: 83vh;  /*!! for my laptop! somehow figure out dynamical prolly in js*/
+    /*height: 83vh;  !*!! for my laptop! somehow figure out dynamical prolly in js*!*/
+    height: calc(100vh - 169px);
     overflow-y: scroll;
     overflow-x: hidden;
     scroll-padding-bottom: 100%;

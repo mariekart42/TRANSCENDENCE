@@ -21,12 +21,12 @@ function chatDom() {
     await logoutUser()
   })
 
-  document.getElementById('goBackToProfileButton').addEventListener('click', async function () {
-    const chatDiv = document.getElementById('showChat');
-    chatDiv.classList.add('hidden');
-    const profileDiv = document.getElementById('showUserProfile');
-    profileDiv.classList.remove('hidden');
-  })
+  // document.getElementById('goBackToProfileButton').addEventListener('click', async function () {
+  //   const chatDiv = document.getElementById('showChat');
+  //   chatDiv.classList.add('hidden');
+  //   const profileDiv = document.getElementById('showUserProfile');
+  //   profileDiv.classList.remove('hidden');
+  // })
 
   document.getElementById('create_chat_button').addEventListener('click', async function() {
     await createChat()
@@ -82,9 +82,10 @@ async function inviteUser(invited_user_name){
     })
     .then(data => {
       renderProfile()
+      setMessageWithTimout('message_with_timeout', 'Invite send!', 5000)
     })
     .catch(error => {
-      setErrorWithTimout('error_message_2', error, 5000)
+      setErrorWithTimout('message_with_timeout', error, 5000)
       console.error('Error during getUserChats:', error);
     });
 }
@@ -190,6 +191,12 @@ async function handleButtonClickChats(chatId, chatName) {
   const right_heading_name = document.getElementById('right-heading-name')
   right_heading_name.textContent = chatName
 
+  const profile_button = document.getElementById('profile-in-chat-button')
+  profile_button.classList.remove('hidden')
+
+  const profile_button_header = document.getElementById('staticBackdropLabel')
+  profile_button_header.textContent = chatName
+
   websocket_obj.chat_id = chatId;
   websocket_obj.chat_name = chatName;
   await sendDataToBackend('get_online_stats')
@@ -222,6 +229,8 @@ async function renderUsersChatList() {
 
     button.addEventListener('click', async function () {
 
+  const edit_profile_button = document.getElementById('edit-profile-button')
+  edit_profile_button.textContent = 'TEST'
       await handleButtonClickChats(array_of_chats[i].chat_id, array_of_chats[i].chat_name);
     });
 
@@ -266,8 +275,8 @@ async function renderAllUsersList() {
     let paragraph = document.createElement('p');
     let button = document.createElement('button');
     button.textContent = array_of_users[i].name;
-    button.classList.add('btn');
-    button.classList.add('btn-outline-dark');
+    // button.classList.add('btn');
+    // button.classList.add('btn-outline-dark');
 
     button.addEventListener('click', async function () {
       console.log('LOL: ', array_of_users[i])
@@ -320,7 +329,7 @@ async function renderNewChat() {
 
     chat_element.addEventListener('click', async function () {
 
-      chat_element.style.backgroundColor = 'red';
+      // chat_element.style.backgroundColor = 'red';
       console.log('should be red lol')
       await handleButtonClickChats(chat.chat_id, chat.chat_name);
     });

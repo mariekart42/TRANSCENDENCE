@@ -46,13 +46,6 @@ function addEventListenersIsAuth() {
       });
   })
   document.getElementById('profileButton').addEventListener('click', function () {
-    const chat = document.getElementById('chat')
-    chat.classList.add('hidden')
-    const nothingSite = document.getElementById('nothingSite')
-    nothingSite.classList.add('hidden')
-    const home = document.getElementById('homeSite')
-    home.classList.remove('hidden')
-
 
     const userModal = new bootstrap.Modal(document.getElementById('userProfileModal2'));
 
@@ -83,8 +76,18 @@ function setErrorWithTimout(element_id, error_message, timout) {
   const obj = document.getElementById(element_id)
   obj.textContent = error_message;
   obj.style.display = 'block';
+  obj.style.color = 'red'
   setTimeout(function() {
     obj.remove();
   }, timout);
 }
 
+function setMessageWithTimout(element_id, message, timout) {
+  const obj = document.getElementById(element_id)
+  obj.textContent = message;
+  obj.style.display = 'block';
+  obj.style.color = 'green'
+  setTimeout(function() {
+    obj.remove();
+  }, timout);
+}
