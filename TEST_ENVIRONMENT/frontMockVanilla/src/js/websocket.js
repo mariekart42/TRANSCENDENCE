@@ -43,7 +43,7 @@ websocket_obj = {
       user_id: null
     }
   ],
-
+  invited_user_name: null,
   message: null,
   sender: null,
   websocket: null,
@@ -89,8 +89,12 @@ async function establishWebsocketConnection() {
       await renderChat()
     }
     else if (data.type === 'created_chat') {
-      console.log('Created new chat info: ', data)
+      console.log('Created new chat info: ', data.message)
     }
+    else if (data.type === 'invited_user_to_chat') {
+      console.log('Invited user to chat info: ', data.message)
+    }
+
   };
 
 
@@ -187,6 +191,19 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
+      else if (request_type === 'set_invited_user_to_chat') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'set_invited_user_to_chat',
+          'data': {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'invited_user_name': websocket_obj.invited_user_name
+          },
+        }));
+      }
+
+
 
 
       // websocket_obj.websocket.addEventListener('message', onMessage);

@@ -57,6 +57,8 @@ class test(AsyncWebsocketConsumer):
             await self.handle_current_user_left_chat(text_data_json)
         elif what_type == 'send_created_new_chat':
             await self.handle_create_new_chat(text_data_json)
+        elif what_type == 'set_invited_user_to_chat':
+            await self.handle_invite_user_to_chat(text_data_json)
         else:
             print('IS SOMETHING ELSE')
 
@@ -75,7 +77,6 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_user(self, user_id, message):
-        # Send a message to a specific user
         await self.send(text_data=json.dumps({
             'user_id': user_id,
             **message,
@@ -122,6 +123,13 @@ class test(AsyncWebsocketConsumer):
             'type': 'created_chat',
             'message': event['data']['message'],
         }))
+
+    async def send_invited_user_to_chat_info(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'invited_user_to_chat',
+            'message': event['data']['message'],
+        }))
+
 
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
@@ -253,11 +261,25 @@ class test(AsyncWebsocketConsumer):
         chat_name = text_data_json["data"]["chat_name"]
         user_id = text_data_json["data"]["user_id"]
         info = await self.createPublicChat(user_id, chat_name)
-
         await self.channel_layer.group_send(
             self.my_group_id,
             {
                 'type': 'send.new.chat.info',
+                'data': {
+                    'message': info
+                },
+            }
+        )
+
+    async def handle_invite_user_to_chat(self, text_data_json):
+        chat_id = text_data_json["data"]["chat_id"]
+        user_id = text_data_json["data"]["user_id"]
+        invited_user_name = text_data_json["data"]["invited_user_name"]
+        info = await self.inviteUserToChat(user_id, chat_id, invited_user_name)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.invited.user.to.chat.info',
                 'data': {
                     'message': info
                 },
@@ -342,12 +364,10 @@ class test(AsyncWebsocketConsumer):
             chat_exists = Chat.objects.filter(id=chat_id).exists()
             if not chat_exists:
                 return 'Chat in leaveChat not found'
-
             chat_instance = Chat.objects.get(id=chat_id)
             user_instance = MyUser.objects.get(id=user_id)
             user_instance.chats.remove(chat_instance)
             user_instance.save()
-
             return 'ok'
         except Exception as e:
             return 'something big in leaveChat'
@@ -359,10 +379,8 @@ class test(AsyncWebsocketConsumer):
             chat_exists = Chat.objects.filter(chatName=chat_name).exists()
             if chat_exists:
                 return 'Chat already exists'
-
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=False)
             user_instance = MyUser.objects.get(id=user_id)
-
             user_instance.chats.add(new_chat.id)
             new_chat.save()
             user_instance.save()
@@ -371,3 +389,21 @@ class test(AsyncWebsocketConsumer):
             return "Invalid user ID"
         except Exception as e:
             return str(e)
+
+    @database_sync_to_async
+    def inviteUserToChat(self, user_id, chat_id, invited_user):
+        try:
+            invited_user_exists = MyUser.objects.filter(name=invited_user).exists()
+            if not invited_user_exists:
+                return 'User you want to invite doesnt exists'
+            inviting_user = MyUser.objects.get(id=user_id)
+            invited_user = MyUser.objects.get(name=invited_user)
+            chat = inviting_user.chats.get(id=chat_id)
+            invited_user.chats.add(chat)
+            return 'ok'
+        except invited_user.DoesNotExist:
+            return "User does not exist"
+        except Exception as e:
+            return str(e)
+
+

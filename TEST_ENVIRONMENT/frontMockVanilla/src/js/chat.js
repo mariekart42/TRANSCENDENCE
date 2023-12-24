@@ -12,7 +12,6 @@ function chatDom() {
 
   document.getElementById('invite_user_button').addEventListener('click', async function () {
     const invited_user_name = document.getElementById('invite_user').value
-
     document.getElementById('invite_user').value = ''
     await inviteUser(invited_user_name)
   })
@@ -20,13 +19,6 @@ function chatDom() {
   document.getElementById('logoutButton').addEventListener('click', async function () {
     await logoutUser()
   })
-
-  // document.getElementById('goBackToProfileButton').addEventListener('click', async function () {
-  //   const chatDiv = document.getElementById('showChat');
-  //   chatDiv.classList.add('hidden');
-  //   const profileDiv = document.getElementById('showUserProfile');
-  //   profileDiv.classList.remove('hidden');
-  // })
 
   document.getElementById('create_chat_button').addEventListener('click', async function() {
     await createChat()
@@ -68,6 +60,10 @@ async function logoutUser() {
 
 // rn as HTTP but needs to happen through ws
 async function inviteUser(invited_user_name){
+  await sendDataToBackend('set_invited_user_to_chat')
+  websocket_obj.invited_user_name = invited_user_name
+
+
   const url = `http://127.0.0.1:6969/user/inviteUserToChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/${invited_user_name}/`
   fetch(url)
     .then(response => {
@@ -106,31 +102,6 @@ async function createChat() {
   await sendDataToBackend('set_new_chat')
   await sendDataToBackend('get_current_users_chats')
   setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
-
-
-  // const url = `http://127.0.0.1:6969/user/createPublicChat/${websocket_obj.user_id}/${chat_name}/`
-  // fetch(url)
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       if (response.status === 409) {
-  //         throw new Error('Chat '+chat_name+' already exists');
-  //       } else {
-  //         throw new Error('Could not create new Chat');
-  //       }
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     // renderProfile()
-  //     renderChat()
-  //     setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
-  //   })
-  //   .catch(error => {
-  //     setErrorWithTimout('info_create_chat', error,  5000)
-  //     console.error('Error during creating new Chat:', error);
-  //   });
-
-
 }
 
 
@@ -144,7 +115,6 @@ async function handleButtonClickChats(chatId, chatName) {
   const chatDiv = document.getElementById('messageSide');
   chatDiv.classList.remove('hidden');
 
-  // console.log('CHAT NAME: ', chatName)
   const right_heading_name = document.getElementById('right-heading-name')
   right_heading_name.textContent = chatName
 
@@ -160,6 +130,8 @@ async function handleButtonClickChats(chatId, chatName) {
   await sendDataToBackend('get_user_in_current_chat')
   await sendDataToBackend('get_chat_messages')
 }
+
+
 
 // async function renderUsersChatList() {
 //   let array_of_chats = websocket_obj.chat_data
