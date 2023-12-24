@@ -83,8 +83,13 @@ async function establishWebsocketConnection() {
       websocket_obj.userInCurrentChat = data.user_in_chat
     }
     else if (data.type === 'current_users_chats') {
+      console.log('HERE BEFORE: ', websocket_obj.chat_data)
       websocket_obj.chat_data = data.users_chats
+      console.log('HERE AFTER: ', websocket_obj.chat_data)
       await renderChat()
+    }
+    else if (data.type === 'created_chat') {
+      console.log('Created new chat info: ', data)
     }
   };
 
@@ -171,6 +176,18 @@ async function sendDataToBackend(request_type) {
           },
         }));
       }
+      else if (request_type === 'set_new_chat') {
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_created_new_chat',
+          'data': {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'chat_name': document.getElementById('new_chat_name').value,
+          },
+        }));
+      }
+
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
       websocket_obj.websocket.addEventListener('error', sendError);
@@ -224,7 +241,7 @@ async function renderMessages() {
       timestampElement.classList.add('receiver-timestamp');
       const currentUserId = myArray[i].sender_id
       function hasMatchingUserId(user) {
-        console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
+        // console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
         return user.user_id === currentUserId;
       }
 

@@ -103,30 +103,32 @@ async function createChat() {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
+  await sendDataToBackend('set_new_chat')
+  await sendDataToBackend('get_current_users_chats')
+  setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
 
 
-
-  const url = `http://127.0.0.1:6969/user/createPublicChat/${websocket_obj.user_id}/${chat_name}/`
-  fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        if (response.status === 409) {
-          throw new Error('Chat '+chat_name+' already exists');
-        } else {
-          throw new Error('Could not create new Chat');
-        }
-      }
-      return response.json();
-    })
-    .then(data => {
-      // renderProfile()
-      renderChat()
-      setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
-    })
-    .catch(error => {
-      setErrorWithTimout('info_create_chat', error,  5000)
-      console.error('Error during creating new Chat:', error);
-    });
+  // const url = `http://127.0.0.1:6969/user/createPublicChat/${websocket_obj.user_id}/${chat_name}/`
+  // fetch(url)
+  //   .then(response => {
+  //     if (!response.ok) {
+  //       if (response.status === 409) {
+  //         throw new Error('Chat '+chat_name+' already exists');
+  //       } else {
+  //         throw new Error('Could not create new Chat');
+  //       }
+  //     }
+  //     return response.json();
+  //   })
+  //   .then(data => {
+  //     // renderProfile()
+  //     renderChat()
+  //     setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
+  //   })
+  //   .catch(error => {
+  //     setErrorWithTimout('info_create_chat', error,  5000)
+  //     console.error('Error during creating new Chat:', error);
+  //   });
 
 
 }
@@ -142,7 +144,7 @@ async function handleButtonClickChats(chatId, chatName) {
   const chatDiv = document.getElementById('messageSide');
   chatDiv.classList.remove('hidden');
 
-  console.log('CHAT NAME: ', chatName)
+  // console.log('CHAT NAME: ', chatName)
   const right_heading_name = document.getElementById('right-heading-name')
   right_heading_name.textContent = chatName
 
@@ -238,7 +240,7 @@ async function renderChat() {
     const chat_element = document.createElement('div');
     chat_element.classList.add('row', 'sideBar-body');
 
-    console.log('CHAT: ', chat)
+    // console.log('CHAT: ', chat)
 
     const avatarCol = document.createElement('div');
     avatarCol.classList.add('col-sm-3', 'col-xs-3', 'sideBar-avatar');

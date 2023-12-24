@@ -55,6 +55,8 @@ class test(AsyncWebsocketConsumer):
             await self.handle_send_all_user()
         elif what_type == 'send_user_left_chat':
             await self.handle_current_user_left_chat(text_data_json)
+        elif what_type == 'send_created_new_chat':
+            await self.handle_create_new_chat(text_data_json)
         else:
             print('IS SOMETHING ELSE')
 
@@ -114,6 +116,13 @@ class test(AsyncWebsocketConsumer):
             'type': 'user_left_chat_info',
             'message': event['data']['message'],
         }))
+
+    async def send_new_chat_info(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'created_chat',
+            'message': event['data']['message'],
+        }))
+
 
 # ---------------------------- HANDLE FUNCTIONS ---------------------------
 
@@ -240,6 +249,21 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
+    async def handle_create_new_chat(self, text_data_json):
+        chat_name = text_data_json["data"]["chat_name"]
+        user_id = text_data_json["data"]["user_id"]
+        info = await self.createPublicChat(user_id, chat_name)
+
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.new.chat.info',
+                'data': {
+                    'message': info
+                },
+            }
+        )
+
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
     @database_sync_to_async
@@ -328,3 +352,22 @@ class test(AsyncWebsocketConsumer):
         except Exception as e:
             return 'something big in leaveChat'
 
+    @database_sync_to_async
+    def createPublicChat(self, user_id, chat_name):
+        try:
+            print('chat_name: ', chat_name)
+            chat_exists = Chat.objects.filter(chatName=chat_name).exists()
+            if chat_exists:
+                return 'Chat already exists'
+
+            new_chat = Chat.objects.create(chatName=chat_name, isPrivate=False)
+            user_instance = MyUser.objects.get(id=user_id)
+
+            user_instance.chats.add(new_chat.id)
+            new_chat.save()
+            user_instance.save()
+            return "ok"
+        except ValueError:
+            return "Invalid user ID"
+        except Exception as e:
+            return str(e)
