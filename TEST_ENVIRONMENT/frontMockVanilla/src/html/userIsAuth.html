@@ -429,7 +429,7 @@
     /*background: transparent;*/
   }
 
-.sideBar-body:hover {
+.sideBar-body:hover{
   background-color: rgba(255, 255, 255, 0.45);
     border-radius: 10px
 }
@@ -513,7 +513,23 @@
     transition: scrollbar-color 0.3s ease;
     -webkit-overflow-scrolling: touch;
     pointer-events: auto;
+
+    &::-webkit-scrollbar {
+      background-color: transparent;
+      width: 0;
+    }
   }
+
+.scroll-contacts:hover {
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.34);
+  }
+}
+
   .scroll-messages {
     height: calc(100vh - 169px);
     overflow-y: scroll;
@@ -524,15 +540,15 @@
     padding: 10px 150px 10px 125px;
   }
 
-  /* width */
-::-webkit-scrollbar {
-  width: 7px;
-}
+/*  !* width *!*/
+/*::-webkit-scrollbar {*/
+/*  width: 7px;*/
+/*}*/
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.43);
-}
+/*!* Handle on hover *!*/
+/*::-webkit-scrollbar-thumb:hover {*/
+/*  border-radius: 10px;*/
+/*  background: rgba(255, 255, 255, 0.43);*/
+/*}*/
 
 </style>
