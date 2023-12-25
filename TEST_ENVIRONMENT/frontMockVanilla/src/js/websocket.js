@@ -90,6 +90,11 @@ async function establishWebsocketConnection() {
         console.log('Created new chat info: ', data.message)
         break
       case 'invited_user_to_chat':
+        if (data.message !== 'ok') {
+          setErrorWithTimout('message_with_timeout', data.message, 5000)
+        } else {
+          setMessageWithTimout('message_with_timeout', 'Invite send successfully', 5000)
+        }
         console.log('Invited user to chat info: ', data.message)
         break
       default:
