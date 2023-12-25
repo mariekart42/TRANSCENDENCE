@@ -212,10 +212,6 @@
     box-sizing: border-box;
   }
 
-  /*.row {
-    --bs-gutter-x: 0rem; !important;
-  }*/
-
   #sendMessageButton {
     margin-right: 128px; !important;
   }
@@ -243,44 +239,30 @@
     margin: auto;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.71);
-    /*border-bottom-right-radius: 10px;*/
     z-index: 1000;
   }
 
   .right-heading-settings {
     position: absolute;
     right: 10px;
-    /*margin-left: auto;*/
-    /*width: max-content;*/
-    /*margin-right: 10px;*/
-    /*position: sticky;*/
   }
-
-  #chat-area {
-    /*background-color: currentColor;*/
-  }
-
 
   .clicked_contact_div {
       background-color: red;
       padding: 100px;
   }
 
-
   .left-heading {
-    /*padding: 10px 0 10px 7px;*/
     padding: 5px 0 5px 5px;
     margin: auto;
     width: 100%;
     background-color: rgba(0, 0, 0, 0.71);
-    /*border-bottom-left-radius: 10px;*/
     z-index: 1000;
   }
 
   .heading-avatar {
     text-align: center;
     padding: 0 !important;
-
   }
 
   .bottom {
@@ -295,20 +277,17 @@
     text-align: center;
     padding: 0 !important;
   }
-  .bottom-avatar-icon {
-
-  }
-
 
   .heading-avatar-icon img {
     border-radius: 50%;
     height: 40px;
     width: 40px;
   }
-.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    color: white !important;
-    background-color: #212121 !important;
-}
+
+  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+      color: white !important;
+      background-color: #212121 !important;
+  }
 
 
   .lol {
@@ -316,17 +295,16 @@
       color: #212121;
   }
 
-.profile-button {
-	width: 100%;
-  padding: 0; !important;
-	text-align: center;
-}
-
-.profile-button::after {
-  content: "🗿";
-  font-size: 32px;
-	display: block;
-}
+  .profile-button {
+    width: 100%;
+    padding: 0; !important;
+    text-align: center;
+  }
+  .profile-button::after {
+    content: "🗿";
+    font-size: 32px;
+    display: block;
+  }
 
   @media screen and (max-height: 400px) {
     .format-input-group {
@@ -335,6 +313,11 @@
   }
 
  /*conditions that happen if max-width is not possible to display anymore*/
+  @media screen and (max-width: 200px) {
+    .format-input-group {
+      display: none;
+    }
+  }
   @media screen and (max-width: 900px) {
     #chat-area {
       display: none;
@@ -351,6 +334,14 @@
        position: relative;
        right: -5px;
        display: none;
+    }
+
+    .format-input-group {
+      position: absolute;
+      width: 100%;
+      bottom: 20px;
+      margin-top: 10px;
+      margin-left: 10px;
     }
   }
   @media screen and (max-width: 1200px) {
@@ -383,7 +374,7 @@
   }
 
 
-  /*contact name on right heading*/
+  /*contact names on right heading*/
   .heading-name {
     padding: 0 !important;
     cursor: pointer;
