@@ -26,10 +26,15 @@ class test(AsyncWebsocketConsumer):
         self.prev_pos = 0
         self.is_host = 0
         self.game_id = 0
-        self.game_id = 0
 
 
+    @classmethod
+    def increment_joined_players(cls):
+        cls.joined_players += 1
 
+    @classmethod
+    def reset_joined_players(cls):
+        cls.joined_players = 0
 
 
     async def connect(self):
@@ -327,7 +332,8 @@ class test(AsyncWebsocketConsumer):
         print("is host status:")
         print(return_val)
 
-        self.joined_players += 1
+        # self.joined_players += 1
+        self.increment_joined_players()
 
         print("self.joined_players")
         print(self.joined_players)
@@ -348,6 +354,7 @@ class test(AsyncWebsocketConsumer):
             }
         )
         if (self.joined_players == 2):
+            self.reset_joined_players()
             await self.channel_layer.group_send(
                 self.my_group_id,
                 {
