@@ -48,9 +48,11 @@ websocket_obj = {
     {
       game_id: null,
       key_code: 0,
-      left_pedal: null,
-      right_pedal: null,
+      left_pedal: 0,
+      right_pedal: 0,
       is_host: false,
+      ball_x: 0,
+      ball_y: 0
 
     }
   ],
@@ -120,6 +122,17 @@ async function establishWebsocketConnection() {
       document.getElementById("waitingScreen").style.display = "none";
 
       launchGame();
+    }
+    else if (data.type === 'ball_update')
+    {
+      console.log("BALL_UPDATE");
+      websocket_obj.game.ball_x = data.ball_x
+      websocket_obj.game.ball_y = data.ball_y
+
+      // document.getElementById("waitingScreen").style.display = "none";
+
+
+      // launchGame();
     }
     
 
@@ -211,7 +224,6 @@ async function sendDataToBackend(request_type) {
       else if (request_type === 'init_game') {
         console.log("in init_game");
 
-
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'send_init_game',
@@ -221,6 +233,20 @@ async function sendDataToBackend(request_type) {
 
           },
         }));
+      }
+      else if (request_type === 'send_ball_update') {
+        console.log("in ball_update");
+
+        websocket_obj.websocket.send(JSON.stringify({
+          'status': 'ok',
+          'type': 'send_ball_update',
+          'data': {
+            'game_id': websocket_obj.game.game_id,
+            'user_id': websocket_obj.user_id,
+
+          },
+        }));
+
       }
 
       // websocket_obj.websocket.addEventListener('message', onMessage);
@@ -274,57 +300,68 @@ async function launchGame()
   }
 
   // Draw the ball
+  // function drawBall() {
+  //   ctx.beginPath();
+  //   ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
+  //   ctx.fill();
+  //   ctx.closePath();
+  // }
+
   function drawBall() {
     ctx.beginPath();
-    ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
+    ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, 10, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
   }
 
   // Move the ball
-  function moveBall() {
-    gameState.ball.x += gameState.ball.dx;
-    gameState.ball.y += gameState.ball.dy;
+  // function moveBall() {
+  //   gameState.ball.x += gameState.ball.dx;
+  //   gameState.ball.y += gameState.ball.dy;
 
-    // Handle ball-wall collisions
-    if (gameState.ball.y - gameState.ball.radius < 0 || gameState.ball.y + gameState.ball.radius > canvas.height) {
-      gameState.ball.dy *= -1;
-    }
+  //   // Handle ball-wall collisions
+  //   if (gameState.ball.y - gameState.ball.radius < 0 || gameState.ball.y + gameState.ball.radius > canvas.height) {
+  //     gameState.ball.dy *= -1;
+  //   }
 
-    // Handle ball-paddle collisions
-    if (
-      gameState.ball.x - gameState.ball.radius < 20 && // Adjust the value based on paddle width
-      gameState.ball.y > websocket_obj.game.left_pedal &&
-      gameState.ball.y < websocket_obj.game.left_pedal + 100 // Adjust the value based on paddle height
-    ) {
-      gameState.ball.dx *= -1;
-    }
+  //   // Handle ball-paddle collisions
+  //   if (
+  //     gameState.ball.x - gameState.ball.radius < 20 && // Adjust the value based on paddle width
+  //     gameState.ball.y > websocket_obj.game.left_pedal &&
+  //     gameState.ball.y < websocket_obj.game.left_pedal + 100 // Adjust the value based on paddle height
+  //   ) {
+  //     gameState.ball.dx *= -1;
+  //   }
 
-    if (
-      gameState.ball.x + gameState.ball.radius > canvas.width - 20 && // Adjust the value based on paddle width
-      gameState.ball.y > websocket_obj.game.right_pedal &&
-      gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
-    ) {
-      gameState.ball.dx *= -1;
-    }
-    if (gameState.ball.x - gameState.ball.radius < 0 || gameState.ball.x + gameState.ball.radius > canvas.width) {
-      // Reset ball position to the center
-      gameState.ball.x = canvas.width / 2;
-      gameState.ball.y = canvas.height / 2;
-    }
-  }
+  //   if (
+  //     gameState.ball.x + gameState.ball.radius > canvas.width - 20 && // Adjust the value based on paddle width
+  //     gameState.ball.y > websocket_obj.game.right_pedal &&
+  //     gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
+  //   ) {
+  //     gameState.ball.dx *= -1;
+  //   }
+  //   if (gameState.ball.x - gameState.ball.radius < 0 || gameState.ball.x + gameState.ball.radius > canvas.width) {
+  //     // Reset ball position to the center
+  //     gameState.ball.x = canvas.width / 2;
+  //     gameState.ball.y = canvas.height / 2;
+  //   }
+  // }
 
   function update() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    moveBall();
+    // moveBall();
     drawPaddles();
     drawBall();
   }
-  function gameLoop() {
+  async function gameLoop() {
+    await sendDataToBackend('send_ball_update');
+
     update();
     requestAnimationFrame(gameLoop);
+
+    setTimeout(gameLoop, 100000);
   }
 
 

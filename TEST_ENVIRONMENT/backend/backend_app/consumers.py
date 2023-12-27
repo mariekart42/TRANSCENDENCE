@@ -15,7 +15,6 @@ class test(AsyncWebsocketConsumer):
             'is_online': ''
         }
     ]
-    joined_players = 0 
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -26,6 +25,24 @@ class test(AsyncWebsocketConsumer):
         self.prev_pos = 0
         self.is_host = 0
         self.game_id = 0
+
+    joined_players = 0 
+
+
+    left_pedal = 150
+    right_pedal = 150
+
+    canvas_width = 800
+    canvas_height = 400
+    ball_x = canvas_width / 2
+    ball_y = canvas_height / 2
+    ball_radius = 10
+    ball_speed = 5
+    ball_dx = 5
+    ball_dy = 5
+
+
+
 
 
     @classmethod
@@ -92,8 +109,113 @@ class test(AsyncWebsocketConsumer):
         elif what_type == 'send_init_game':
             self.game_id = game_id
             await self.handle_send_init_game()
+        elif what_type == 'send_ball_update':
+            self.game_id = game_id
+            await self.handle_send_ball_update()
         else:
             print('IS SOMETHING ELSE')
+
+
+    # class Ball:
+    #     def __init__(self, x, y, radius, dx, dy):
+    #         self.x = x
+    #         self.y = y
+    #         self.radius = radius
+    #         self.dx = dx
+    #         self.dy = dy
+
+
+    # def calculate_ball_state(self):
+
+    #     gameState = Ball(self.canvas_width // 2, self.canvas_height // 2, 10, 5, 5)
+
+    #     gameState.x += gameState.dx
+    #     gameState.y += gameState.dy
+
+    #     # Handle ball-wall collisions
+    #     if gameState.y - gameState.radius < 0 or gameState.y + gameState.radius > self.canvas_height:
+    #         gameState.dy *= -1
+
+    #     # Handle ball-paddle collisions
+    #     if (
+    #         gameState.x - gameState.radius < 20 and
+    #         gameState.y > self.left_pedal and
+    #         gameState.y < self.left_pedal
+    #     ):
+    #         gameState.dx *= -1
+
+    #     if (
+    #         gameState.x + gameState.radius > self.canvas_width - 20 and
+    #         gameState.y > self.right_pedal and
+    #         gameState.y < self.right_pedal
+    #     ):
+    #         gameState.dx *= -1
+
+        # if gameState.x - gameState.radius < 0 or gameState.x + gameState.radius > self.canvas_width:
+        #     # Reset ball position to the center
+        #     gameState.x = self.canvas_width // 2
+        #     gameState.y = self.canvas_height // 2
+
+
+    def calculate_ball_state(self):
+
+        # gameState = Ball(self.canvas_width // 2, self.canvas_height // 2, 10, 5, 5)
+
+        self.ball_x += self.ball_dx
+        self.ball_y += self.ball_dy
+
+        # Handle ball-wall collisions
+        if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
+            self.ball_dy *= -1
+
+        # Handle ball-paddle collisions
+        if (
+            self.ball_x - self.ball_radius < 20 and
+            self.ball_y > self.left_pedal and
+            self.ball_y < self.left_pedal + 100
+        ):
+            self.ball_dx *= -1
+
+        if (
+            self.ball_x + self.ball_radius > self.canvas_width - 20 and
+            self.ball_y > self.right_pedal and
+            self.ball_y < self.right_pedal + 100
+        ):
+            self.ball_dx *= -1
+
+        if self.ball_x - self.ball_radius < 0 or self.ball_x + self.ball_radius > self.canvas_width:
+            # Reset ball position to the center
+            self.ball_x = self.canvas_width // 2
+            self.ball_y = self.canvas_height // 2
+            
+    # async def calculate_ball_state(self):
+    #     self.ball_x += self.ball_dx
+    #     self.ball_y += self.ball_dy
+
+    #     # Handle ball-wall collisions
+    #     if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
+    #         self.ball_dy *= -1
+
+    #     # Handle ball-paddle collisions
+    #     if (
+    #         self.ball_x - self.ball_radius < 20 and
+    #         self.left_pedal < self.ball_y < self.left_pedal + 100  # Adjust the paddle height as needed
+    #     ):
+    #         self.ball_dx *= -1
+
+    #     if (
+    #         self.ball_x + self.ball_radius > self.canvas_width - 20 and
+    #         self.right_pedal < self.ball_y < self.right_pedal + 100  # Adjust the paddle height as needed
+    #     ):
+    #         self.ball_dx *= -1
+
+    #     # Handle ball-wall collisions for left and right walls
+    #     if self.ball_x - self.ball_radius < 0 or self.ball_x + self.ball_radius > self.canvas_width:
+    #         # Reset ball position to the center
+    #         self.ball_x = self.canvas_width // 2
+    #         self.ball_y = self.canvas_height // 2
+
+
 
 # ---------------------------- UFF FUNCTIONS ----------------------------
     async def send_chat_messages(self, event):
@@ -147,16 +269,9 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_game_scene(self, event):
-        # if (self.is_host == True):
-        #     response_type = 'render_left'
-        # else:
-        #     response_type = 'render_right'
-        # print("RESPONSE TYPE")
 
-        # print(response_type)
         await self.send(text_data=json.dumps({
             'type': event['data']['response_type'],
-            # 'all_user': event['data']['all_user'],
             'new_pedal_pos': event['data']['new_pedal_pos']
         }))
 
@@ -175,6 +290,14 @@ class test(AsyncWebsocketConsumer):
             'type': 'game_start',
             # 'is_host': event['data']['is_host'],
             # 'joined_players': event['data']['joined_players']
+
+        }))
+    async def send_ball_update(self, event):
+
+        await self.send(text_data=json.dumps({
+            'type': 'ball_update',
+            'ball_x': event['data']['ball_x'],
+            'ball_y': event['data']['ball_y'],
 
         }))
 
@@ -307,8 +430,10 @@ class test(AsyncWebsocketConsumer):
 
         if (self.is_host == True):
             response_type = 'render_left'
+            self.left_pedal = new_pedal_pos
         else:
             response_type = 'render_right'
+            self.right_pedal = new_pedal_pos
             
         print("RESPONSE TYPE")
 
@@ -338,11 +463,6 @@ class test(AsyncWebsocketConsumer):
         print("self.joined_players")
         print(self.joined_players)
 
-        # Get the user's channel name
-        # user_channel_name = f"{self.user['user_id']}"
-        # print(f"User channel name: {user_channel_name}")
-
-        # Send the message directly to the specific user's channel
         await self.channel_layer.send(
             self.channel_name,
             {
@@ -360,11 +480,29 @@ class test(AsyncWebsocketConsumer):
                 {
                     'type': 'send.game.start',
                     'data': {
-                        # 'new_pedal_pos': new_pedal_pos,
-                        # 'response_type': response_type
+                        'ball_x': self.ball_x,
+                        'ball_y': self.ball_y
                     },
                 }
             )
+
+    async def handle_send_ball_update(self):
+        self.calculate_ball_state()
+        print("BALL_UPDATEEEE")
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.ball.update',
+                'data': {
+                    'ball_x': self.ball_x,   
+                    'ball_y': self.ball_y
+                    
+                },
+            }
+        )
+
+
+
 
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
