@@ -270,6 +270,8 @@ function drawPaddles() {
   const canvas = document.getElementById("pongCanvas");
 
   const ctx = canvas.getContext("2d");
+  console.log("left pedal: ", websocket_obj.game.left_pedal);
+  console.log("right pedal: ", websocket_obj.game.right_pedal);
 
   ctx.fillStyle = "black";
   ctx.fillRect(

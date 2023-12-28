@@ -39,14 +39,19 @@ class test(AsyncWebsocketConsumer):
     canvas_height = 400
     ball_x = canvas_width / 2
     ball_y = canvas_height / 2
-    ball_radius = 10
-    ball_speed = 5
+    ball_radius = 12
+    ball_speed = 3
     ball_dx = 5
     ball_dy = 5
 
 
 
-
+    @classmethod
+    async def assign_left_pedal(cls, val):
+        cls.left_pedal = val
+    @classmethod
+    async def assign_right_pedal(cls, val):
+        cls.right_pedal = val
 
     @classmethod
     def increment_joined_players(cls):
@@ -168,7 +173,41 @@ class test(AsyncWebsocketConsumer):
 
     async def calculate_ball_state(self):
 
-        # gameState = Ball(self.canvas_width // 2, self.canvas_height // 2, 10, 5, 5)
+
+        # self.ball_x += self.ball_dx
+        # self.ball_y += self.ball_dy
+
+        # # Handle ball-wall collisions
+        # if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
+        #     self.ball_dy *= -1
+
+        # # Handle ball-paddle collisions
+        # if (
+        #     self.ball_x - self.ball_radius < 20 and
+        #     self.ball_y > self.left_pedal and
+        #     self.ball_y < self.left_pedal + 100
+        # ):
+        #     self.ball_dx *= -1
+
+        # if (
+        #     self.ball_x + self.ball_radius > self.canvas_width - 20 and
+        #     self.ball_y > self.right_pedal and
+        #     self.ball_y < self.right_pedal + 100
+        # ):
+        #     self.ball_dx *= -1
+
+        # if self.ball_x - self.ball_radius < 0 or self.ball_x + self.ball_radius > self.canvas_width:
+        #     # Reset ball position to the center
+        #     self.ball_x = self.canvas_width // 2
+        #     self.ball_y = self.canvas_height // 2
+
+        # Adjust the paddle height as needed
+        print("left pedal")
+        print(self.left_pedal)
+        print("right pedal")
+        print(self.right_pedal)
+
+        paddle_height = 100
 
         self.ball_x += self.ball_dx
         self.ball_y += self.ball_dy
@@ -177,25 +216,26 @@ class test(AsyncWebsocketConsumer):
         if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
             self.ball_dy *= -1
 
-        # Handle ball-paddle collisions
+        # Handle ball-paddle collisions with left paddle
         if (
             self.ball_x - self.ball_radius < 20 and
-            self.ball_y > self.left_pedal and
-            self.ball_y < self.left_pedal + 100
+            self.left_pedal < self.ball_y < self.left_pedal + paddle_height
         ):
-            self.ball_dx *= -1
+            self.ball_dx = abs(self.ball_dx)  # Ensure the ball moves to the right
 
+        # Handle ball-paddle collisions with right paddle
         if (
             self.ball_x + self.ball_radius > self.canvas_width - 20 and
-            self.ball_y > self.right_pedal and
-            self.ball_y < self.right_pedal + 100
+            self.right_pedal < self.ball_y < self.right_pedal + paddle_height
         ):
-            self.ball_dx *= -1
+            self.ball_dx = -abs(self.ball_dx)  # Ensure the ball moves to the left
 
-        if self.ball_x - self.ball_radius < 0 or self.ball_x + self.ball_radius > self.canvas_width:
+        # Handle ball-wall collisions for left and right walls
+        if self.ball_x - self.ball_radius < 0 + 5 or self.ball_x + self.ball_radius - 5 > self.canvas_width:
             # Reset ball position to the center
             self.ball_x = self.canvas_width // 2
             self.ball_y = self.canvas_height // 2
+
 
 
     async def game_loop(self):
@@ -466,10 +506,13 @@ class test(AsyncWebsocketConsumer):
 
         if (self.is_host == True):
             response_type = 'render_left'
-            self.left_pedal = new_pedal_pos
+            await self.assign_left_pedal(new_pedal_pos)
+            # self.left_pedal = new_pedal_pos
         else:
             response_type = 'render_right'
-            self.right_pedal = new_pedal_pos
+            await self.assign_right_pedal(new_pedal_pos)
+
+            # self.right_pedal = new_pedal_pos
             
         print("RESPONSE TYPE")
 
