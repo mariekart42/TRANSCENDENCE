@@ -94,11 +94,15 @@ async function establishWebsocketConnection() {
     else if (data.type === 'render_left')
     {
       websocket_obj.game.left_pedal = data.new_pedal_pos
+      await update();
+
       // await renderGame()
     }
     else if (data.type === 'render_right')
     {
       websocket_obj.game.right_pedal = data.new_pedal_pos
+      await update();
+
       // await renderGame()
     }
     
@@ -128,6 +132,8 @@ async function establishWebsocketConnection() {
       console.log("BALL_UPDATE");
       websocket_obj.game.ball_x = data.ball_x
       websocket_obj.game.ball_y = data.ball_y
+      await update();
+
 
       // document.getElementById("waitingScreen").style.display = "none";
 
@@ -198,7 +204,7 @@ async function sendDataToBackend(request_type) {
         }));
       }
 
-      else if (request_type === 'game_new_move') {
+      else if (request_type === 'game_new_move') {      
         console.log("in game_new_move");
         console.log(websocket_obj.game.is_host);
         // prev_pos =  websocket_obj.game.left_pedal;
@@ -260,6 +266,49 @@ async function sendDataToBackend(request_type) {
   });
 }
 
+function drawPaddles() {
+  const canvas = document.getElementById("pongCanvas");
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "black";
+  ctx.fillRect(
+    10,
+    websocket_obj.game.left_pedal,
+    10,
+    100
+  );
+  ctx.fillRect(
+    canvas.width - 10,
+    websocket_obj.game.right_pedal,
+    10,
+    100
+  );
+}
+
+function drawBall() {
+  const canvas = document.getElementById("pongCanvas");
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.beginPath();
+  ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, 10, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.closePath();
+}
+
+async  function update() {
+  const canvas = document.getElementById("pongCanvas");
+
+  const ctx = canvas.getContext("2d");
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // moveBall();
+  drawPaddles();
+  drawBall();
+}
+
 async function launchGame()
 {
   // document.getElementById("waitingScreen").style.display = "none";
@@ -283,21 +332,21 @@ async function launchGame()
     // is_host: false,
   };
 
-  function drawPaddles() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(
-      10,
-      websocket_obj.game.left_pedal,
-      10,
-      100
-    );
-    ctx.fillRect(
-      canvas.width - 10,
-      websocket_obj.game.right_pedal,
-      10,
-      100
-    );
-  }
+  // function drawPaddles() {
+  //   ctx.fillStyle = "black";
+  //   ctx.fillRect(
+  //     10,
+  //     websocket_obj.game.left_pedal,
+  //     10,
+  //     100
+  //   );
+  //   ctx.fillRect(
+  //     canvas.width - 10,
+  //     websocket_obj.game.right_pedal,
+  //     10,
+  //     100
+  //   );
+  // }
 
   // Draw the ball
   // function drawBall() {
@@ -307,12 +356,12 @@ async function launchGame()
   //   ctx.closePath();
   // }
 
-  function drawBall() {
-    ctx.beginPath();
-    ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, 10, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.closePath();
-  }
+  // function drawBall() {
+  //   ctx.beginPath();
+  //   ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, 10, 0, Math.PI * 2);
+  //   ctx.fill();
+  //   ctx.closePath();
+  // }
 
   // Move the ball
   // function moveBall() {
@@ -347,25 +396,28 @@ async function launchGame()
   //   }
   // }
 
-  function update() {
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // moveBall();
-    drawPaddles();
-    drawBall();
-  }
-  async function gameLoop() {
-    await sendDataToBackend('send_ball_update');
-
-    update();
-    requestAnimationFrame(gameLoop);
-
-    setTimeout(gameLoop, 100000);
-  }
+  // function update() {
+  // async  function update() {
 
 
-  gameLoop()
+  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  //   // moveBall();
+  //   drawPaddles();
+  //   drawBall();
+  // }
+  await update()
+  // async function gameLoop() {
+  //   await sendDataToBackend('send_ball_update');
+
+  //   update();
+  //   requestAnimationFrame(gameLoop);
+
+  //   setTimeout(gameLoop, 100000);
+  // }
+
+
+  // gameLoop()
 
 }
 

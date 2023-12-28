@@ -6,6 +6,9 @@ from . import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from django.utils import timezone
+# import pygame
+import asyncio
+
 
 
 class test(AsyncWebsocketConsumer):
@@ -157,7 +160,13 @@ class test(AsyncWebsocketConsumer):
         #     gameState.y = self.canvas_height // 2
 
 
-    def calculate_ball_state(self):
+
+
+
+
+
+
+    async def calculate_ball_state(self):
 
         # gameState = Ball(self.canvas_width // 2, self.canvas_height // 2, 10, 5, 5)
 
@@ -187,7 +196,34 @@ class test(AsyncWebsocketConsumer):
             # Reset ball position to the center
             self.ball_x = self.canvas_width // 2
             self.ball_y = self.canvas_height // 2
-            
+
+
+    async def game_loop(self):
+        while True:
+            try:
+                print("CALCULATING BALL STATE")
+                await self.calculate_ball_state()
+                # await self.handle_send_ball_update()
+
+                # ... your game loop logic ...
+
+                # Use channel_layer to send a message to the group directly
+                await self.channel_layer.group_send(
+                    self.my_group_id,
+                    {
+                        'type': 'send.ball.update',
+                        'data': {
+                            'ball_x': self.ball_x,
+                            'ball_y': self.ball_y,
+                        },
+                    }
+                )
+                await asyncio.sleep(1/60)
+
+            except Exception as e:
+                print(f"Error in game_loop: {e}")
+
+        
     # async def calculate_ball_state(self):
     #     self.ball_x += self.ball_dx
     #     self.ball_y += self.ball_dy
@@ -293,7 +329,7 @@ class test(AsyncWebsocketConsumer):
 
         }))
     async def send_ball_update(self, event):
-
+        print("IN SEND BALL UPDATE")
         await self.send(text_data=json.dumps({
             'type': 'ball_update',
             'ball_x': event['data']['ball_x'],
@@ -474,6 +510,7 @@ class test(AsyncWebsocketConsumer):
             }
         )
         if (self.joined_players == 2):
+            print("TWO PLAYERS\n")
             self.reset_joined_players()
             await self.channel_layer.group_send(
                 self.my_group_id,
@@ -485,9 +522,14 @@ class test(AsyncWebsocketConsumer):
                     },
                 }
             )
+            print("after TWO PLAYERS\n")
+
+            # await self.game_loop()
+            asyncio.create_task(self.game_loop())
+
 
     async def handle_send_ball_update(self):
-        self.calculate_ball_state()
+        await self.calculate_ball_state()
         print("BALL_UPDATEEEE")
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -500,6 +542,8 @@ class test(AsyncWebsocketConsumer):
                 },
             }
         )
+        print("sent")
+
 
 
 
