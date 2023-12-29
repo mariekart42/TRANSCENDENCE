@@ -103,7 +103,6 @@ async function renderProfile() {
 }
 
 async function handleButtonClickChats(chat_obj) {
-  console.log('CHAT_OBJ: ', chat_obj)
 
   const chatDiv = document.getElementById('messageSide');
   chatDiv.classList.remove('hidden');
@@ -134,13 +133,10 @@ async function handleButtonClickChats(chat_obj) {
 
 
 async function renderChat() {
-  console.log('HEEE: ', websocket_obj.chat_data)
-  // render user list on the left side
   const chats_container = document.getElementById('chatsLeftSide')
   chats_container.innerHTML = ''
 
   let myArray = websocket_obj.chat_data
-  console.log('MY ARRAY: ', myArray)
   myArray.forEach(chat => {
     const chat_element = document.createElement('div');
     chat_element.classList.add('row', 'sideBar-body');
