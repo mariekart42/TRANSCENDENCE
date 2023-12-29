@@ -72,16 +72,16 @@ function setErrorWithTimout(element_id, error_message, timout) {
   obj.style.display = 'block';
   obj.style.color = 'red'
   setTimeout(function() {
-    obj.remove();
+    obj.style.display = 'none';
   }, timout);
 }
 
-function setMessageWithTimout(element_id, message, timout) {
+async function setMessageWithTimout(element_id, message, timout) {
   const obj = document.getElementById(element_id)
   obj.textContent = message;
   obj.style.display = 'block';
   obj.style.color = 'green'
-  setTimeout(function() {
-    obj.remove();
+  setTimeout(async function() {
+    obj.style.display = 'none';
   }, timout);
 }

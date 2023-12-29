@@ -25,7 +25,7 @@ websocket_obj = {
     {
       chat_id: null,
       chat_name: null,
-      isPrivate: false,
+      isPrivate: null,
     }
   ],
   messages: [
@@ -174,6 +174,7 @@ async function sendDataToBackend(request_type) {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
             'chat_name': document.getElementById('new_chat_name').value,
+            'isPrivate': document.getElementById('flexSwitchCheckChecked').checked
           }
           break
         case 'set_invited_user_to_chat':

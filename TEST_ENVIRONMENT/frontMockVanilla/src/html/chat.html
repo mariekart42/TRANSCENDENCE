@@ -25,6 +25,10 @@
                     <label for="new_chat_name" class="form-label">Create new chat</label>
                     <input type="text" class="form-control" placeholder="New Chat..."
                            aria-label="Chat Name" id="new_chat_name" aria-describedby="create_chat_button">
+                  <div class="form-check form-switch">
+                    <label class="form-check-label" for="flexSwitchCheckChecked">private</label>
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked">
+                  </div>
                     <button class="btn btn-outline-success" type="button" id="create_chat_button">Create</button>
                     <div id="info_create_chat"></div>
                   </div>
@@ -55,33 +59,52 @@
           </div>
           <div class="col">
 
-            <button id="profile-in-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile">Profile</button>
-            <!-- PROFILE IN CHAT -->
-            <!-- Outer Modal (Profile) -->
-            <div class="modal fade" id="staticBackdropProfile" data-bs-backdrop="static" data-bs-keyboard="false"
-                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+<!--?       FOR PRIVATE CHATS-->
+            <button id="profile-in-private-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#backdropPrivateProfile">PRIV Profile</button>
+            <div class="modal fade" id="backdropPrivateProfile" data-bs-backdrop="static" data-bs-keyboard="false"
+                 tabindex="-1" aria-labelledby="backdropPrivateProfileLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                   <!-- Header -->
                   <div class="modal-header">
-                    <h1 class="modal-title" id="staticBackdropLabel"></h1>
+                    <h1 class="modal-title" id="backdropPrivateProfileLabel"></h1>
                   </div>
                   <!-- Body -->
                   <div class="modal-body">
-                    <!-- Content of the outer modal -->
-                    <div id="userInChatList"></div>
-                    <br>
+                   nothing lol
+                  </div>
+                  <!-- Footer -->
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+<!--?       FOR PUBLIC CHATS-->
+            <button id="profile-in-public-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile">PUB Profile</button>
+            <div class="modal fade" id="staticBackdropProfile" data-bs-backdrop="static" data-bs-keyboard="false"
+                 tabindex="-1" aria-labelledby="backdropPublicProfileLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <!-- Header -->
+                  <div class="modal-header">
+                    <h1 class="modal-title" id="backdropPublicProfileLabel"></h1>
+                  </div>
+                  <!-- Body -->
+                  <div class="modal-body">
+                    <div id="userInChatList"></div><br>
                     <div class="input-group mb-3">
                       <input type="text" class="form-control" placeholder="Invite User..."
                              aria-label="Recipient's username" id="invite_user" aria-describedby="invite_user_button">
                       <button class="btn btn-outline-success" type="button" id="invite_user_button">Invite</button>
                     </div>
-                    <div id="message_with_timeout"></div>
-                      <br>
+                    <div id="message_with_timeout"></div><br>
                     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop2">Leave Chat
-                    </button>
-                    <br><br>
+                    </button><br><br>
                   </div>
                   <!-- Footer -->
                   <div class="modal-footer">

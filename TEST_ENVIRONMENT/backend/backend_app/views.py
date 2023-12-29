@@ -166,7 +166,14 @@ def getUserChats(request, user_id):
     try:
         user_instance = MyUser.objects.get(id=user_id)
         user_chats = user_instance.chats.all()
-        chat_data = [{'chat_id': chat.id, 'chat_name': chat.chatName} for chat in user_chats]
+        chat_data = [
+            {
+                'chat_id': chat.id,
+                'chat_name': chat.chatName,
+                'isPrivate': chat.isPrivate
+            }
+            for chat in user_chats
+        ]
         return JsonResponse({'chat_data': chat_data})
     except MyUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)

@@ -260,7 +260,8 @@ class test(AsyncWebsocketConsumer):
     async def handle_create_new_chat(self, text_data_json):
         chat_name = text_data_json["data"]["chat_name"]
         user_id = text_data_json["data"]["user_id"]
-        info = await self.createPublicChat(user_id, chat_name)
+        is_private = text_data_json["data"]["isPrivate"]
+        info = await self.createChat(user_id, chat_name, is_private)
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -343,7 +344,8 @@ class test(AsyncWebsocketConsumer):
         user_chats = [
             {
                 'chat_id': chat.id,
-                'chat_name': chat.chatName
+                'chat_name': chat.chatName,
+                'isPrivate': chat.isPrivate
             }
             for chat in all_chats
         ]
@@ -373,13 +375,12 @@ class test(AsyncWebsocketConsumer):
             return 'something big in leaveChat'
 
     @database_sync_to_async
-    def createPublicChat(self, user_id, chat_name):
+    def createChat(self, user_id, chat_name, is_private):
         try:
-            print('chat_name: ', chat_name)
             chat_exists = Chat.objects.filter(chatName=chat_name).exists()
             if chat_exists:
                 return 'Chat already exists'
-            new_chat = Chat.objects.create(chatName=chat_name, isPrivate=False)
+            new_chat = Chat.objects.create(chatName=chat_name, isPrivate=is_private)
             user_instance = MyUser.objects.get(id=user_id)
             user_instance.chats.add(new_chat.id)
             new_chat.save()

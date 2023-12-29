@@ -21,6 +21,7 @@ function chatDom() {
   })
 
   document.getElementById('create_chat_button').addEventListener('click', async function() {
+    // get info if private or not
     await createChat()
   })
 }
@@ -80,9 +81,18 @@ async function createChat() {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
+  const checkBox = document.getElementById('flexSwitchCheckChecked')
+  if (checkBox.checked) {
+    console.log('SWITCH ON ')
+  } else {
+    console.log('SWITCH OFF')
+  }
+
+
+
   await sendDataToBackend('set_new_chat')
   await sendDataToBackend('get_current_users_chats')
-  setMessageWithTimout('info_create_chat', 'Created chat "'+chat_name+'" successfully', 5000)
+  await setMessageWithTimout('info_create_chat', 'Created chat "' + chat_name + '" successfully', 5000)
 }
 
 
@@ -92,21 +102,31 @@ async function renderProfile() {
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 }
 
-async function handleButtonClickChats(chatId, chatName) {
+async function handleButtonClickChats(chat_obj) {
+  console.log('CHAT_OBJ: ', chat_obj)
+
   const chatDiv = document.getElementById('messageSide');
   chatDiv.classList.remove('hidden');
 
   const right_heading_name = document.getElementById('right-heading-name')
-  right_heading_name.textContent = chatName
+  right_heading_name.textContent = chat_obj.chat_name
 
-  const profile_button = document.getElementById('profile-in-chat-button')
-  profile_button.classList.remove('hidden')
+  let private_profile_button = document.getElementById('profile-in-private-chat-button')
+  let private_profile_header = document.getElementById('backdropPrivateProfileLabel')
+  let public_profile_button = document.getElementById('profile-in-public-chat-button')
+  let public_profile_header = document.getElementById('backdropPublicProfileLabel')
+  if (chat_obj.isPrivate) {
+    private_profile_button.classList.remove('hidden')
+    private_profile_header.textContent = chat_obj.chat_name
+    public_profile_button.classList.add('hidden')
+  } else {
+    public_profile_button.classList.remove('hidden')
+    public_profile_header.textContent = chat_obj.chat_name
+    private_profile_button.classList.add('hidden')
+  }
 
-  const profile_button_header = document.getElementById('staticBackdropLabel')
-  profile_button_header.textContent = chatName
-
-  websocket_obj.chat_id = chatId;
-  websocket_obj.chat_name = chatName;
+  websocket_obj.chat_id = chat_obj.chat_id;
+  websocket_obj.chat_name = chat_obj.chat_name;
   await sendDataToBackend('get_online_stats')
   await sendDataToBackend('get_user_in_current_chat')
   await sendDataToBackend('get_chat_messages')
@@ -114,7 +134,7 @@ async function handleButtonClickChats(chatId, chatName) {
 
 
 async function renderChat() {
-  console.log('render new chat, chats: ', websocket_obj.chat_data)
+  console.log('HEEE: ', websocket_obj.chat_data)
   // render user list on the left side
   const chats_container = document.getElementById('chatsLeftSide')
   chats_container.innerHTML = ''
@@ -124,8 +144,6 @@ async function renderChat() {
   myArray.forEach(chat => {
     const chat_element = document.createElement('div');
     chat_element.classList.add('row', 'sideBar-body');
-
-    // console.log('CHAT: ', chat)
 
     const avatarCol = document.createElement('div');
     avatarCol.classList.add('col-sm-3', 'col-xs-3', 'sideBar-avatar');
@@ -149,10 +167,14 @@ async function renderChat() {
     nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
 
     let chatName = document.createElement('div');
-    chatName.textContent = chat.chat_name;
+    if (chat.isPrivate) {
+      chatName.textContent = chat.chat_name + ' [PRIVATE]';
+    } else {
+      chatName.textContent = chat.chat_name + ' [PUBLIC]';
+    }
 
     chat_element.addEventListener('click', async function () {
-      await handleButtonClickChats(chat.chat_id, chat.chat_name);
+      await handleButtonClickChats(chat);
     });
 
     nameCol.appendChild(chatName);
