@@ -13,19 +13,11 @@ function addEventListenersIsAuth() {
   }
   loadContentChat('html/chat.html', 'chat');
 
-  document.getElementById('showChatButton').addEventListener('click', function () {
+  document.getElementById('showChatButton').addEventListener('click', async function () {
     const chat = document.getElementById('chat')
     chat.classList.remove('hidden')
-    const nothing = document.getElementById('nothingSite')
-    nothing.classList.add('hidden')
-    const home = document.getElementById('homeSite')
-    home.classList.add('hidden')
-  })
-  document.getElementById('nothingButton').addEventListener('click', async function () {
-    const chat = document.getElementById('chat')
-    chat.classList.add('hidden')
     const nothingSite = document.getElementById('nothingSite')
-    nothingSite.classList.remove('hidden')
+    nothingSite.classList.add('hidden')
     const home = document.getElementById('homeSite')
     home.classList.add('hidden')
     let url = `http://127.0.0.1:6969/user/getUserChats/${websocket_obj.user_id}/`
@@ -44,6 +36,14 @@ function addEventListenersIsAuth() {
         console.error('Error during getUserChats:', error);
       });
   })
+  document.getElementById('nothingButton').addEventListener('click', async function () {
+    const chat = document.getElementById('chat')
+    chat.classList.add('hidden')
+    const nothingSite = document.getElementById('nothingSite')
+    nothingSite.classList.remove('hidden')
+    const home = document.getElementById('homeSite')
+    home.classList.add('hidden')
+  })
 
   document.getElementById('profileButton').addEventListener('click', function () {
     const userModal = new bootstrap.Modal(document.getElementById('userProfileModal2'));
@@ -54,11 +54,13 @@ function addEventListenersIsAuth() {
     userModal.show();
   })
 
-  document.getElementById('home').addEventListener('click', function () {
+  document.getElementById('homeButton').addEventListener('click', function () {
     const chat = document.getElementById('chat')
     chat.classList.add('hidden')
     const nothingSite = document.getElementById('nothingSite')
     nothingSite.classList.add('hidden')
+      const home = document.getElementById('homeSite')
+    home.classList.remove('hidden')
     // also game etc. later
   })
 }

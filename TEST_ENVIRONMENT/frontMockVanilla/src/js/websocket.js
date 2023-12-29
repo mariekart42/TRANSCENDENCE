@@ -209,9 +209,6 @@ async function sendDataToBackend(request_type) {
 
 async function renderMessages() {
 
-  const chatTitle = document.getElementById('chatTitle')
-  chatTitle.textContent = websocket_obj.chat_name +' | ' + websocket_obj.chat_id
-
   let myArray = websocket_obj.messages.message_data;
   renderUserInChatList()
   let mainContainer = document.getElementById('messageContainer');
@@ -248,8 +245,7 @@ async function renderMessages() {
         return user.user_id === currentUserId;
       }
 
-      const isCurrentUserOnline = websocket_obj.onlineStats.some(hasMatchingUserId);
-      if (isCurrentUserOnline) {
+      if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
         titleElement.textContent = myArray[i].sender + ' 🟢';
       } else {
         titleElement.textContent = myArray[i].sender + ' 🔴';
@@ -277,18 +273,23 @@ function renderUserInChatList() {
   let mainContainer = document.getElementById('userInChatList');
   mainContainer.innerHTML = '';
 
-  // CHANGE ALL_USER WITH user in chat
   let myArray = websocket_obj.userInCurrentChat
-  console.log('MyArray: ', myArray)
 
   let title = document.createElement('h2');
   title.textContent = 'User in Chat:'
   mainContainer.appendChild(title);
 
   for (let i = 0; i < myArray.length; i++) {
-    let textDiv = document.createElement('div');
-      textDiv.textContent = myArray[i].user_name;
-      mainContainer.appendChild(textDiv)
+    const chat_element = document.createElement('div');
+    chat_element.classList.add('row', 'contacts-in-chat-profile');
+    chat_element.textContent = myArray[i].user_name;
+    chat_element.addEventListener('click', async function () {
+      await handleButtonClickChatsInProfile();
+    });
+    mainContainer.appendChild(chat_element)
   }
 }
 
+async function handleButtonClickChatsInProfile() {
+  console.log('lol something should happen now')
+}
