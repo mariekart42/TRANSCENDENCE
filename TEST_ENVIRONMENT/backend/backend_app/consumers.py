@@ -19,6 +19,9 @@ class test(AsyncWebsocketConsumer):
         }
     ]
 
+    game_states = {}
+
+
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
@@ -28,38 +31,87 @@ class test(AsyncWebsocketConsumer):
         self.prev_pos = 0
         self.is_host = 0
         self.game_id = 0
-
-    joined_players = 0 
-
-
-    left_pedal = 150
-    right_pedal = 150
-
-    canvas_width = 800
-    canvas_height = 400
-    ball_x = canvas_width / 2
-    ball_y = canvas_height / 2
-    ball_radius = 12
-    ball_speed = 3
-    ball_dx = 5
-    ball_dy = 5
+        # self.joined_players = 0 
 
 
+        # self.left_pedal = 150
+        # self.right_pedal = 150
 
-    @classmethod
+        # self.canvas_width = 800
+        # self.canvas_height = 400
+        # self.ball_x = canvas_width / 2
+        # self.ball_y = canvas_height / 2
+        # self.ball_radius = 12
+        # self.ball_speed = 3
+        # self.ball_dx = 5
+        # self.ball_dy = 5
+
+    # joined_players = 0 
+
+
+    # left_pedal = 150
+    # right_pedal = 150
+
+    # canvas_width = 800
+    # canvas_height = 400
+    # ball_x = canvas_width / 2
+    # ball_y = canvas_height / 2
+    # ball_radius = 12
+    # ball_speed = 3
+    # ball_dx = 5
+    # ball_dy = 5
+
+
+# Update these methods
     async def assign_left_pedal(cls, val):
-        cls.left_pedal = val
-    @classmethod
+        # await cls.init_game_struct()
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['left_pedal'] = val
+
     async def assign_right_pedal(cls, val):
-        cls.right_pedal = val
+        # await cls.init_game_struct()
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['right_pedal'] = val
 
-    @classmethod
-    def increment_joined_players(cls):
-        cls.joined_players += 1
+    async def increment_joined_players(cls):
+        # await cls.init_game_struct()
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['joined_players'] += 1
 
-    @classmethod
-    def reset_joined_players(cls):
-        cls.joined_players = 0
+    async def reset_joined_players(cls):
+        # await cls.init_game_struct()
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['joined_players'] = 0
+
+
+
+    # # @classmethod
+    # async def assign_left_pedal(self, val):
+    #     # cls.left_pedal = val
+    #     await self.init_game_struct()
+    #     game_state = self.game_states.get(cls.game_id, {})
+    #     game_state['left_pedal'] = val
+
+    # # @classmethod
+    # async def assign_right_pedal(self, val):
+    #     # cls.right_pedal = val
+    #     await self.init_game_struct()
+    #     game_state = self.game_states.get(self.game_id, {})
+    #     game_state['right_pedal'] = val
+
+    # # @classmethod
+    # async def increment_joined_players(self):
+    #     # cls.game_states[self.game_id]joined_players += 1
+    #     await self.init_game_struct()
+    #     game_state = self.game_states.get(self.game_id, {})
+    #     game_state['joined_players'] += 1
+
+    # # @classmethod
+    # async def reset_joined_players(self):
+    #     await self.init_game_struct()
+    #     game_state = self.game_states.get(self.game_id, {})
+    #     game_state['joined_players'] = 0
+    #     # cls.joined_players = 0
 
 
     async def connect(self):
@@ -91,6 +143,7 @@ class test(AsyncWebsocketConsumer):
         print(self.user)
         print('______________\n')
 
+        await self.init_game_struct()
 
 
         await self.channel_layer.group_add(
@@ -356,7 +409,6 @@ class test(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'init_game',
             'is_host': event['data']['is_host'],
-            # 'joined_players': event['data']['joined_players']
 
         }))
 
@@ -364,8 +416,6 @@ class test(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps({
             'type': 'game_start',
-            # 'is_host': event['data']['is_host'],
-            # 'joined_players': event['data']['joined_players']
 
         }))
     async def send_ball_update(self, event):
@@ -531,16 +581,32 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
+    async def init_game_struct(self):
+        if self.game_id not in self.game_states:
+            self.game_states[self.game_id] = {
+                'left_pedal': 150,
+                'right_pedal': 150,
+                'ball_x': 400,  # Initial ball position
+                'ball_y': 200,  # Initial ball position
+                'ball_radius': 10,
+                'ball_speed': 3,
+                'ball_dx': 5,
+                'ball_dy': 5,
+                'joined_players': 0
+            }
+
     async def handle_send_init_game(self):
+
+        await self.init_game_struct()
         return_val = await self.get_host(self.game_id, self.user['user_id'])
         print("is host status:")
         print(return_val)
 
-        # self.joined_players += 1
-        self.increment_joined_players()
-
+        await self.increment_joined_players()
+        # self.game_states.get(self.game_id, {}).get('joined_players')
         print("self.joined_players")
-        print(self.joined_players)
+        print( self.game_states.get(self.game_id, {}).get('joined_players')
+)
 
         await self.channel_layer.send(
             self.channel_name,
@@ -548,13 +614,13 @@ class test(AsyncWebsocketConsumer):
                 'type': 'send.init.game',
                 'data': {
                     'is_host': return_val,
-                    'joined_players': self.joined_players
+                    'joined_players': self.game_states.get(self.game_id, {}).get('joined_players')
                 },
             }
         )
-        if (self.joined_players == 2):
+        if (self.game_states.get(self.game_id, {}).get('joined_players') == 2):
             print("TWO PLAYERS\n")
-            self.reset_joined_players()
+            await self.reset_joined_players()
             await self.channel_layer.group_send(
                 self.my_group_id,
                 {
