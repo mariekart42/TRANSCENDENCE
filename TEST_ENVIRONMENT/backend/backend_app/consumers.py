@@ -226,68 +226,43 @@ class test(AsyncWebsocketConsumer):
 
     async def calculate_ball_state(self):
 
-
-        # self.ball_x += self.ball_dx
-        # self.ball_y += self.ball_dy
-
-        # # Handle ball-wall collisions
-        # if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
-        #     self.ball_dy *= -1
-
-        # # Handle ball-paddle collisions
-        # if (
-        #     self.ball_x - self.ball_radius < 20 and
-        #     self.ball_y > self.left_pedal and
-        #     self.ball_y < self.left_pedal + 100
-        # ):
-        #     self.ball_dx *= -1
-
-        # if (
-        #     self.ball_x + self.ball_radius > self.canvas_width - 20 and
-        #     self.ball_y > self.right_pedal and
-        #     self.ball_y < self.right_pedal + 100
-        # ):
-        #     self.ball_dx *= -1
-
-        # if self.ball_x - self.ball_radius < 0 or self.ball_x + self.ball_radius > self.canvas_width:
-        #     # Reset ball position to the center
-        #     self.ball_x = self.canvas_width // 2
-        #     self.ball_y = self.canvas_height // 2
-
         # Adjust the paddle height as needed
         print("left pedal")
-        print(self.left_pedal)
+        print(self.game_states.get(self.game_id, {}).get('left_pedal'))
         print("right pedal")
-        print(self.right_pedal)
+        print(self.game_states.get(self.game_id, {}).get('right_pedal'))
 
         paddle_height = 100
+        canvas_width = 800
+        canvas_height = 400
 
-        self.ball_x += self.ball_dx
-        self.ball_y += self.ball_dy
+        self.game_states[self.game_id]['ball_x'] += self.game_states[self.game_id]['ball_dx']
+        self.game_states[self.game_id]['ball_y'] += self.game_states[self.game_id]['ball_dy']
 
         # Handle ball-wall collisions
-        if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
-            self.ball_dy *= -1
+        if self.game_states[self.game_id]['ball_y'] - self.game_states[self.game_id]['ball_radius'] < 0 or self.game_states[self.game_id]['ball_y'] + self.game_states[self.game_id]['ball_radius'] > canvas_height:
+            self.game_states[self.game_id]['ball_dy'] *= -1
 
         # Handle ball-paddle collisions with left paddle
         if (
-            self.ball_x - self.ball_radius < 20 and
-            self.left_pedal < self.ball_y < self.left_pedal + paddle_height
+            self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 20 and
+            self.game_states[self.game_id]['left_pedal'] < self.game_states[self.game_id]['ball_y'] < self.game_states[self.game_id]['left_pedal'] + paddle_height
         ):
-            self.ball_dx = abs(self.ball_dx)  # Ensure the ball moves to the right
+            self.game_states[self.game_id]['ball_dx'] = abs(self.game_states[self.game_id]['ball_dx'])  # Ensure the ball moves to the right
 
         # Handle ball-paddle collisions with right paddle
         if (
-            self.ball_x + self.ball_radius > self.canvas_width - 20 and
-            self.right_pedal < self.ball_y < self.right_pedal + paddle_height
+            self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] > canvas_width - 20 and
+            self.game_states[self.game_id]['right_pedal'] < self.game_states[self.game_id]['ball_y'] < self.game_states[self.game_id]['right_pedal'] + paddle_height
         ):
-            self.ball_dx = -abs(self.ball_dx)  # Ensure the ball moves to the left
+            self.game_states[self.game_id]['ball_dx'] = -abs(self.game_states[self.game_id]['ball_dx'])  # Ensure the ball moves to the left
 
         # Handle ball-wall collisions for left and right walls
-        if self.ball_x - self.ball_radius < 0 + 5 or self.ball_x + self.ball_radius - 5 > self.canvas_width:
+        if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 5 or self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 5 > canvas_width:
             # Reset ball position to the center
-            self.ball_x = self.canvas_width // 2
-            self.ball_y = self.canvas_height // 2
+            self.game_states[self.game_id]['ball_x'] = canvas_width // 2
+            self.game_states[self.game_id]['ball_y'] = canvas_height // 2
+
 
 
 
@@ -306,8 +281,8 @@ class test(AsyncWebsocketConsumer):
                     {
                         'type': 'send.ball.update',
                         'data': {
-                            'ball_x': self.ball_x,
-                            'ball_y': self.ball_y,
+                            'ball_x': self.game_states[self.game_id]['ball_x'],
+                            'ball_y': self.game_states[self.game_id]['ball_y'],
                         },
                     }
                 )
@@ -605,8 +580,8 @@ class test(AsyncWebsocketConsumer):
         await self.increment_joined_players()
         # self.game_states.get(self.game_id, {}).get('joined_players')
         print("self.joined_players")
-        print( self.game_states.get(self.game_id, {}).get('joined_players')
-)
+        print( self.game_states.get(self.game_id, {}).get('joined_players'))
+
 
         await self.channel_layer.send(
             self.channel_name,
@@ -626,8 +601,8 @@ class test(AsyncWebsocketConsumer):
                 {
                     'type': 'send.game.start',
                     'data': {
-                        'ball_x': self.ball_x,
-                        'ball_y': self.ball_y
+                        'ball_x': self.game_states.get(self.game_id, {}).get('ball_x'),
+                        'ball_y': self.game_states.get(self.game_id, {}).get('ball_y')
                     },
                 }
             )
