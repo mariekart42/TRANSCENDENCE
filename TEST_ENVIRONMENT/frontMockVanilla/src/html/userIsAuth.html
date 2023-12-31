@@ -71,9 +71,29 @@
   <h1>WAITING FOR THE SECOND PLAYER</h1>
 </div>
 
-<div id="showGameField" style="display: none;">
-  <canvas id="pongCanvas" width="800" height="400"></canvas>
+<div id="showGameField">
+  <div id="leftPlayer" class="playerInfo">
+    <p>Player 1: John</p>
+    <!-- Add more styling or player information as needed -->
+  </div>
+
+  <div id="score" class="playerInfo">
+    <p>Score: 0 - 0</p>
+    <!-- Add more styling or additional score information as needed -->
+  </div>
+
+  <div id="rightPlayer" class="playerInfo">
+    <p>Player 2: Jane</p>
+    <!-- Add more styling or player information as needed -->
+  </div>
 </div>
+
+<canvas id="pongCanvas" width="800" height="400"></canvas>
+
+
+<!-- <div id="showGameField" style="display: none;">
+  <canvas id="pongCanvas" width="800" height="400"></canvas>
+</div> -->
 
 
 <!-- Create New Chat Modal -->
@@ -183,6 +203,18 @@
 
 
   <style>
+  #showGameField {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+  }
+
+  .playerInfo {
+    flex: 1;
+    padding: 10px;
+  }
+
   .own-message-text {
   background-color: #e6e6e6;
   padding: 5px;

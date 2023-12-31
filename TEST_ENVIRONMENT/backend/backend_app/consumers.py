@@ -31,35 +31,7 @@ class test(AsyncWebsocketConsumer):
         self.prev_pos = 0
         self.is_host = 0
         self.game_id = 0
-        # self.joined_players = 0 
-
-
-        # self.left_pedal = 150
-        # self.right_pedal = 150
-
-        # self.canvas_width = 800
-        # self.canvas_height = 400
-        # self.ball_x = canvas_width / 2
-        # self.ball_y = canvas_height / 2
-        # self.ball_radius = 12
-        # self.ball_speed = 3
-        # self.ball_dx = 5
-        # self.ball_dy = 5
-
-    # joined_players = 0 
-
-
-    # left_pedal = 150
-    # right_pedal = 150
-
-    # canvas_width = 800
-    # canvas_height = 400
-    # ball_x = canvas_width / 2
-    # ball_y = canvas_height / 2
-    # ball_radius = 12
-    # ball_speed = 3
-    # ball_dx = 5
-    # ball_dy = 5
+        self.game_group_id = None
 
 
 # Update these methods
@@ -132,14 +104,16 @@ class test(AsyncWebsocketConsumer):
         # chat_id = text_data_json["data"]["chat_id"]
         chat_id = "" #TEMPORARY
         game_id = text_data_json["data"]["game_id"]
-        # self.my_group_id = 'group_%s' % chat_id
-        self.my_group_id = 'group_%s' % game_id
+        self.my_group_id = 'group_%s' % chat_id
+        # self.my_group_id = 'group_%s' % game_id
+        self.game_group_id = 'group_%s' % game_id
+
         # self.game_id = game_id
         # self.key_code = text_data_json["data"]["key_code"]
         # self.prev_pos = text_data_json["data"]["prev_pos"]
         # print('IN RECIEVE. PREV_POS AND GROUP:')
         # print(self.prev_pos)
-        print(self.my_group_id)
+        print(self.game_group_id)
         print(self.user)
         print('______________\n')
 
@@ -148,7 +122,11 @@ class test(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(
             self.my_group_id,
-            self.channel_name,
+            self.channel_name
+        )
+        await self.channel_layer.group_add(
+            self.game_group_id,
+            self.channel_name
         )
         if what_type == 'save_message_in_db':
             await self.handle_save_message_in_db(text_data_json)
@@ -165,7 +143,6 @@ class test(AsyncWebsocketConsumer):
         elif what_type == 'send_game_scene':
             self.key_code = text_data_json["data"]["key_code"]
             self.prev_pos = text_data_json["data"]["prev_pos"]
-            # self.is_host = text_data_json["data"]["is_host"]
             await self.handle_send_game_scene()
         elif what_type == 'send_init_game':
             self.game_id = game_id
@@ -277,7 +254,7 @@ class test(AsyncWebsocketConsumer):
 
                 # Use channel_layer to send a message to the group directly
                 await self.channel_layer.group_send(
-                    self.my_group_id,
+                    self.game_group_id,
                     {
                         'type': 'send.ball.update',
                         'data': {
@@ -519,7 +496,6 @@ class test(AsyncWebsocketConsumer):
         )
 
     async def handle_send_game_scene(self):
-        all_user = await self.get_all_user()
 
         # new_pedal_pos = 0
         if self.key_code == 38:
@@ -543,12 +519,11 @@ class test(AsyncWebsocketConsumer):
 
         print(response_type)    
         await self.channel_layer.group_send(
-            self.my_group_id,
+            self.game_group_id,
             {
                 'type': 'send.game.scene',
                 'data': {
                     # 'chat_id': chat_id,
-                    'all_user': all_user,            
                     'new_pedal_pos': new_pedal_pos,
                     'response_type': response_type
 
@@ -597,7 +572,7 @@ class test(AsyncWebsocketConsumer):
             print("TWO PLAYERS\n")
             await self.reset_joined_players()
             await self.channel_layer.group_send(
-                self.my_group_id,
+                self.game_group_id,
                 {
                     'type': 'send.game.start',
                     'data': {
@@ -616,7 +591,7 @@ class test(AsyncWebsocketConsumer):
         await self.calculate_ball_state()
         print("BALL_UPDATEEEE")
         await self.channel_layer.group_send(
-            self.my_group_id,
+            self.game_group_id,
             {
                 'type': 'send.ball.update',
                 'data': {
