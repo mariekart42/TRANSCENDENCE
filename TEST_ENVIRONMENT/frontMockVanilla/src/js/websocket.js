@@ -52,7 +52,9 @@ websocket_obj = {
       right_pedal: 0,
       is_host: false,
       ball_x: 0,
-      ball_y: 0
+      ball_y: 0,
+      host_score: 0,
+      guest_score: 0
 
     }
   ],

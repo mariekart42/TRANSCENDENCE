@@ -56,41 +56,10 @@ class test(AsyncWebsocketConsumer):
         game_state['joined_players'] = 0
 
 
-
-    # # @classmethod
-    # async def assign_left_pedal(self, val):
-    #     # cls.left_pedal = val
-    #     await self.init_game_struct()
-    #     game_state = self.game_states.get(cls.game_id, {})
-    #     game_state['left_pedal'] = val
-
-    # # @classmethod
-    # async def assign_right_pedal(self, val):
-    #     # cls.right_pedal = val
-    #     await self.init_game_struct()
-    #     game_state = self.game_states.get(self.game_id, {})
-    #     game_state['right_pedal'] = val
-
-    # # @classmethod
-    # async def increment_joined_players(self):
-    #     # cls.game_states[self.game_id]joined_players += 1
-    #     await self.init_game_struct()
-    #     game_state = self.game_states.get(self.game_id, {})
-    #     game_state['joined_players'] += 1
-
-    # # @classmethod
-    # async def reset_joined_players(self):
-    #     await self.init_game_struct()
-    #     game_state = self.game_states.get(self.game_id, {})
-    #     game_state['joined_players'] = 0
-    #     # cls.joined_players = 0
-
-
     async def connect(self):
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
-        # self.channel_name = f"user_{self.user['user_id']}"
 
         await self.accept()
 
@@ -236,6 +205,21 @@ class test(AsyncWebsocketConsumer):
 
         # Handle ball-wall collisions for left and right walls
         if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 5 or self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 5 > canvas_width:
+            
+            if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 5:
+            # Ball hit the left side
+            # Handle left side collision logic here
+            # For example, you can update the score or reflect the ball's direction
+            self.game_states[self.game_id]['host_scored'] = 1
+
+
+            elif self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 5 > canvas_width:
+            # Ball hit the right side
+            # Handle right side collision logic here
+            # For example, you can update the score or reflect the ball's direction
+
+
+            
             # Reset ball position to the center
             self.game_states[self.game_id]['ball_x'] = canvas_width // 2
             self.game_states[self.game_id]['ball_y'] = canvas_height // 2
@@ -249,8 +233,6 @@ class test(AsyncWebsocketConsumer):
                 print("CALCULATING BALL STATE")
                 await self.calculate_ball_state()
                 # await self.handle_send_ball_update()
-
-                # ... your game loop logic ...
 
                 # Use channel_layer to send a message to the group directly
                 await self.channel_layer.group_send(
@@ -268,33 +250,6 @@ class test(AsyncWebsocketConsumer):
             except Exception as e:
                 print(f"Error in game_loop: {e}")
 
-        
-    # async def calculate_ball_state(self):
-    #     self.ball_x += self.ball_dx
-    #     self.ball_y += self.ball_dy
-
-    #     # Handle ball-wall collisions
-    #     if self.ball_y - self.ball_radius < 0 or self.ball_y + self.ball_radius > self.canvas_height:
-    #         self.ball_dy *= -1
-
-    #     # Handle ball-paddle collisions
-    #     if (
-    #         self.ball_x - self.ball_radius < 20 and
-    #         self.left_pedal < self.ball_y < self.left_pedal + 100  # Adjust the paddle height as needed
-    #     ):
-    #         self.ball_dx *= -1
-
-    #     if (
-    #         self.ball_x + self.ball_radius > self.canvas_width - 20 and
-    #         self.right_pedal < self.ball_y < self.right_pedal + 100  # Adjust the paddle height as needed
-    #     ):
-    #         self.ball_dx *= -1
-
-    #     # Handle ball-wall collisions for left and right walls
-    #     if self.ball_x - self.ball_radius < 0 or self.ball_x + self.ball_radius > self.canvas_width:
-    #         # Reset ball position to the center
-    #         self.ball_x = self.canvas_width // 2
-    #         self.ball_y = self.canvas_height // 2
 
 
 
@@ -542,7 +497,9 @@ class test(AsyncWebsocketConsumer):
                 'ball_speed': 3,
                 'ball_dx': 5,
                 'ball_dy': 5,
-                'joined_players': 0
+                'joined_players': 0,
+                'host_scored': 0,
+                'guest_scored':0
             }
 
     async def handle_send_init_game(self):
