@@ -135,12 +135,16 @@ async function establishWebsocketConnection() {
       websocket_obj.game.ball_x = data.ball_x
       websocket_obj.game.ball_y = data.ball_y
       await update();
+    }
+    else if (data.type === 'score_update')
+    {
+      console.log("SCORE_UPDATE");
+      websocket_obj.game.host_score = data.host_score
+      websocket_obj.game.guest_score = data.guest_score
+      console.log("host_score: ", websocket_obj.game.host_score);
+      console.log("guest_score: ", websocket_obj.game.guest_score);
 
-
-      // document.getElementById("waitingScreen").style.display = "none";
-
-
-      // launchGame();
+      await updateScore();
     }
     
 
@@ -311,6 +315,14 @@ async  function update() {
   // moveBall();
   drawPaddles();
   drawBall();
+}
+
+async function updateScore() {
+  var hostScoreElem = document.getElementById('score1');
+  var guestScoreElem = document.getElementById('score2');
+  hostScoreElem.textContent = websocket_obj.game.host_score;
+  guestScoreElem.textContent = websocket_obj.game.guest_score;
+
 }
 
 async function launchGame()
