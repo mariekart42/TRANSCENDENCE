@@ -174,6 +174,7 @@ async function sendDataToBackend(request_type) {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
             'chat_name': document.getElementById('new_chat_name').value,
+            // 'isPrivate': false,
             'isPrivate': document.getElementById('flexSwitchCheckChecked').checked
           }
           break
@@ -285,12 +286,29 @@ function renderUserInChatList() {
     chat_element.classList.add('row', 'contacts-in-chat-profile');
     chat_element.textContent = myArray[i].user_name;
     chat_element.addEventListener('click', async function () {
-      await handleButtonClickChatsInProfile();
+      await handleButtonClickChatsInProfile(myArray[i].user_name);
     });
     mainContainer.appendChild(chat_element)
   }
 }
 
-async function handleButtonClickChatsInProfile() {
-  console.log('lol something should happen now')
+
+
+async function handleButtonClickChatsInProfile(clickedUser) {
+  // automatically render profile of clicked user
+  console.log('clicked user: ', clickedUser)
+
+  const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));
+
+  const lol = document.getElementById('lol')
+  lol.style.opacity = 0.5;
+  // lol.classList.add('hidden')
+
+
+  let private_profile_header = document.getElementById('backdropClickedUserLabel')
+
+  private_profile_header.textContent = clickedUser
+modal.show(); // Open the modal
+
+
 }

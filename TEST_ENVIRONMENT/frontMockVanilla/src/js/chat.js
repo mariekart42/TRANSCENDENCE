@@ -24,6 +24,11 @@ function chatDom() {
     // get info if private or not
     await createChat()
   })
+
+  document.getElementById('close_button_clicked_user').addEventListener('click', async function() {
+    const puplic_chat_backdrop = document.getElementById('lol')
+    puplic_chat_backdrop.style.opacity = 1;
+  })
 }
 
 
@@ -81,18 +86,14 @@ async function createChat() {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
-  const checkBox = document.getElementById('flexSwitchCheckChecked')
-  if (checkBox.checked) {
-    console.log('SWITCH ON ')
-  } else {
-    console.log('SWITCH OFF')
-  }
-
-
 
   await sendDataToBackend('set_new_chat')
   await sendDataToBackend('get_current_users_chats')
   await setMessageWithTimout('info_create_chat', 'Created chat "' + chat_name + '" successfully', 5000)
+}
+
+async function createPrivateChat() {
+
 }
 
 
