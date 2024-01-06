@@ -6,6 +6,8 @@ websocket_obj = {
 
   chat_name: null,
   chat_id: null,
+  chat_is_private: null,
+  new_chat_name: null,
 
   onlineStats: [
     {
@@ -87,7 +89,20 @@ async function establishWebsocketConnection() {
         await renderChat()
         break
       case 'created_chat':
-        console.log('Created new chat info: ', data.message)
+        console.log('created chat: data: ', data)
+        if (data.message === 'ok') {
+          if (websocket_obj.chat_is_private) {
+            await setMessageWithTimout('info_create_private_chat', 'Created chat "' + websocket_obj.new_chat_name + '" successfully', 5000)
+          } else {
+            await setMessageWithTimout('info_create_chat', 'Created chat "' + websocket_obj.new_chat_name + '" successfully', 5000)
+          }
+        } else {
+          if (websocket_obj.chat_is_private) {
+            await setErrorWithTimout('info_create_private_chat', 'Error: "' + data.message + '"', 5000)
+          } else {
+            await setErrorWithTimout('info_create_chat', 'Error: "' + data.message + '"', 5000)
+          }
+        }
         break
       case 'invited_user_to_chat':
         if (data.message !== 'ok') {
@@ -173,9 +188,9 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-            'chat_name': document.getElementById('new_chat_name').value,
+            'chat_name': websocket_obj.new_chat_name,
             // 'isPrivate': false,
-            'isPrivate': document.getElementById('flexSwitchCheckChecked').checked
+            'isPrivate': websocket_obj.chat_is_private
           }
           break
         case 'set_invited_user_to_chat':

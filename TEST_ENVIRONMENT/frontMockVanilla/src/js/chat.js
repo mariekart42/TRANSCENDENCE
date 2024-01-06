@@ -21,13 +21,20 @@ function chatDom() {
   })
 
   document.getElementById('create_chat_button').addEventListener('click', async function() {
-    // get info if private or not
-    await createChat()
+    let chat_name = document.getElementById('new_chat_name').value
+    const private_chat = false
+    await createChat(chat_name, private_chat)
+  })
+
+  document.getElementById('create_private_chat_button').addEventListener('click', async function() {
+    let chat_name = document.getElementById('new_private_chat_name').value
+    const private_chat = true
+    await createChat(chat_name, private_chat)
   })
 
   document.getElementById('close_button_clicked_user').addEventListener('click', async function() {
-    const puplic_chat_backdrop = document.getElementById('lol')
-    puplic_chat_backdrop.style.opacity = 1;
+    const public_chat_backdrop = document.getElementById('lol')
+    public_chat_backdrop.style.opacity = 1;
   })
 }
 
@@ -80,16 +87,27 @@ async function leaveChat() {
 }
 
 
-async function createChat() {
-  const chat_name = document.getElementById('new_chat_name').value
-  if (!chat_name.trim()) {
-    setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
+async function createChat(chatName, chatIsPrivate) {
+  console.log('CHAT NAME: ', chatName, '  PRIVATE: ', chatIsPrivate)
+  if (chatName.trim() === '') {
+    if (chatIsPrivate) {
+      setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
+    } else {
+      setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
+    }
     return;
   }
 
+  websocket_obj.chat_is_private = chatIsPrivate
+  websocket_obj.new_chat_name = chatName
   await sendDataToBackend('set_new_chat')
   await sendDataToBackend('get_current_users_chats')
-  await setMessageWithTimout('info_create_chat', 'Created chat "' + chat_name + '" successfully', 5000)
+
+  if (chatIsPrivate) {
+    await setMessageWithTimout('info_create_private_chat', 'Created chat "' + chatName + '" successfully', 5000)
+  } else {
+    await setMessageWithTimout('info_create_chat', 'Created chat "' + chatName + '" successfully', 5000)
+  }
 }
 
 async function createPrivateChat() {
