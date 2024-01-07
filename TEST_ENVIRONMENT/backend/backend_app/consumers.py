@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse
 from .models import MyUser, Chat, Message
+from django.db.models import Q
 from . import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
@@ -57,6 +58,8 @@ class test(AsyncWebsocketConsumer):
             await self.handle_current_user_left_chat(text_data_json)
         elif what_type == 'send_created_new_chat':
             await self.handle_create_new_chat(text_data_json)
+        elif what_type == 'send_created_new_private_chat':
+            await self.handle_create_new_private_chat(text_data_json)
         elif what_type == 'set_invited_user_to_chat':
             await self.handle_invite_user_to_chat(text_data_json)
         else:
@@ -103,6 +106,7 @@ class test(AsyncWebsocketConsumer):
     async def send_current_users_chats(self, event):
         await self.send(text_data=json.dumps({
             'type': 'current_users_chats',
+            'user_id': event['data']['user_id'],
             'users_chats': event['data']['users_chats']
         }))
 
@@ -121,6 +125,12 @@ class test(AsyncWebsocketConsumer):
     async def send_new_chat_info(self, event):
         await self.send(text_data=json.dumps({
             'type': 'created_chat',
+            'message': event['data']['message'],
+        }))
+
+    async def send_new_private_chat_info(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'created_private_chat',
             'message': event['data']['message'],
         }))
 
@@ -224,6 +234,7 @@ class test(AsyncWebsocketConsumer):
             {
                 'type': 'send.current.users.chats',
                 'data': {
+                    'user_id': user_id,
                     'chat_id': chat_id,
                     'users_chats': users_chats,
                 },
@@ -272,6 +283,21 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
+    async def handle_create_new_private_chat(self, text_data_json):
+        chat_name = text_data_json["data"]["chat_name"]
+        user_id = text_data_json["data"]["user_id"]
+        info = await self.createPrivateChat(user_id, chat_name)
+
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.new.private.chat.info',
+                'data': {
+                    'message': info
+                },
+            }
+        )
+
     async def handle_invite_user_to_chat(self, text_data_json):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
@@ -299,7 +325,7 @@ class test(AsyncWebsocketConsumer):
             chat_instance = Chat.objects.get(id=chat_id)
             chat_instance.messages.add(new_message.id)
             new_message.save()
-            return JsonResponse({'message': "Message created successfully"})
+            return "Message created successfully"
         except Exception as e:
             return JsonResponse({'error': 'something big in createMessage'}, status=500)
 
@@ -339,17 +365,60 @@ class test(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
+        print('........ what')
         user_instance = MyUser.objects.get(id=user_id)
         all_chats = user_instance.chats.all()
+        print('all chats: ', all_chats)
         user_chats = [
             {
                 'chat_id': chat.id,
-                'chat_name': chat.chatName,
+                # 'chat_name': chat.chatName,
+                'chat_name': self.getChatName(chat, user_id),
+                'private_chat_names': self.getPrivateChatNames(chat, user_id),
+            #     'chat_name': {if (chat.private == true) {
+            #     chat.name = chat.users.notcurrentuser(user_id)
+            # }},
                 'isPrivate': chat.isPrivate
             }
             for chat in all_chats
         ]
+
+        print('USER CHATS: ', user_chats)
+
         return user_chats
+
+    # @database_sync_to_async
+    def getChatName(self, chat_instance, user_id):
+        if not chat_instance.isPrivate:
+            return chat_instance.chatName
+
+        # if chat is private, need to figure out name of chat user that is not current user
+        chat_id = chat_instance.id
+        users_in_chat = MyUser.objects.filter(chats__id=chat_id)
+
+        current_user_instance = MyUser.objects.get(id=user_id)
+        current_user = current_user_instance.name
+
+        # get other users name
+        for user in users_in_chat:
+            if not current_user == user.name:
+                return user.name
+        return 'lol private shit backend CONSUMERS.py'
+
+    def getPrivateChatNames(self, chat_instance, user_id):
+        if not chat_instance.isPrivate:
+            return None
+
+        # if chat is private, need to figure out name of chat user that is not current user
+        chat_id = chat_instance.id
+        users_in_chat = MyUser.objects.filter(chats__id=chat_id)
+        chat_names_list = [user.name for user in users_in_chat]
+        # current_user_instance = MyUser.objects.get(id=user_id)
+        # current_user = current_user_instance.name
+        print('------HERE chat names: ', chat_names_list)
+        return chat_names_list
+        # return 'lol private shit backend CONSUMERS.py'
+
 
     @database_sync_to_async
     def get_all_user(self):
@@ -388,6 +457,50 @@ class test(AsyncWebsocketConsumer):
             return "ok"
         except ValueError:
             return "Invalid user ID"
+        except Exception as e:
+            return str(e)
+
+    @database_sync_to_async
+    def createPrivateChat(self, user_id, chat_name):
+        try:
+            # chat_name should be the user we create a chat with
+            user_exists = MyUser.objects.filter(name=chat_name).exists()
+            if not user_exists:
+                return 'User does not exist'
+
+            # user_instance = MyUser.objects.get(id=user_id)
+            # user_name = user_instance.name
+
+            # TODO: need to check if the two user combo chat already exists
+                # get all chats that are private
+                # from them, get all chats that user_id is in
+                # from them, check if in one of them, chat_name is also a user
+            user_instance = MyUser.objects.get(id=user_id)
+
+            # Filter all private chats that the user is part of
+            private_chats = Chat.objects.filter(isPrivate=True, myuser__id=user_id)
+
+            chat_already_exists = private_chats.filter(myuser__name=chat_name)
+
+            # for chat in private_chats_for_users2:
+            #     print('chat: ', chat.chatName)
+
+            if chat_already_exists:
+                return "You are already in a private chat with this user"
+
+            new_chat = Chat.objects.create(chatName=chat_name, isPrivate=True)
+
+            current_user_instance = MyUser.objects.get(id=user_id)
+            other_user_instance = MyUser.objects.get(name=chat_name)
+
+            current_user_instance.chats.add(new_chat.id)
+            current_user_instance.save()
+            other_user_instance.chats.add(new_chat.id)
+            other_user_instance.save()
+            new_chat.save()
+            return "ok"
+        except ValueError:
+            return "User does not exist 2"
         except Exception as e:
             return str(e)
 

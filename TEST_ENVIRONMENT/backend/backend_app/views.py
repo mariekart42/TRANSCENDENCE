@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import MyUser, Chat, Message
+from .models import MyUser, Chat#, Message
 from django.http import JsonResponse
 import json  # build in python module
 from django.views.decorators.http import require_GET, require_POST
@@ -169,7 +169,7 @@ def getUserChats(request, user_id):
         chat_data = [
             {
                 'chat_id': chat.id,
-                'chat_name': chat.chatName,
+                'chat_name': getChatName(chat, user_id),
                 'isPrivate': chat.isPrivate
             }
             for chat in user_chats
@@ -179,6 +179,26 @@ def getUserChats(request, user_id):
         return JsonResponse({'error': 'User not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def getChatName(chat_instance, user_id):
+    if not chat_instance.isPrivate:
+        return chat_instance.chatName
+    # if chat is private, need to figure out name of chat user that is not current user
+    chat_id = chat_instance.id
+    users_in_chat = MyUser.objects.filter(chats__id=chat_id)
+
+    current_user_instance = MyUser.objects.get(id=user_id)
+    current_user = current_user_instance.name
+
+    # get other users name
+    for user in users_in_chat:
+        if not current_user == user.name:
+            return user.name
+
+    return 'AHHHHHH something wrong'
+
+
+
 
 
 @require_GET

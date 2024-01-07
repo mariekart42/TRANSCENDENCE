@@ -27,6 +27,7 @@ websocket_obj = {
     {
       chat_id: null,
       chat_name: null,
+      private_chat_names: [],
       isPrivate: null,
     }
   ],
@@ -85,30 +86,34 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
-        websocket_obj.chat_data = data.users_chats
+
+        if (data.user_id === websocket_obj.user_id) {
+          websocket_obj.chat_data = data.users_chats
+          console.log('USER: ', websocket_obj.username, ' -- chat_data: ', websocket_obj.chat_data)
+        }
         await renderChat()
         break
       case 'created_chat':
-        console.log('created chat: data: ', data)
+        console.log('PRIVATE chat | USER:', websocket_obj.username, ' -- data: ', data)
         if (data.message === 'ok') {
-          if (websocket_obj.chat_is_private) {
-            await setMessageWithTimout('info_create_private_chat', 'Created chat "' + websocket_obj.new_chat_name + '" successfully', 5000)
-          } else {
-            await setMessageWithTimout('info_create_chat', 'Created chat "' + websocket_obj.new_chat_name + '" successfully', 5000)
-          }
+          await setMessageWithTimout('info_create_chat', 'Created chat successfully', 5000)
         } else {
-          if (websocket_obj.chat_is_private) {
-            await setErrorWithTimout('info_create_private_chat', 'Error: "' + data.message + '"', 5000)
-          } else {
-            await setErrorWithTimout('info_create_chat', 'Error: "' + data.message + '"', 5000)
-          }
+          await setErrorWithTimout('info_create_chat', 'Error: ' + data.message, 5000)
         }
+        break
+      case 'created_private_chat':
+        console.log('PRIVATE chat | USER:', websocket_obj.username, ' -- data: ', data)
+          if (data.message === 'ok') {
+            await setMessageWithTimout('info_create_private_chat', 'Created chat successfully', 5000)
+          } else {
+            await setErrorWithTimout('info_create_private_chat', 'Error: ' + data.message, 5000)
+          }
         break
       case 'invited_user_to_chat':
         if (data.message !== 'ok') {
-          setErrorWithTimout('message_with_timeout', data.message, 5000)
+          await setErrorWithTimout('message_with_timeout', data.message, 5000)
         } else {
-          setMessageWithTimout('message_with_timeout', 'Invite send successfully', 5000)
+          await setMessageWithTimout('message_with_timeout', 'Invite send successfully', 5000)
         }
         console.log('Invited user to chat info: ', data.message)
         break
@@ -188,10 +193,18 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-            'chat_name': websocket_obj.new_chat_name,
-            // 'isPrivate': false,
-            'isPrivate': websocket_obj.chat_is_private
+            'chat_name': document.getElementById('new_chat_name').value,
+            'isPrivate': false,
+            // 'isPrivate': websocket_obj.chat_is_private
           }
+          break
+        case 'set_new_private_chat':
+          type = 'send_created_new_private_chat'
+            data = {
+              'user_id': websocket_obj.user_id,
+              'chat_id': websocket_obj.chat_id,
+              'chat_name': document.getElementById('new_private_chat_name').value,
+            }
           break
         case 'set_invited_user_to_chat':
           type = 'set_invited_user_to_chat'

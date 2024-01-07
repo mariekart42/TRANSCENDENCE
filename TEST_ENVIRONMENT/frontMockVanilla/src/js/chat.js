@@ -21,15 +21,17 @@ function chatDom() {
   })
 
   document.getElementById('create_chat_button').addEventListener('click', async function() {
-    let chat_name = document.getElementById('new_chat_name').value
-    const private_chat = false
-    await createChat(chat_name, private_chat)
+    // let chat_name = document.getElementById('new_chat_name').value
+    // const private_chat = false
+    // await createChat(chat_name, private_chat)
+    await createPublicChat()
   })
 
   document.getElementById('create_private_chat_button').addEventListener('click', async function() {
-    let chat_name = document.getElementById('new_private_chat_name').value
-    const private_chat = true
-    await createChat(chat_name, private_chat)
+    // let chat_name = document.getElementById('new_private_chat_name').value
+    // const private_chat = true
+    // await createChat(chat_name, private_chat)
+    await createPrivateChat()
   })
 
   document.getElementById('close_button_clicked_user').addEventListener('click', async function() {
@@ -45,8 +47,8 @@ async function logoutUser() {
   notAuth.classList.remove('hidden');
   const isAuth = document.getElementById('userIsAuth');
   isAuth.classList.add('hidden');
-  const chatDiv = document.getElementById('showChat');
-  chatDiv.classList.add('hidden');
+  // const chatDiv = document.getElementById('showChat');
+  // chatDiv.classList.add('hidden');
   const profileDiv = document.getElementById('showUserProfile');
   profileDiv.classList.add('hidden');
 }
@@ -87,31 +89,33 @@ async function leaveChat() {
 }
 
 
-async function createChat(chatName, chatIsPrivate) {
-  console.log('CHAT NAME: ', chatName, '  PRIVATE: ', chatIsPrivate)
-  if (chatName.trim() === '') {
-    if (chatIsPrivate) {
-      setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
-    } else {
-      setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
-    }
+async function createPublicChat() {
+  let chat_name = document.getElementById('new_chat_name').value
+
+  if (chat_name.trim() === '') {
+    setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
   }
 
-  websocket_obj.chat_is_private = chatIsPrivate
-  websocket_obj.new_chat_name = chatName
   await sendDataToBackend('set_new_chat')
   await sendDataToBackend('get_current_users_chats')
-
-  if (chatIsPrivate) {
-    await setMessageWithTimout('info_create_private_chat', 'Created chat "' + chatName + '" successfully', 5000)
-  } else {
-    await setMessageWithTimout('info_create_chat', 'Created chat "' + chatName + '" successfully', 5000)
-  }
+  let chatNameLabel = document.getElementById('new_chat_name');
+  chatNameLabel.value = '';
+  chatNameLabel.textContent = '';
 }
 
 async function createPrivateChat() {
+  let chat_name = document.getElementById('new_private_chat_name').value
 
+  if (chat_name.trim() === '') {
+      setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
+    return;
+  }
+  await sendDataToBackend('set_new_private_chat')
+  await sendDataToBackend('get_current_users_chats')
+  let chatNameLabel = document.getElementById('new_private_chat_name');
+  chatNameLabel.value = '';
+  chatNameLabel.textContent = '';
 }
 
 
@@ -183,6 +187,19 @@ async function renderChat() {
 
     let chatName = document.createElement('div');
     if (chat.isPrivate) {
+      // TODO: check is user_name === chat_name, if yes, chatName = private_chat_name
+      // console.log('HERE: ', chat.private_chat_names[0]);
+      // console.log('HERE: ', chat.private_chat_names[1]);
+      //
+      // let chat_name = chat.private_chat_names[1]
+      // // console.log('HERE: ', chat.private_chat_names)
+      //
+      // if (websocket_obj.username === chat_name) {
+      //   chat_name = chat.private_chat_names[0]
+      // }
+
+
+
       chatName.textContent = chat.chat_name + ' [PRIVATE]';
     } else {
       chatName.textContent = chat.chat_name + ' [PUBLIC]';
