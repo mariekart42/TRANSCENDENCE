@@ -93,11 +93,13 @@ async function joinGame(gameId) {
 
   // Draw paddles
   ctx.fillStyle = "black";
-  ctx.fillRect(10, canvas.height / 2 - 50, 10, 100);
-  ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
+  ctx.fillRect(canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
+  ctx.fillRect(canvas.width / 80 - canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
 
-  websocket_obj.game.left_pedal = canvas.height / 2 - 50;
-  websocket_obj.game.right_pedal = canvas.height / 2 - 50;
+  // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
+
+  websocket_obj.game.left_pedal = canvas.height / 2 - canvas.height / 8;
+  websocket_obj.game.right_pedal = canvas.height / 2 - canvas.height / 8;
 
   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
@@ -196,8 +198,15 @@ async function joinGame(gameId) {
 
   console.log("IN JOINGAME");
 
+  function updateCanvasSize() {
+    const canvas = document.getElementById("pongCanvas");
+    canvas.width = window.innerWidth;  // Set canvas width to window width
+    canvas.height = window.innerHeight;  // Set canvas height to window height
+  }
+  
+  window.addEventListener("resize", updateCanvasSize);
 
-
+  window.addEventListener("load", updateCanvasSize);
 
 
   // sendDataToBackend('game_new_move');

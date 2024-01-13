@@ -36,22 +36,18 @@ class test(AsyncWebsocketConsumer):
 
 # Update these methods
     async def assign_left_pedal(cls, val):
-        # await cls.init_game_struct()
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['left_pedal'] = val
 
     async def assign_right_pedal(cls, val):
-        # await cls.init_game_struct()
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['right_pedal'] = val
 
     async def increment_joined_players(cls):
-        # await cls.init_game_struct()
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['joined_players'] += 1
 
     async def reset_joined_players(cls):
-        # await cls.init_game_struct()
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['joined_players'] = 0
 
@@ -134,9 +130,13 @@ class test(AsyncWebsocketConsumer):
         print("right pedal")
         print(self.game_states.get(self.game_id, {}).get('right_pedal'))
 
-        paddle_height = 100
-        canvas_width = 800
-        canvas_height = 400
+        # paddle_height = 100
+        # canvas_width = 800
+        # canvas_height = 400
+
+        paddle_height = 0.5
+        canvas_width = 4
+        canvas_height = 2
 
         self.game_states[self.game_id]['ball_x'] += self.game_states[self.game_id]['ball_dx']
         self.game_states[self.game_id]['ball_y'] += self.game_states[self.game_id]['ball_dy']
@@ -147,29 +147,29 @@ class test(AsyncWebsocketConsumer):
 
         # Handle ball-paddle collisions with left paddle
         if (
-            self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 20 and
+            self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0.1 and
             self.game_states[self.game_id]['left_pedal'] < self.game_states[self.game_id]['ball_y'] < self.game_states[self.game_id]['left_pedal'] + paddle_height
         ):
             self.game_states[self.game_id]['ball_dx'] = abs(self.game_states[self.game_id]['ball_dx'])  # Ensure the ball moves to the right
 
         # Handle ball-paddle collisions with right paddle
         if (
-            self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] > canvas_width - 20 and
+            self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] > canvas_width - 0.1 and
             self.game_states[self.game_id]['right_pedal'] < self.game_states[self.game_id]['ball_y'] < self.game_states[self.game_id]['right_pedal'] + paddle_height
         ):
             self.game_states[self.game_id]['ball_dx'] = -abs(self.game_states[self.game_id]['ball_dx'])  # Ensure the ball moves to the left
 
         # Handle ball-wall collisions for left and right walls
-        if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 5 or self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 5 > canvas_width:
+        if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 0.025 or self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 0.025 > canvas_width:
             print("BALL HIT LEFT OR RIGHT WALL")
-            if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 5:
+            if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 0.025:
             # Ball hit the left side
             # Handle left side collision logic here
             # For example, you can update the score or reflect the ball's direction
                 self.game_states[self.game_id]['guest_score'] += 1
 
 
-            elif self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 5 > canvas_width:
+            elif self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 0.025 > canvas_width:
             # Ball hit the right side
             # Handle right side collision logic here
             # For example, you can update the score or reflect the ball's direction
@@ -184,17 +184,7 @@ class test(AsyncWebsocketConsumer):
             # Reset ball position to the center
             self.game_states[self.game_id]['ball_x'] = canvas_width // 2
             self.game_states[self.game_id]['ball_y'] = canvas_height // 2
-            # await self.channel_layer.group_send(
-            #         self.game_group_id,
-            #         {
-            #             'type': 'send.score.update',
-            #             'data': {
-            #                 'host_score': self.game_states[self.game_id]['host_score'],
-            #                 'guest_score': self.game_states[self.game_id]['guest_score'],
-            #             },
-            #         }
-            #     )
-            # await self.send_score_update()
+
             await self.handle_send_score_update()
 
 
@@ -434,9 +424,9 @@ class test(AsyncWebsocketConsumer):
     async def handle_send_game_scene(self):
 
         if self.key_code == 38:
-            new_pedal_pos = self.prev_pos - 10
+            new_pedal_pos = self.prev_pos - 0.05
         elif self.key_code == 40:
-            new_pedal_pos = self.prev_pos + 10
+            new_pedal_pos = self.prev_pos + 0.05
         else:
             new_pedal_pos = self.prev_pos
 
@@ -467,14 +457,14 @@ class test(AsyncWebsocketConsumer):
     async def init_game_struct(self):
         if self.game_id not in self.game_states:
             self.game_states[self.game_id] = {
-                'left_pedal': 150,
-                'right_pedal': 150,
-                'ball_x': 400,  # Initial ball position
-                'ball_y': 200,  # Initial ball position
-                'ball_radius': 10,
-                'ball_speed': 3,
-                'ball_dx': 5,
-                'ball_dy': 5,
+                'left_pedal': 1,
+                'right_pedal': 1,
+                'ball_x': 2,  # Initial ball position
+                'ball_y': 1,  # Initial ball position
+                'ball_radius': 0.05,
+                'ball_speed': 0.015,
+                'ball_dx': 0.025,
+                'ball_dy': 0.025,
                 'joined_players': 0,
                 'host_score': 0,
                 'guest_score': 0

@@ -95,14 +95,20 @@ async function establishWebsocketConnection() {
     }
     else if (data.type === 'render_left')
     {
-      websocket_obj.game.left_pedal = data.new_pedal_pos
+      const canvas = document.getElementById("pongCanvas");
+      websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+      console.log("new left_pedal: ", websocket_obj.game.left_pedal);
       await update();
 
       // await renderGame()
     }
     else if (data.type === 'render_right')
     {
-      websocket_obj.game.right_pedal = data.new_pedal_pos
+      const canvas = document.getElementById("pongCanvas");
+
+      websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+      // websocket_obj.game.right_pedal = data.new_pedal_pos
+      console.log("new right_pedal: ", websocket_obj.game.right_pedal);
       await update();
 
       // await renderGame()
@@ -132,8 +138,19 @@ async function establishWebsocketConnection() {
     else if (data.type === 'ball_update')
     {
       console.log("BALL_UPDATE");
-      websocket_obj.game.ball_x = data.ball_x
-      websocket_obj.game.ball_y = data.ball_y
+      // websocket_obj.game.ball_x = data.ball_x
+      const canvas = document.getElementById("pongCanvas");
+
+      websocket_obj.game.ball_x = data.ball_x * canvas.width / 4;
+      console.log("ball_x: ", websocket_obj.game.ball_x)
+      console.log("data.ball_x: ", data.ball_x)
+      console.log("data.ball_y: ", data.ball_y)
+
+
+      // // websocket_obj.game.ball_y = data.ball_y
+      websocket_obj.game.ball_y = data.ball_y * canvas.height / 2;
+      console.log("ball_y: ", websocket_obj.game.ball_y);
+
       await update();
     }
     else if (data.type === 'score_update')
@@ -210,7 +227,9 @@ async function sendDataToBackend(request_type) {
         }));
       }
 
-      else if (request_type === 'game_new_move') {      
+      else if (request_type === 'game_new_move') {   
+        const canvas = document.getElementById("pongCanvas");
+   
         console.log("in game_new_move");
         console.log(websocket_obj.game.is_host);
         // prev_pos =  websocket_obj.game.left_pedal;
@@ -220,7 +239,8 @@ async function sendDataToBackend(request_type) {
           pedal_pos = websocket_obj.game.right_pedal
         // console.log(prev_pos);
 
-
+        pedal_pos = pedal_pos * 2 / canvas.height;
+        console.log("pedal_pos: ", pedal_pos);
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
           'type': 'send_game_scene',
@@ -279,19 +299,37 @@ function drawPaddles() {
   console.log("left pedal: ", websocket_obj.game.left_pedal);
   console.log("right pedal: ", websocket_obj.game.right_pedal);
 
+  console.log ("canvas.width: ", canvas.width);
+  console.log ("canvas.height: ", canvas.height);
+  console.log ("canvas.width / 80: ", canvas.width / 80);
+  console.log ("canvas.height / 8: ", canvas.height / 8);
+  console.log ("canvas.height / 4: ", canvas.height / 4);
+
+
   ctx.fillStyle = "black";
+  // ctx.fillRect(
+  //   10,
+  //   websocket_obj.game.left_pedal,
+  //   10,
+  //   100
+  // );
+  // ctx.fillRect(
+  //   canvas.width - 10,
+  //   websocket_obj.game.right_pedal,
+  //   10,
+  //   100
+  // );
   ctx.fillRect(
-    10,
+    canvas.width / 80,
     websocket_obj.game.left_pedal,
-    10,
-    100
-  );
+    canvas.width / 80,
+    canvas.height / 4);
+
   ctx.fillRect(
-    canvas.width - 10,
+    canvas.width - canvas.width / 80,
     websocket_obj.game.right_pedal,
-    10,
-    100
-  );
+    canvas.width / 80,
+    canvas.height / 4);
 }
 
 function drawBall() {
@@ -300,7 +338,9 @@ function drawBall() {
   const ctx = canvas.getContext("2d");
 
   ctx.beginPath();
-  ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, 10, 0, Math.PI * 2);
+  ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, canvas.width / 80, 0, Math.PI * 2);
+  // ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
+
   ctx.fill();
   ctx.closePath();
 }
@@ -451,13 +491,23 @@ async function renderGame() {
 
   // Draw paddles at the updated position
   ctx.fillStyle = "black";
-  ctx.fillRect(10, websocket_obj.game.left_pedal, 10, 100);
-  ctx.fillRect(canvas.width - 10, websocket_obj.game.right_pedal, 10, 100);
+  // ctx.fillRect(10, websocket_obj.game.left_pedal, 10, 100);
+  // ctx.fillRect(canvas.width - 10, websocket_obj.game.right_pedal, 10, 100);
+  ctx.fillRect(canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
+  ctx.fillRect(canvas.width / 80 - canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
+  console.log ("canvas.width: ", canvas.width);
+  console.log ("canvas.height: ", canvas.height);
+  console.log ("canvas.width / 80: ", canvas.width / 80);
+  console.log ("canvas.height / 8: ", canvas.height / 8);
+  console.log ("canvas.height / 4: ", canvas.height / 4);
+
 
 
   // Draw the ball
   ctx.beginPath();
-  ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
+  // ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
+  ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
+
   ctx.fill();
   ctx.closePath();
 
