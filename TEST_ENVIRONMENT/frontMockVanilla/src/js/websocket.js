@@ -102,6 +102,8 @@ async function establishWebsocketConnection() {
 
       // await renderGame()
     }
+
+
     else if (data.type === 'render_right')
     {
       const canvas = document.getElementById("pongCanvas");
