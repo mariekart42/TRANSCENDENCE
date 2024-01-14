@@ -1,3 +1,4 @@
+import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse
@@ -17,9 +18,17 @@ class test(AsyncWebsocketConsumer):
         }
     ]
 
+    channels = [
+        {
+            'user_id': '',
+            'channel_name': ''
+        }
+    ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
+        self.channel_of_user = None
         self.my_group_id = None
         self.isOnline = 0
 
@@ -37,11 +46,17 @@ class test(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         what_type = text_data_json["type"]
         chat_id = text_data_json["data"]["chat_id"]
+        user_id = text_data_json["data"]["user_id"]
+
+
         self.my_group_id = 'group_%s' % chat_id
-        await self.channel_layer.group_add(
-            self.my_group_id,
-            self.channel_name,
-        )
+        print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
+        await self.channel_layer.group_add(self.my_group_id, self.channel_name)
+
+        self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
+        self.channels.append(self.channel_of_user)
+
+
         if what_type == 'save_message_in_db':
             await self.handle_save_message_in_db(text_data_json)
         elif what_type == 'send_chat_messages':
@@ -59,9 +74,9 @@ class test(AsyncWebsocketConsumer):
         elif what_type == 'send_created_new_chat':
             await self.handle_create_new_chat(text_data_json)
         elif what_type == 'send_created_new_private_chat':
-            await self.handle_create_new_private_chat(text_data_json)
+            await self.handle_create_new_private_chat(text_data_json) #TODO: here new channel thing
         elif what_type == 'set_invited_user_to_chat':
-            await self.handle_invite_user_to_chat(text_data_json)
+            await self.handle_invite_user_to_chat(text_data_json) #TODO: here new channel thing
         else:
             print('IS SOMETHING ELSE')
 
@@ -104,6 +119,7 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_current_users_chats(self, event):
+        # print('SEND CURRENT USERS CHATS of [', event['data']['user_id'], ']: ', event['data']['users_chats'])
         await self.send(text_data=json.dumps({
             'type': 'current_users_chats',
             'user_id': event['data']['user_id'],
@@ -229,6 +245,7 @@ class test(AsyncWebsocketConsumer):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
         users_chats = await self.get_users_chats(user_id)
+        print('HERE| CURRENT CHATS: ', users_chats)
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -240,6 +257,8 @@ class test(AsyncWebsocketConsumer):
                 },
             }
         )
+
+
 
     async def handle_send_all_user(self):
         all_user = await self.get_all_user()
@@ -273,15 +292,17 @@ class test(AsyncWebsocketConsumer):
         user_id = text_data_json["data"]["user_id"]
         is_private = text_data_json["data"]["isPrivate"]
         info = await self.createChat(user_id, chat_name, is_private)
-        await self.channel_layer.group_send(
-            self.my_group_id,
-            {
-                'type': 'send.new.chat.info',
-                'data': {
-                    'message': info
-                },
-            }
-        )
+        test_message = info["message"]
+        test_chat_id = info["chat_id"]
+
+
+        await self.send(text_data=json.dumps({
+            'type': 'created_chat',
+            'chat_id': info["chat_id"],
+            'message': info["message"]
+        }))
+
+
 
     async def handle_create_new_private_chat(self, text_data_json):
         chat_name = text_data_json["data"]["chat_name"]
@@ -303,6 +324,30 @@ class test(AsyncWebsocketConsumer):
         user_id = text_data_json["data"]["user_id"]
         invited_user_name = text_data_json["data"]["invited_user_name"]
         info = await self.inviteUserToChat(user_id, chat_id, invited_user_name)
+
+        # TODO: add new user to self.my_group_id
+        others_user_id = await self.getIdWithName(invited_user_name)
+
+        # get channel_name from class channels:
+        others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
+        if others_user_channel_name is not None:
+            print('FOUND others channel name')
+            await self.channel_layer.group_add(self.my_group_id, others_user_channel_name)
+            # get all chats from the other user:
+            other_users_chats = await self.get_users_chats(others_user_id)
+            print('OTHER_USERS CHATS: ', other_users_chats)
+            await self.channel_layer.group_send(
+                self.my_group_id,
+                {
+                    'type': 'send.current.users.chats',
+                    'data': {
+                        'user_id': others_user_id,
+                        'chat_id': chat_id,
+                        'users_chats': other_users_chats,
+                    },
+                }
+            )
+
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -313,7 +358,37 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
+
+
+
+
+
+
+    async def get_channel_name_with_id(self, user_id):
+        for channel in self.channels:
+            if channel['user_id'] == user_id:
+                return channel['channel_name']
+
+        print('NO MATCHING CHANNEL NAME FOUND')
+        return None
+
+
+
+
+
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
+
+    @database_sync_to_async
+    def getIdWithName(self, user_name):
+        try:
+            # print('USER NAME: ', user_name)
+            user_instance = MyUser.objects.get(name=user_name)
+            user_id = user_instance.id
+            # print('USER ID: ', user_id)
+            return user_id
+        except Exception as e:
+            return -1
+
 
     @database_sync_to_async
     def create_message(self, user_id, chat_id, text):
@@ -365,10 +440,10 @@ class test(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
-        print('........ what')
+        # print('........ what')
         user_instance = MyUser.objects.get(id=user_id)
         all_chats = user_instance.chats.all()
-        print('all chats: ', all_chats)
+        # print('all chats: ', all_chats)
         user_chats = [
             {
                 'chat_id': chat.id,
@@ -383,7 +458,7 @@ class test(AsyncWebsocketConsumer):
             for chat in all_chats
         ]
 
-        print('USER CHATS: ', user_chats)
+        # print('USER CHATS: ', user_chats)
 
         return user_chats
 
@@ -415,7 +490,7 @@ class test(AsyncWebsocketConsumer):
         chat_names_list = [user.name for user in users_in_chat]
         # current_user_instance = MyUser.objects.get(id=user_id)
         # current_user = current_user_instance.name
-        print('------HERE chat names: ', chat_names_list)
+        # print('------HERE chat names: ', chat_names_list)
         return chat_names_list
         # return 'lol private shit backend CONSUMERS.py'
 
@@ -448,15 +523,17 @@ class test(AsyncWebsocketConsumer):
         try:
             chat_exists = Chat.objects.filter(chatName=chat_name).exists()
             if chat_exists:
-                return 'Chat already exists'
+                return {'chat_id': -1, 'message': 'Chat already exists'}
             new_chat = Chat.objects.create(chatName=chat_name, isPrivate=is_private)
             user_instance = MyUser.objects.get(id=user_id)
             user_instance.chats.add(new_chat.id)
             new_chat.save()
             user_instance.save()
-            return "ok"
+
+            chat_instance = Chat.objects.get(chatName=chat_name)
+            return {'chat_id': chat_instance.id, 'message': 'ok'}
         except ValueError:
-            return "Invalid user ID"
+            return {'chat_id': -1, 'message': "Invalid user ID"}
         except Exception as e:
             return str(e)
 

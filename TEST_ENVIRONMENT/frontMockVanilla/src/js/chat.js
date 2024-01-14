@@ -31,6 +31,7 @@ function chatDom() {
     // let chat_name = document.getElementById('new_private_chat_name').value
     // const private_chat = true
     // await createChat(chat_name, private_chat)
+    // const chat_name = document.getElementById('')
     await createPrivateChat()
   })
 
@@ -38,6 +39,61 @@ function chatDom() {
     const public_chat_backdrop = document.getElementById('lol')
     public_chat_backdrop.style.opacity = 1;
   })
+
+  // testing this button:
+  document.getElementById('goToChatButton').addEventListener('click', async function(){
+
+    const clicked_user = document.getElementById('backdropClickedUserLabel')
+
+    let chatNameToFind = clicked_user.textContent;
+    let foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chatNameToFind);
+
+    if (foundChat) {
+      console.log(foundChat);
+      await handleButtonClickChats(foundChat);
+      const public_chat_backdrop = document.getElementById('lol')
+      public_chat_backdrop.style.opacity = 1;
+      $('#staticBackdropProfile').modal('hide');
+      $('#backdropClickedUser').modal('hide');
+    } else {
+      console.log('No matching chat, create one')
+      console.log(chatNameToFind);
+      // TODO create new chat here
+      document.getElementById('new_private_chat_name').value = chatNameToFind
+      console.log('BEFORE chat name: ', document.getElementById('new_private_chat_name').value)
+      await sendDataToBackend('set_new_private_chat')
+      await sendDataToBackend('get_current_users_chats')
+      await showChat(chatNameToFind)
+
+      // foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chatNameToFind);
+      // if (foundChat) {
+      //   await handleButtonClickChats(foundChat);
+      //   const public_chat_backdrop = document.getElementById('lol')
+      //   public_chat_backdrop.style.opacity = 1;
+      //   $('#staticBackdropProfile').modal('hide');
+      //   $('#backdropClickedUser').modal('hide');
+      // } else {
+      //   console.log('unexpected error, should not happen!!!')
+      // }
+    }
+  })
+
+  document.getElementById('blockUserButton').addEventListener('click', async function() {
+    console.log('here block logic')
+  })
+}
+
+async function showChat(chat_name){
+  let foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chat_name);
+  if (foundChat) {
+    await handleButtonClickChats(foundChat);
+    const public_chat_backdrop = document.getElementById('lol')
+    public_chat_backdrop.style.opacity = 1;
+    $('#staticBackdropProfile').modal('hide');
+    $('#backdropClickedUser').modal('hide');
+  } else {
+    console.log('unexpected error, should not happen!!!')
+  }
 }
 
 
@@ -98,7 +154,7 @@ async function createPublicChat() {
   }
 
   await sendDataToBackend('set_new_chat')
-  await sendDataToBackend('get_current_users_chats')
+  // await sendDataToBackend('get_current_users_chats')
   let chatNameLabel = document.getElementById('new_chat_name');
   chatNameLabel.value = '';
   chatNameLabel.textContent = '';
@@ -106,7 +162,6 @@ async function createPublicChat() {
 
 async function createPrivateChat() {
   let chat_name = document.getElementById('new_private_chat_name').value
-
   if (chat_name.trim() === '') {
       setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
     return;

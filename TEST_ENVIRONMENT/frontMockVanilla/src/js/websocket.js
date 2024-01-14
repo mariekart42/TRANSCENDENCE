@@ -63,7 +63,7 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
-
+    console.log('ONMESSAGE DATA: ', data)
     switch (data.type) {
       case 'all_chat_messages':
          if (data.chat_id === websocket_obj.chat_id) {
@@ -86,16 +86,20 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
+        console.log('FRONTEND USERS CHATS: ', data.users_chats)
 
         if (data.user_id === websocket_obj.user_id) {
           websocket_obj.chat_data = data.users_chats
           console.log('USER: ', websocket_obj.username, ' -- chat_data: ', websocket_obj.chat_data)
+          await renderChat()
         }
-        await renderChat()
         break
       case 'created_chat':
         console.log('PRIVATE chat | USER:', websocket_obj.username, ' -- data: ', data)
         if (data.message === 'ok') {
+          websocket_obj.chat_id = data.chat_id
+          await sendDataToBackend('get_current_users_chats')
+
           await setMessageWithTimout('info_create_chat', 'Created chat successfully', 5000)
         } else {
           await setErrorWithTimout('info_create_chat', 'Error: ' + data.message, 5000)
@@ -110,9 +114,11 @@ async function establishWebsocketConnection() {
           }
         break
       case 'invited_user_to_chat':
+        console.log('i got invited lol')
         if (data.message !== 'ok') {
           await setErrorWithTimout('message_with_timeout', data.message, 5000)
         } else {
+          await renderChat()
           await setMessageWithTimout('message_with_timeout', 'Invite send successfully', 5000)
         }
         console.log('Invited user to chat info: ', data.message)
@@ -171,10 +177,12 @@ async function sendDataToBackend(request_type) {
         case 'get_user_in_current_chat':
           type = 'send_user_in_current_chat'
           data = {
+            'user_id': websocket_obj.user_id,// new
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'get_current_users_chats':
+          console.log('CHAT_ID: ', websocket_obj.chat_id)
           type = 'send_current_users_chats'
           data = {
             'user_id': websocket_obj.user_id,
@@ -309,14 +317,25 @@ function renderUserInChatList() {
   title.textContent = 'User in Chat:'
   mainContainer.appendChild(title);
 
+  // own user always first in the list
+  const own_user = document.createElement('div');
+  own_user.classList.add('row', 'own-user-in-chat-profile');
+  own_user.textContent = 'You';
+  // own_user.addEventListener('click', async function () {
+  //   await handleButtonClickChatsInProfile(websocket_obj.username);
+  // });
+  mainContainer.appendChild(own_user)
+
   for (let i = 0; i < myArray.length; i++) {
-    const chat_element = document.createElement('div');
-    chat_element.classList.add('row', 'contacts-in-chat-profile');
-    chat_element.textContent = myArray[i].user_name;
-    chat_element.addEventListener('click', async function () {
-      await handleButtonClickChatsInProfile(myArray[i].user_name);
-    });
-    mainContainer.appendChild(chat_element)
+    if (myArray[i].user_name !== websocket_obj.username) {
+      const chat_element = document.createElement('div');
+      chat_element.classList.add('row', 'contacts-in-chat-profile');
+      chat_element.textContent = myArray[i].user_name;
+      chat_element.addEventListener('click', async function () {
+        await handleButtonClickChatsInProfile(myArray[i].user_name);
+      });
+      mainContainer.appendChild(chat_element)
+    }
   }
 }
 
