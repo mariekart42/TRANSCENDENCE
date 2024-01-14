@@ -36,6 +36,13 @@ class test(AsyncWebsocketConsumer):
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
+
+        #TODO: create a channel_zer0 where everybody gets set to that connects
+        # - online stats should use that group
+        await self.channel_layer.group_add('channel_zer0', self.channel_name)
+        self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
+        self.channels.append(self.channel_of_user)
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -46,15 +53,11 @@ class test(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         what_type = text_data_json["type"]
         chat_id = text_data_json["data"]["chat_id"]
-        user_id = text_data_json["data"]["user_id"]
+        # user_id = text_data_json["data"]["user_id"]
 
         self.my_group_id = 'group_%s' % chat_id
         print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
         await self.channel_layer.group_add(self.my_group_id, self.channel_name)
-
-        self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
-        self.channels.append(self.channel_of_user)
-
 
         if what_type == 'save_message_in_db':
             await self.handle_save_message_in_db(text_data_json)
@@ -118,7 +121,6 @@ class test(AsyncWebsocketConsumer):
         }))
 
     async def send_current_users_chats(self, event):
-        # print('SEND CURRENT USERS CHATS of [', event['data']['user_id'], ']: ', event['data']['users_chats'])
         await self.send(text_data=json.dumps({
             'type': 'current_users_chats',
             'user_id': event['data']['user_id'],
@@ -208,7 +210,6 @@ class test(AsyncWebsocketConsumer):
                 'data': {
                     'message': 'ok',
                 },
-
             }
         )
 
@@ -244,7 +245,6 @@ class test(AsyncWebsocketConsumer):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
         users_chats = await self.get_users_chats(user_id)
-        print('HERE| CURRENT CHATS: ', users_chats)
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -256,8 +256,6 @@ class test(AsyncWebsocketConsumer):
                 },
             }
         )
-
-
 
     async def handle_send_all_user(self):
         all_user = await self.get_all_user()
@@ -291,17 +289,11 @@ class test(AsyncWebsocketConsumer):
         user_id = text_data_json["data"]["user_id"]
         is_private = text_data_json["data"]["isPrivate"]
         info = await self.createChat(user_id, chat_name, is_private)
-        test_message = info["message"]
-        test_chat_id = info["chat_id"]
-
-
         await self.send(text_data=json.dumps({
             'type': 'created_chat',
             'chat_id': info["chat_id"],
             'message': info["message"]
         }))
-
-
 
     async def handle_create_new_private_chat(self, text_data_json):
         # chat_name IS the others users name!!
@@ -309,14 +301,11 @@ class test(AsyncWebsocketConsumer):
         user_id = text_data_json["data"]["user_id"]
         info = await self.createPrivateChat(user_id, chat_name)
 
-        others_user_id = await self.getIdWithName(chat_name)
+        others_user_id = await self.get_id_with_name(chat_name)
         others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
         if others_user_channel_name is not None:
-            print('FOUND others channel name')
             await self.channel_layer.group_add(self.my_group_id, others_user_channel_name)
-            # get all chats from the other user:
             other_users_chats = await self.get_users_chats(others_user_id)
-            print('OTHER_USERS CHATS: ', other_users_chats)
             await self.channel_layer.group_send(
                 self.my_group_id,
                 {
@@ -344,17 +333,11 @@ class test(AsyncWebsocketConsumer):
         invited_user_name = text_data_json["data"]["invited_user_name"]
         info = await self.inviteUserToChat(user_id, chat_id, invited_user_name)
 
-        # TODO: add new user to self.my_group_id
-        others_user_id = await self.getIdWithName(invited_user_name)
-
-        # get channel_name from class channels:
+        others_user_id = await self.get_id_with_name(invited_user_name)
         others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
         if others_user_channel_name is not None:
-            print('FOUND others channel name')
             await self.channel_layer.group_add(self.my_group_id, others_user_channel_name)
-            # get all chats from the other user:
             other_users_chats = await self.get_users_chats(others_user_id)
-            print('OTHER_USERS CHATS: ', other_users_chats)
             await self.channel_layer.group_send(
                 self.my_group_id,
                 {
@@ -376,18 +359,10 @@ class test(AsyncWebsocketConsumer):
             }
         )
 
-
-
-
-
-
-
     async def get_channel_name_with_id(self, user_id):
         for channel in self.channels:
-            if channel['user_id'] == user_id:
+            if channel['user_id'] == str(user_id):
                 return channel['channel_name']
-
-        print('NO MATCHING CHANNEL NAME FOUND')
         return None
 
 
@@ -397,7 +372,7 @@ class test(AsyncWebsocketConsumer):
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
     @database_sync_to_async
-    def getIdWithName(self, user_name):
+    def get_id_with_name(self, user_name):
         try:
             # print('USER NAME: ', user_name)
             user_instance = MyUser.objects.get(name=user_name)
