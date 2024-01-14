@@ -73,7 +73,10 @@ async function establishWebsocketConnection() {
         }
         break
       case 'online_stats':
+        console.log('USER ', websocket_obj.username, ' received online stats: ', data.online_stats)
         websocket_obj.onlineStats = data.online_stats
+          // await renderChat()// ?
+          await renderMessages()// ??
         break
       case 'user_left_chat_info':
         console.log('user removed from chat info: ', data.message)
@@ -249,9 +252,11 @@ async function renderMessages() {
 
   let myArray = websocket_obj.messages.message_data;
   renderUserInChatList()
+
   let mainContainer = document.getElementById('messageContainer');
   mainContainer.innerHTML = '';
 
+  if (!myArray) { return }
   let tmpDiv = [];
   for (let i = 0; i < myArray.length; i++) {
     let messageDiv = document.createElement('div');

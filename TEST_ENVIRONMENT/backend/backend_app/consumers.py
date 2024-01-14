@@ -42,7 +42,7 @@ class test(AsyncWebsocketConsumer):
         await self.channel_layer.group_add('channel_zer0', self.channel_name)
         self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
         self.channels.append(self.channel_of_user)
-
+        await self.handle_send_online_stats()# ??
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -170,7 +170,8 @@ class test(AsyncWebsocketConsumer):
             for instance in self.connections
         ]
         await self.channel_layer.group_send(
-            self.my_group_id,
+            # self.my_group_id,
+            'channel_zer0',
             {
                 'type': 'send.online.stats',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
                 'data': {
@@ -188,7 +189,8 @@ class test(AsyncWebsocketConsumer):
             for instance in self.connections
         ]
         await self.channel_layer.group_send(
-            self.my_group_id,
+            'channel_zer0',
+            # self.my_group_id,
             {
                 'type': 'send.online.stats.on.disconnect',  # THIS triggers send_chat_online_stats function!! (ik fuggin weird)
                 'data': {
