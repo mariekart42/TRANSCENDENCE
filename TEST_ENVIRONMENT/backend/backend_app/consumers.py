@@ -48,7 +48,6 @@ class test(AsyncWebsocketConsumer):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
 
-
         self.my_group_id = 'group_%s' % chat_id
         print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
         await self.channel_layer.group_add(self.my_group_id, self.channel_name)
@@ -74,9 +73,9 @@ class test(AsyncWebsocketConsumer):
         elif what_type == 'send_created_new_chat':
             await self.handle_create_new_chat(text_data_json)
         elif what_type == 'send_created_new_private_chat':
-            await self.handle_create_new_private_chat(text_data_json) #TODO: here new channel thing
+            await self.handle_create_new_private_chat(text_data_json)
         elif what_type == 'set_invited_user_to_chat':
-            await self.handle_invite_user_to_chat(text_data_json) #TODO: here new channel thing
+            await self.handle_invite_user_to_chat(text_data_json)
         else:
             print('IS SOMETHING ELSE')
 
@@ -305,9 +304,29 @@ class test(AsyncWebsocketConsumer):
 
 
     async def handle_create_new_private_chat(self, text_data_json):
+        # chat_name IS the others users name!!
         chat_name = text_data_json["data"]["chat_name"]
         user_id = text_data_json["data"]["user_id"]
         info = await self.createPrivateChat(user_id, chat_name)
+
+        others_user_id = await self.getIdWithName(chat_name)
+        others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
+        if others_user_channel_name is not None:
+            print('FOUND others channel name')
+            await self.channel_layer.group_add(self.my_group_id, others_user_channel_name)
+            # get all chats from the other user:
+            other_users_chats = await self.get_users_chats(others_user_id)
+            print('OTHER_USERS CHATS: ', other_users_chats)
+            await self.channel_layer.group_send(
+                self.my_group_id,
+                {
+                    'type': 'send.current.users.chats',
+                    'data': {
+                        'user_id': others_user_id,
+                        'users_chats': other_users_chats,
+                    },
+                }
+            )
 
         await self.channel_layer.group_send(
             self.my_group_id,
@@ -342,7 +361,6 @@ class test(AsyncWebsocketConsumer):
                     'type': 'send.current.users.chats',
                     'data': {
                         'user_id': others_user_id,
-                        'chat_id': chat_id,
                         'users_chats': other_users_chats,
                     },
                 }
