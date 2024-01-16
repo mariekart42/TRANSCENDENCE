@@ -96,7 +96,9 @@ async function establishWebsocketConnection() {
     else if (data.type === 'render_left')
     {
       const canvas = document.getElementById("pongCanvas");
-      websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+      // websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+      websocket_obj.game.left_pedal = data.new_pedal_pos
+
       console.log("new left_pedal: ", websocket_obj.game.left_pedal);
       await update();
 
@@ -108,7 +110,7 @@ async function establishWebsocketConnection() {
     {
       const canvas = document.getElementById("pongCanvas");
 
-      websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+      websocket_obj.game.right_pedal = data.new_pedal_pos
       // websocket_obj.game.right_pedal = data.new_pedal_pos
       console.log("new right_pedal: ", websocket_obj.game.right_pedal);
       await update();
@@ -298,8 +300,14 @@ function drawPaddles() {
   const canvas = document.getElementById("pongCanvas");
 
   const ctx = canvas.getContext("2d");
-  console.log("left pedal: ", websocket_obj.game.left_pedal);
-  console.log("right pedal: ", websocket_obj.game.right_pedal);
+  
+  left_pedal = canvas.height * websocket_obj.game.left_pedal / 2
+  right_pedal = canvas.height * websocket_obj.game.right_pedal / 2
+
+
+
+  console.log("left pedal: ", left_pedal);
+  console.log("right pedal: ", right_pedal);
 
   console.log ("canvas.width: ", canvas.width);
   console.log ("canvas.height: ", canvas.height);
@@ -323,13 +331,13 @@ function drawPaddles() {
   // );
   ctx.fillRect(
     canvas.width / 80,
-    websocket_obj.game.left_pedal,
+    left_pedal,
     canvas.width / 80,
     canvas.height / 4);
 
   ctx.fillRect(
     canvas.width - canvas.width / 80,
-    websocket_obj.game.right_pedal,
+    right_pedal,
     canvas.width / 80,
     canvas.height / 4);
 }
@@ -339,8 +347,12 @@ function drawBall() {
 
   const ctx = canvas.getContext("2d");
 
+  // canvas.width = window.innerWidth;
+  // canvas.height = window.innerHeight;
+
   ctx.beginPath();
   ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, canvas.width / 80, 0, Math.PI * 2);
+  console.log("BALL canvas.width / 80", canvas.width / 80)
   // ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
 
   ctx.fill();
@@ -375,108 +387,18 @@ async function launchGame()
   const ctx = canvas.getContext("2d");
 
   const gameState = {
-    // leftPedal: web,
-    // rightPedal: canvas.height / 2 - 50,
     ball: {
       x: canvas.width / 2,
       y: canvas.height / 2,
-      radius: 10,
+      radius: canvas.width / 80,
       speed: 5,
       dx: 5,
       dy: 5,
     },
-    // game_id: gameId,
-    // key_code: 0,
-    // is_host: false,
+
   };
 
-  // function drawPaddles() {
-  //   ctx.fillStyle = "black";
-  //   ctx.fillRect(
-  //     10,
-  //     websocket_obj.game.left_pedal,
-  //     10,
-  //     100
-  //   );
-  //   ctx.fillRect(
-  //     canvas.width - 10,
-  //     websocket_obj.game.right_pedal,
-  //     10,
-  //     100
-  //   );
-  // }
-
-  // Draw the ball
-  // function drawBall() {
-  //   ctx.beginPath();
-  //   ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
-  //   ctx.fill();
-  //   ctx.closePath();
-  // }
-
-  // function drawBall() {
-  //   ctx.beginPath();
-  //   ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, 10, 0, Math.PI * 2);
-  //   ctx.fill();
-  //   ctx.closePath();
-  // }
-
-  // Move the ball
-  // function moveBall() {
-  //   gameState.ball.x += gameState.ball.dx;
-  //   gameState.ball.y += gameState.ball.dy;
-
-  //   // Handle ball-wall collisions
-  //   if (gameState.ball.y - gameState.ball.radius < 0 || gameState.ball.y + gameState.ball.radius > canvas.height) {
-  //     gameState.ball.dy *= -1;
-  //   }
-
-  //   // Handle ball-paddle collisions
-  //   if (
-  //     gameState.ball.x - gameState.ball.radius < 20 && // Adjust the value based on paddle width
-  //     gameState.ball.y > websocket_obj.game.left_pedal &&
-  //     gameState.ball.y < websocket_obj.game.left_pedal + 100 // Adjust the value based on paddle height
-  //   ) {
-  //     gameState.ball.dx *= -1;
-  //   }
-
-  //   if (
-  //     gameState.ball.x + gameState.ball.radius > canvas.width - 20 && // Adjust the value based on paddle width
-  //     gameState.ball.y > websocket_obj.game.right_pedal &&
-  //     gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
-  //   ) {
-  //     gameState.ball.dx *= -1;
-  //   }
-  //   if (gameState.ball.x - gameState.ball.radius < 0 || gameState.ball.x + gameState.ball.radius > canvas.width) {
-  //     // Reset ball position to the center
-  //     gameState.ball.x = canvas.width / 2;
-  //     gameState.ball.y = canvas.height / 2;
-  //   }
-  // }
-
-  // function update() {
-  // async  function update() {
-
-
-  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  //   // moveBall();
-  //   drawPaddles();
-  //   drawBall();
-  // }
   await update()
-  // async function gameLoop() {
-  //   await sendDataToBackend('send_ball_update');
-
-  //   update();
-  //   requestAnimationFrame(gameLoop);
-
-  //   setTimeout(gameLoop, 100000);
-  // }
-
-
-  // gameLoop()
-
 }
 
 async function renderGame() {

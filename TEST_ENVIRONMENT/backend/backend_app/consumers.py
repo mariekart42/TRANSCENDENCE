@@ -457,8 +457,8 @@ class test(AsyncWebsocketConsumer):
     async def init_game_struct(self):
         if self.game_id not in self.game_states:
             self.game_states[self.game_id] = {
-                'left_pedal': 1,
-                'right_pedal': 1,
+                'left_pedal': 0.75,
+                'right_pedal': 0.75,
                 'ball_x': 2,  # Initial ball position
                 'ball_y': 1,  # Initial ball position
                 'ball_radius': 0.05,

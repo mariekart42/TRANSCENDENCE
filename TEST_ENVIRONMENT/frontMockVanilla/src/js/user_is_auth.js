@@ -34,6 +34,8 @@ function addEventListenersIsAuth() {
   })
     document.getElementById('createGameButton').addEventListener('click', createGame);
 
+    
+
 }
 
 
@@ -93,115 +95,44 @@ async function joinGame(gameId) {
 
   // Draw paddles
   ctx.fillStyle = "black";
-  ctx.fillRect(canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
-  ctx.fillRect(canvas.width / 80 - canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
+  // websocket_obj.game.left_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
+  // websocket_obj.game.right_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
+  left_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
+  right_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
+  ctx.fillRect(canvas.width / 80, left_pedal, canvas.width / 80, canvas.height / 4);
+  ctx.fillRect(canvas.width - canvas.width / 80, right_pedal, canvas.width / 80, canvas.height / 4);
 
   // ctx.fillRect(canvas.width - 10, canvas.height / 2 - 50, 10, 100);
 
-  websocket_obj.game.left_pedal = canvas.height / 2 - canvas.height / 8;
-  websocket_obj.game.right_pedal = canvas.height / 2 - canvas.height / 8;
 
   websocket_obj.game.game_id = gameId;
   websocket_obj.game.key_code = 0;
   websocket_obj.game.is_host = false;
 
 
-  // Draw the ball
-  // ctx.beginPath();
-  // ctx.arc(canvas.width / 2, canvas.height / 2, 10, 0, Math.PI * 2);
-  // ctx.fill();
-  // ctx.closePath();
-
-  // const gameState = {
-  //   // leftPedal: web,
-  //   // rightPedal: canvas.height / 2 - 50,
-  //   ball: {
-  //     x: canvas.width / 2,
-  //     y: canvas.height / 2,
-  //     radius: 10,
-  //     speed: 5,
-  //     dx: 5,
-  //     dy: 5,
-  //   },
-  //   // game_id: gameId,
-  //   // key_code: 0,
-  //   // is_host: false,
-  // };
-
-  // function drawPaddles() {
-  //   ctx.fillStyle = "black";
-  //   ctx.fillRect(
-  //     10,
-  //     websocket_obj.game.left_pedal,
-  //     10,
-  //     100
-  //   );
-  //   ctx.fillRect(
-  //     canvas.width - 10,
-  //     websocket_obj.game.right_pedal,
-  //     10,
-  //     100
-  //   );
-  // }
-
-  // // Draw the ball
-  // function drawBall() {
-  //   ctx.beginPath();
-  //   ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2);
-  //   ctx.fill();
-  //   ctx.closePath();
-  // }
-
-  // // Move the ball
-  // function moveBall() {
-  //   gameState.ball.x += gameState.ball.dx;
-  //   gameState.ball.y += gameState.ball.dy;
-
-  //   // Handle ball-wall collisions
-  //   if (gameState.ball.y - gameState.ball.radius < 0 || gameState.ball.y + gameState.ball.radius > canvas.height) {
-  //     gameState.ball.dy *= -1;
-  //   }
-
-  //   // Handle ball-paddle collisions
-  //   if (
-  //     gameState.ball.x - gameState.ball.radius < 20 && // Adjust the value based on paddle width
-  //     gameState.ball.y > websocket_obj.game.left_pedal &&
-  //     gameState.ball.y < websocket_obj.game.left_pedal + 100 // Adjust the value based on paddle height
-  //   ) {
-  //     gameState.ball.dx *= -1;
-  //   }
-
-  //   if (
-  //     gameState.ball.x + gameState.ball.radius > canvas.width - 20 && // Adjust the value based on paddle width
-  //     gameState.ball.y > websocket_obj.game.right_pedal &&
-  //     gameState.ball.y < websocket_obj.game.right_pedal + 100 // Adjust the value based on paddle height
-  //   ) {
-  //     gameState.ball.dx *= -1;
-  //   }
-  // }
-
-  // function update() {
-
-  //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  //   moveBall();
-  //   drawPaddles();
-  //   drawBall();
-  // }
-  // function gameLoop() {
-  //   update();
-  //   requestAnimationFrame(gameLoop);
-  // }
-
-
 
 
   console.log("IN JOINGAME");
 
-  function updateCanvasSize() {
+  async  function update() {
     const canvas = document.getElementById("pongCanvas");
-    canvas.width = window.innerWidth;  // Set canvas width to window width
-    canvas.height = window.innerHeight;  // Set canvas height to window height
+  
+    const ctx = canvas.getContext("2d");
+  
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // moveBall();
+    drawPaddles();
+    drawBall();
+  }
+
+
+  async function updateCanvasSize() {
+    const canvas = document.getElementById("pongCanvas");
+    canvas.width = window.innerWidth * 0.75;  // Set canvas width to window width
+    canvas.height = window.innerHeight * 0.75;  // Set canvas height to window height
+    await update();
+
   }
   
   window.addEventListener("resize", updateCanvasSize);
@@ -256,8 +187,6 @@ async function renderInvites() {
 
   const username = "k";
 
-  // console.log(element); // Check the console for the result
-
 
 
   var theButton = document.getElementById('createGameButton');
@@ -274,35 +203,6 @@ async function renderInvites() {
     container.innerHTML = htmlContent;
 // _+_+_+_+_+_+_
 
-// const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
-// console.log(response);
-
-// // try {
-//     const data = await response.json();
-
-//     // Check if data.game_sessions is an array
-//     if (Array.isArray(data.game_sessions)) {
-//         console.log(data.game_sessions);
-//         const gameSessions = data.game_sessions;
-
-//         const container = document.getElementById('game-session-container');
-
-//         // Loop through each game session and create a button
-//         gameSessions.forEach(session => {
-//             const button = document.createElement('button');
-//             button.textContent = `Join ${session.id}`;
-
-//             // Add a click event listener to handle the button click
-//             button.addEventListener('click', () => {
-//                 joinGame(session.id); // Replace with your logic
-//             });
-
-//             // Append the button to the container
-//             container.appendChild(button);
-//         });
-//     } else {
-//         console.error("Invalid data structure: game_sessions is not an array");
-//     }
 } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
 }
