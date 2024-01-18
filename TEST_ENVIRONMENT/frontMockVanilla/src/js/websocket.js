@@ -298,7 +298,7 @@ async function sendDataToBackend(request_type) {
 
 function drawPaddles() {
 
-  console.log("in drawPaddles WEBSOCKETS.JS");
+  // console.log("in drawPaddles WEBSOCKETS.JS");
   const canvas = document.getElementById("pongCanvas");
 
   const ctx = canvas.getContext("2d");
@@ -339,6 +339,8 @@ function drawPaddles() {
 }
 
 function drawBall() {
+  console.log("in drawBall WEBSOCKETS.JS");
+
   const canvas = document.getElementById("pongCanvas");
 
   const ctx = canvas.getContext("2d");
@@ -347,7 +349,10 @@ function drawBall() {
   // canvas.height = window.innerHeight;
 
   ctx.beginPath();
-  ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, canvas.width / 80, 0, Math.PI * 2);
+  // radius = canvas.width / 80
+  radius = canvas.height / 40
+
+  ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, radius, 0, Math.PI * 2);
   console.log("BALL canvas.width / 80", canvas.width / 80)
   // ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
 
