@@ -243,7 +243,7 @@ async function sendDataToBackend(request_type) {
           pedal_pos = websocket_obj.game.right_pedal
         // console.log(prev_pos);
 
-        pedal_pos = pedal_pos * 2 / canvas.height;
+        // pedal_pos = pedal_pos * 2 / canvas.height;
         console.log("pedal_pos: ", pedal_pos);
         websocket_obj.websocket.send(JSON.stringify({
           'status': 'ok',
@@ -297,12 +297,19 @@ async function sendDataToBackend(request_type) {
 }
 
 function drawPaddles() {
+
+  console.log("in drawPaddles WEBSOCKETS.JS");
   const canvas = document.getElementById("pongCanvas");
 
   const ctx = canvas.getContext("2d");
   
+  console.log("left pedal: ", websocket_obj.game.left_pedal);
+  console.log("right pedal: ", websocket_obj.game.right_pedal);
   left_pedal = canvas.height * websocket_obj.game.left_pedal / 2
   right_pedal = canvas.height * websocket_obj.game.right_pedal / 2
+  
+  // left_pedal = 0.75
+  // right_pedal = 0.75
 
 
 
@@ -311,24 +318,13 @@ function drawPaddles() {
 
   console.log ("canvas.width: ", canvas.width);
   console.log ("canvas.height: ", canvas.height);
-  console.log ("canvas.width / 80: ", canvas.width / 80);
-  console.log ("canvas.height / 8: ", canvas.height / 8);
-  console.log ("canvas.height / 4: ", canvas.height / 4);
+  // console.log ("canvas.width / 80: ", canvas.width / 80);
+  // console.log ("canvas.height / 8: ", canvas.height / 8);
+  // console.log ("canvas.height / 4: ", canvas.height / 4);
 
 
   ctx.fillStyle = "black";
-  // ctx.fillRect(
-  //   10,
-  //   websocket_obj.game.left_pedal,
-  //   10,
-  //   100
-  // );
-  // ctx.fillRect(
-  //   canvas.width - 10,
-  //   websocket_obj.game.right_pedal,
-  //   10,
-  //   100
-  // );
+
   ctx.fillRect(
     canvas.width / 80,
     left_pedal,
