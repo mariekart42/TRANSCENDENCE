@@ -73,11 +73,7 @@ class test(AsyncWebsocketConsumer):
         # self.my_group_id = 'group_%s' % game_id
         self.game_group_id = 'group_%s' % game_id
 
-        # self.game_id = game_id
-        # self.key_code = text_data_json["data"]["key_code"]
-        # self.prev_pos = text_data_json["data"]["prev_pos"]
-        # print('IN RECIEVE. PREV_POS AND GROUP:')
-        # print(self.prev_pos)
+
         print(self.game_group_id)
         print(self.user)
         print('______________\n')
@@ -130,10 +126,6 @@ class test(AsyncWebsocketConsumer):
         print("right pedal")
         print(self.game_states.get(self.game_id, {}).get('right_pedal'))
 
-        # paddle_height = 100
-        # canvas_width = 800
-        # canvas_height = 400
-
         paddle_height = 0.5
         canvas_width = 4
         canvas_height = 2
@@ -168,6 +160,9 @@ class test(AsyncWebsocketConsumer):
             # For example, you can update the score or reflect the ball's direction
                 self.game_states[self.game_id]['guest_score'] += 1
 
+                    # await self.handle_send_score_update()
+                    # await self.handle_send_game_over()
+
 
             elif self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 0.025 > canvas_width:
             # Ball hit the right side
@@ -185,13 +180,30 @@ class test(AsyncWebsocketConsumer):
             self.game_states[self.game_id]['ball_x'] = canvas_width // 2
             self.game_states[self.game_id]['ball_y'] = canvas_height // 2
 
+
+            if (self.game_states[self.game_id]['guest_score'] == self.game_states[self.game_id]['score_limit'] or 
+                self.game_states[self.game_id]['host_score'] == self.game_states[self.game_id]['score_limit']):
+                
+                self.game_states[self.game_id]['game_active'] = False
+                print("GAME OVER")
+                print("HOST SCORE")
+                print(self.game_states[self.game_id]['host_score'])
+                print("GUEST SCORE")
+                print(self.game_states[self.game_id]['guest_score'])
+
+            print("GAME ACTIVE")
+            print(self.game_states[self.game_id]['game_active'])
             await self.handle_send_score_update()
 
 
 
 
     async def game_loop(self):
+
+        game_status = self.game_states.get(self.game_id, {}).get('game_active')
         while True:
+            print("game_status")
+            print(game_status)
             try:
                 print("CALCULATING BALL STATE")
                 await self.calculate_ball_state()
@@ -212,7 +224,10 @@ class test(AsyncWebsocketConsumer):
 
             except Exception as e:
                 print(f"Error in game_loop: {e}")
-
+                break
+            if self.game_states.get(self.game_id, {}).get('game_active') == False:
+                    break  
+        print("-----GAME LOOP OVER-----")
 
 
 
@@ -467,7 +482,9 @@ class test(AsyncWebsocketConsumer):
                 'ball_dy': 0.025,
                 'joined_players': 0,
                 'host_score': 0,
-                'guest_score': 0
+                'guest_score': 0,
+                'score_limit': 3,
+                'game_active': True,
             }
 
     async def handle_send_init_game(self):

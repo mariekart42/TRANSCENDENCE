@@ -307,9 +307,6 @@ function drawPaddles() {
   console.log("right pedal: ", websocket_obj.game.right_pedal);
   left_pedal = canvas.height * websocket_obj.game.left_pedal / 2
   right_pedal = canvas.height * websocket_obj.game.right_pedal / 2
-  
-  // left_pedal = 0.75
-  // right_pedal = 0.75
 
 
 
@@ -390,7 +387,6 @@ async function launchGame()
       x: canvas.width / 2,
       y: canvas.height / 2,
       radius: canvas.width / 80,
-      speed: 5,
       dx: 5,
       dy: 5,
     },

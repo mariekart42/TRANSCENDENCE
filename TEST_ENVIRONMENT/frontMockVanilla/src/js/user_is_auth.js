@@ -175,7 +175,6 @@ async function renderInvites() {
     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
     const htmlContent = await response.text();
 
-    // Assuming you have a container element with the id 'htmlContainer'
     const container = document.getElementById('game-session-container');
     container.innerHTML = htmlContent;
 // _+_+_+_+_+_+_
@@ -234,16 +233,12 @@ async function sendGameInvitation() {
 
 async function createGame() {
 
-  console.log('In createGame:');
 
-
-  // const username = "k";
-
-    console.log("IN CREATEGAME"); // Check the console for the result
+    console.log("IN CREATEGAME");
 
 
     var element = document.getElementById('createGameButton');
-    console.log(element); // Check the console for the result
+    console.log(element);
 
 
 
@@ -252,7 +247,7 @@ async function createGame() {
   try {
     const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
     const data = await response.json();
-    console.log(data.id); // Check the console for the result
+    console.log(data.id);
     active_game = data.id;
 
     if (response.ok) {
