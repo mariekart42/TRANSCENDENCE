@@ -167,6 +167,15 @@ async function establishWebsocketConnection() {
 
       await updateScore();
     }
+    else if (data.type === 'game_over')
+    {
+      console.log("GAME_OVER");
+      // document.getElementById("waitingScreen").style.display = "block";
+      websocket_obj.game.host_score = 0
+      websocket_obj.game.guest_score = 0
+      websocket_obj.game.game_id = 0
+      await updateScore();
+    }
     
 
   };

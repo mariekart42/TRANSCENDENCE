@@ -156,18 +156,14 @@ class test(AsyncWebsocketConsumer):
             print("BALL HIT LEFT OR RIGHT WALL")
             if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 0.025:
             # Ball hit the left side
-            # Handle left side collision logic here
-            # For example, you can update the score or reflect the ball's direction
+
                 self.game_states[self.game_id]['guest_score'] += 1
 
-                    # await self.handle_send_score_update()
-                    # await self.handle_send_game_over()
 
 
             elif self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id]['ball_radius'] - 0.025 > canvas_width:
             # Ball hit the right side
-            # Handle right side collision logic here
-            # For example, you can update the score or reflect the ball's direction
+
                 self.game_states[self.game_id]['host_score'] += 1
         
             print("HOST SCORE")
@@ -186,12 +182,9 @@ class test(AsyncWebsocketConsumer):
                 
                 self.game_states[self.game_id]['game_active'] = False
                 print("GAME OVER")
-                print("HOST SCORE")
-                print(self.game_states[self.game_id]['host_score'])
-                print("GUEST SCORE")
-                print(self.game_states[self.game_id]['guest_score'])
+    
 
-            print("GAME ACTIVE")
+            print("GAME ACTIVE state = ")
             print(self.game_states[self.game_id]['game_active'])
             await self.handle_send_score_update()
 
@@ -200,10 +193,10 @@ class test(AsyncWebsocketConsumer):
 
     async def game_loop(self):
 
-        game_status = self.game_states.get(self.game_id, {}).get('game_active')
+        # game_status = self.game_states.get(self.game_id, {}).get('game_active')
         while True:
-            print("game_status")
-            print(game_status)
+            # print("game_status")
+            # print(game_status)
             try:
                 print("CALCULATING BALL STATE")
                 await self.calculate_ball_state()
@@ -226,7 +219,18 @@ class test(AsyncWebsocketConsumer):
                 print(f"Error in game_loop: {e}")
                 break
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
-                    break  
+                self.game_states.pop(self.game_id, None)    
+                await self.channel_layer.group_send(
+                        self.game_group_id,
+                        {
+                            'type': 'send.game.over',
+                            'data': {
+                        
+                            },
+                        }
+                    )
+                break 
+
         print("-----GAME LOOP OVER-----")
 
 
@@ -317,6 +321,13 @@ class test(AsyncWebsocketConsumer):
             'type': 'score_update',
             'host_score': event['data']['host_score'],
             'guest_score': event['data']['guest_score'],
+
+        }))
+
+    async def send_game_over(self, event):
+        print("IN SEND BALL UPDATE")
+        await self.send(text_data=json.dumps({
+            'type': 'game_over',
 
         }))
 
