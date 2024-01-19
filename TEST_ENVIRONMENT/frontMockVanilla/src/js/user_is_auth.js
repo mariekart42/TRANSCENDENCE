@@ -99,18 +99,10 @@ async function joinGame(gameId) {
 
   // Draw paddles
   ctx.fillStyle = "black";
-  // websocket_obj.game.left_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
-  // websocket_obj.game.right_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
-  // left_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
-  // right_pedal = canvas.height / 2 - (canvas.height / 4 / 2);
   
   websocket_obj.game.left_pedal = 0.75
   console.log("websocket_obj.game.left_pedal: ", websocket_obj.game.left_pedal);
-  // websocket_obj.game[0].left_pedal = 0.75;
-
   websocket_obj.game.right_pedal = 0.75
-
-  // websocket_obj.game[0].right_pedal = 0.75
 
 
   ctx.fillRect(canvas.width / 80, canvas.height / 2 - (canvas.height / 4 / 2), canvas.width / 80, canvas.height / 4);
@@ -125,108 +117,22 @@ async function joinGame(gameId) {
 
 
 
-
   console.log("IN JOINGAME");
-  function drawPaddles() {
-
-    // console.log("in drawPaddles WEBSOCKETS.JS");
-    const canvas = document.getElementById("pongCanvas");
-  
-    const ctx = canvas.getContext("2d");
-    
-    console.log("left pedal: ", left_pedal);
-    console.log("right pedal: ", right_pedal);
-    left_pedal = canvas.height * websocket_obj.game.left_pedal / 2
-    right_pedal = canvas.height * websocket_obj.game.right_pedal / 2
-    
-    // left_pedal = 0.75
-    // right_pedal = 0.75
-  
-  
-  
-    console.log("left pedal: ", left_pedal);
-    console.log("right pedal: ", right_pedal);
-  
-    console.log ("canvas.width: ", canvas.width);
-    console.log ("canvas.height: ", canvas.height);
-    // console.log ("canvas.width / 80: ", canvas.width / 80);
-    // console.log ("canvas.height / 8: ", canvas.height / 8);
-    // console.log ("canvas.height / 4: ", canvas.height / 4);
-  
-  
-    ctx.fillStyle = "black";
-  
-    ctx.fillRect(
-      canvas.width / 80,
-      left_pedal,
-      canvas.width / 80,
-      canvas.height / 4);
-  
-    ctx.fillRect(
-      canvas.width - canvas.width / 80,
-      right_pedal,
-      canvas.width / 80,
-      canvas.height / 4);
-  }
-  
-  function drawBall() {
-    console.log("in drawBall Is_auth.JS");
-    const canvas = document.getElementById("pongCanvas");
-  
-    const ctx = canvas.getContext("2d");
-  
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
-  
-    // ctx.beginPath();
-    // radius = canvas.width / 80
-    radius = canvas.height / 40
-
-    ctx.arc(websocket_obj.game.ball_x, websocket_obj.game.ball_y, radius, 0, Math.PI * 2);
-    console.log("BALL canvas.width / 80", canvas.width / 80)
-    // ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 80, 0, Math.PI * 2);
-  
-    ctx.fill();
-    // ctx.closePath();
-  }
-
-
-  async  function update() {
-    const canvas = document.getElementById("pongCanvas");
-  
-    const ctx = canvas.getContext("2d");
-  
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-    // moveBall();
-    drawPaddles();
-    drawBall();
-  }
 
 
   async function updateCanvasSize() {
     const canvas = document.getElementById("pongCanvas");
     canvas.width = window.innerWidth * 0.75;  // Set canvas width to window width
     canvas.height = window.innerHeight * 0.75;  // Set canvas height to window height
-    await update();
 
   }
   
   window.addEventListener("resize", updateCanvasSize);
 
-  window.addEventListener("load", updateCanvasSize);
+  // window.addEventListener("load", updateCanvasSize);
 
-
-  // sendDataToBackend('game_new_move');
-  console.log("before init:");
-
-  console.log(websocket_obj.game.is_host);
 
   await sendDataToBackend('init_game');
-
-  console.log("after init:");
-
-  console.log(websocket_obj.game.is_host);
 
   document.addEventListener("keydown", async function(event) {
       // Log the key code to the console
@@ -244,12 +150,6 @@ async function joinGame(gameId) {
       }
 
   });
-
-  
-  // gameLoop()
-
-  // document.getElementById("waitingScreen").style.display = "block";
-
 
   console.log('end of JoinGame');
 

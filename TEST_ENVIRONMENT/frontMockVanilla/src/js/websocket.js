@@ -345,8 +345,6 @@ function drawBall() {
 
   const ctx = canvas.getContext("2d");
 
-  // canvas.width = window.innerWidth;
-  // canvas.height = window.innerHeight;
 
   ctx.beginPath();
   // radius = canvas.width / 80
@@ -414,10 +412,8 @@ async function renderGame() {
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw paddles at the updated position
   ctx.fillStyle = "black";
-  // ctx.fillRect(10, websocket_obj.game.left_pedal, 10, 100);
-  // ctx.fillRect(canvas.width - 10, websocket_obj.game.right_pedal, 10, 100);
+
   ctx.fillRect(canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
   ctx.fillRect(canvas.width / 80 - canvas.width / 80, canvas.height / 2 - canvas.height / 8, canvas.width / 80, canvas.height / 4);
   console.log ("canvas.width: ", canvas.width);
