@@ -174,6 +174,7 @@ async function establishWebsocketConnection() {
       websocket_obj.game.host_score = 0
       websocket_obj.game.guest_score = 0
       websocket_obj.game.game_id = 0
+      // await updateScore();
       await updateScore();
     }
     
