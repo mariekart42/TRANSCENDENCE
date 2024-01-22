@@ -11,15 +11,20 @@
   <li class="nav-item" style="margin-left: auto">
     <button id="profileButton" type="button" class="nav-link active nav-button-style" style="border-radius: 12px 12px 1px 1px;">PROFILE</button>
 
-    <!--MODAL TEMPLATE FOR EACH USER-->
+    <!--MODAL TEMPLATE FOR PROFILE OF USER -->
     <div class="modal" id="userProfileModal2" tabindex="-1" aria-labelledby="userModalLabel2" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content" style="color: #1b1b1b">
+
           <div class="modal-header">
             <p class="modal-title" id="userModalLabel2"></p>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body" id="userProfileModalBody2">
+            <form id="profilePictureForm">
+              <input type="file" id="profilePictureInput" accept="image/*">
+              <button type="submit">Upload</button>
+            </form>
             <!-- User data goes here -->
           </div>
           <div class="modal-footer">
@@ -41,6 +46,61 @@
 <div id="chat" class="hidden"></div>
 
 <div id="nothingSite" class="hidden">
-  here is nothing
+  testing history thingy
+  <button type="button" id="goBack" class="btn btn-danger">go back</button>
+  <button type="button" id="goForward" class="btn btn-danger">go forward</button>
 
 </div>
+
+<style>
+
+
+/*#userProfileModal2 {*/
+/*    display: none; !* Initially hide the modal *!*/
+/*}*/
+
+#previewContainer {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  border-radius: 10px;
+cursor: pointer; /* Change the cursor to a pointer on hover */
+}
+
+#previewImage {
+  width: 100%;
+  height: 30vh;
+  object-fit: cover;
+  position: relative;
+}
+
+#previewContainer:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(190, 190, 190, 0.5); /* Change the color and opacity as needed */
+}
+
+
+#onHoverText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white; /* Change text color as needed */
+  text-align: center; /* Center text horizontally */
+  font-size: 25px; /* Adjust font size as needed */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+#previewContainer:hover #onHoverText {
+  opacity: 1;
+}
+
+
+</style>

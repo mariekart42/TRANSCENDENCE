@@ -170,10 +170,12 @@ def getUserChats(request, user_id):
             {
                 'chat_id': chat.id,
                 'chat_name': getChatName(chat, user_id),
-                'isPrivate': chat.isPrivate
+                'isPrivate': chat.isPrivate,
+                'last_message': getLastMessageInChat(chat.id)
             }
             for chat in user_chats
         ]
+
         return JsonResponse({'chat_data': chat_data})
     except MyUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
@@ -197,8 +199,25 @@ def getChatName(chat_instance, user_id):
 
     return 'AHHHHHH something wrong'
 
+def getLastMessageInChat(chat_id):
+    # chat_exist = Chat.objects.filter(id=chat_id)
+    # if not chat_exist:
+    #     return {'message': 'Chat does not exist', 'last_message': 'Not found'}
 
+    chat_instance = Chat.objects.get(id=chat_id)
+    last_message = chat_instance.messages.order_by('-timestamp').first()
 
+    if last_message:
+        print("Last Message:", last_message.text)
+        print("Sender:", last_message.sender)
+        print("Timestamp:", last_message.formatted_timestamp())
+        return last_message
+    else:
+        print("No messages in the chat.")
+        # last_message.text = 'Message not found'
+        # last_message.formatted_timestamp = 0
+        # last_message.sender = 'Message not found'
+        return None
 
 
 @require_GET

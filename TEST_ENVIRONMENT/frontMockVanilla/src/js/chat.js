@@ -20,7 +20,7 @@ function chatDom() {
     await logoutUser()
   })
 
-  document.getElementById('create_chat_button').addEventListener('click', async function() {
+  document.getElementById('create_public_chat_button').addEventListener('click', async function() {
     // let chat_name = document.getElementById('new_chat_name').value
     // const private_chat = false
     // await createChat(chat_name, private_chat)
@@ -211,10 +211,11 @@ async function handleButtonClickChats(chat_obj) {
 
 
 async function renderChat() {
+
   const chats_container = document.getElementById('chatsLeftSide')
   chats_container.innerHTML = ''
 
-  let myArray = websocket_obj.chat_data
+  let myArray = sortChats(websocket_obj.chat_data)
   myArray.forEach(chat => {
     const chat_element = document.createElement('div');
     chat_element.classList.add('row', 'sideBar-body');
@@ -242,19 +243,6 @@ async function renderChat() {
 
     let chatName = document.createElement('div');
     if (chat.isPrivate) {
-      // TODO: check is user_name === chat_name, if yes, chatName = private_chat_name
-      // console.log('HERE: ', chat.private_chat_names[0]);
-      // console.log('HERE: ', chat.private_chat_names[1]);
-      //
-      // let chat_name = chat.private_chat_names[1]
-      // // console.log('HERE: ', chat.private_chat_names)
-      //
-      // if (websocket_obj.username === chat_name) {
-      //   chat_name = chat.private_chat_names[0]
-      // }
-
-
-
       chatName.textContent = chat.chat_name + ' [PRIVATE]';
     } else {
       chatName.textContent = chat.chat_name + ' [PUBLIC]';
@@ -271,10 +259,9 @@ async function renderChat() {
 
     const timeSpan = document.createElement('span');
     timeSpan.classList.add('time-meta', 'pull-right');
-    timeSpan.textContent = '69:69'; // HERE extract actual timestamp from last message
+    timeSpan.textContent = getTimestamp(chat)
 
     timeCol.appendChild(timeSpan);
-
     rowDiv.appendChild(nameCol);
     rowDiv.appendChild(timeCol);
     mainCol.appendChild(rowDiv);
@@ -282,4 +269,64 @@ async function renderChat() {
     chat_element.appendChild(mainCol);
     chats_container.appendChild(chat_element);
   });
+}
+
+function getTimestamp(chat) {
+  const dateString = chat.last_message["time"]
+  if (dateString === '0') { return '' }
+  let dateParts = dateString.split(' ');
+  const timePart = dateParts[0];
+  const datePart = dateParts[1];
+  const currentDate = new Date();
+  dateParts = datePart.split('.');
+  const day = parseInt(dateParts[0], 10);
+  const month = parseInt(dateParts[1], 10);
+  const year = parseInt(dateParts[2], 10);
+  const date = new Date(year, month - 1, day);
+  const yesterday = new Date(currentDate);
+  yesterday.setDate(currentDate.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+  if (isYesterday) {
+    return 'yesterday'
+  } else if (date < yesterday) {
+    return datePart
+  } else {
+    return timePart
+  }
+}
+
+function sortChats(chats){
+  chats.sort(compareChats);
+  return chats
+}
+
+function compareChats(chat1, chat2) {
+  var time1 = parseTimeString(chat1.last_message["time"]);
+  var time2 = parseTimeString(chat2.last_message["time"]);
+
+  // Handle the case where one of the timestamps is '0'
+  if (time1 === '0') { return 1 }
+  if (time2 === '0') { return -1 }
+
+  if (time1.getFullYear() !== time2.getFullYear()) {
+    return time2.getFullYear() - time1.getFullYear();
+  }
+  if (time1.getMonth() !== time2.getMonth()) {
+    return time2.getMonth() - time1.getMonth();
+  }
+  if (time1.getDate() !== time2.getDate()) {
+    return time2.getDate() - time1.getDate();
+  }
+  return time2.getHours() * 60 + time2.getMinutes() - (time1.getHours() * 60 + time1.getMinutes());
+}
+
+function parseTimeString(timeString) {
+  if (timeString === '0') {
+    return new Date(0); // Set to the epoch for '0' timestamp
+  }
+  var [hours, minutes, day, month, year] = timeString.match(/\d+/g);
+  return new Date(year, month - 1, day, hours, minutes);
 }

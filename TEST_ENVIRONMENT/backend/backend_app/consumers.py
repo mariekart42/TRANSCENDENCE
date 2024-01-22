@@ -8,7 +8,8 @@ from . import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from django.utils import timezone
-
+from django.db.models import Max
+from django.core.exceptions import ObjectDoesNotExist
 
 class test(AsyncWebsocketConsumer):
     connections = [
@@ -124,6 +125,8 @@ class test(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'current_users_chats',
             'user_id': event['data']['user_id'],
+            # 'message': event['data']['message'],
+            # 'last_message': event['data']['last_message'],
             'users_chats': event['data']['users_chats']
         }))
 
@@ -247,6 +250,10 @@ class test(AsyncWebsocketConsumer):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
         users_chats = await self.get_users_chats(user_id)
+        print('OK 3')
+        print(users_chats)
+        # info = await self.get_last_message_in_chat(chat_id)
+
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -255,6 +262,8 @@ class test(AsyncWebsocketConsumer):
                     'user_id': user_id,
                     'chat_id': chat_id,
                     'users_chats': users_chats,
+                    # 'last_message': info["last_message"], #TODO: implement in frontend
+                    # 'message': info["message"], #TODO: implement in frontend
                 },
             }
         )
@@ -340,6 +349,7 @@ class test(AsyncWebsocketConsumer):
         if others_user_channel_name is not None:
             await self.channel_layer.group_add(self.my_group_id, others_user_channel_name)
             other_users_chats = await self.get_users_chats(others_user_id)
+
             await self.channel_layer.group_send(
                 self.my_group_id,
                 {
@@ -445,6 +455,7 @@ class test(AsyncWebsocketConsumer):
                 # 'chat_name': chat.chatName,
                 'chat_name': self.getChatName(chat, user_id),
                 'private_chat_names': self.getPrivateChatNames(chat, user_id),
+                'last_message': self.get_last_message_in_chat(chat.id),
             #     'chat_name': {if (chat.private == true) {
             #     chat.name = chat.users.notcurrentuser(user_id)
             # }},
@@ -592,4 +603,34 @@ class test(AsyncWebsocketConsumer):
         except Exception as e:
             return str(e)
 
+    # @database_sync_to_async
+    def get_last_message_in_chat(self, chat_id):
+        try:
+            chat_instance = Chat.objects.get(id=chat_id)
+            print('OK 1')
+            last_message = chat_instance.messages.order_by('-timestamp').first()
+            print('OK 2')
+            if last_message:
+                print("Last Message:", last_message.text)
+                print("Sender:", last_message.sender)
+                print("Timestamp:", last_message.formatted_timestamp())
+                # return last_message
+                return {'text': last_message.text, 'time': last_message.formatted_timestamp(), 'status': 'ok'}
+                # return None
+        except ObjectDoesNotExist:
+            print("Chat does not exist.")
 
+        print("No messages in the chat.")
+        return {'text': '', 'time': '0', 'status': 'Not found'}
+        # messages_in_chat = chat_instance.messages.all()
+        # message_data = [
+        #     {
+        #         'id': message.id,
+        #         'sender_id': message.senderId,
+        #         'sender': message.sender,
+        #         'text': message.text,
+        #         'timestamp': message.formatted_timestamp(),
+        #     }
+        #     for message in messages_in_chat
+        # ]
+        # return message_data

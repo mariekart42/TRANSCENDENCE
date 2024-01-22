@@ -2,6 +2,7 @@ websocket_obj = {
 
   username: null,
   password: null,
+  avatar: 'https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg',
   age: null,
 
   chat_name: null,
@@ -29,6 +30,7 @@ websocket_obj = {
       chat_name: null,
       private_chat_names: [],
       isPrivate: null,
+      last_message: null,
     }
   ],
   messages: [
@@ -92,7 +94,9 @@ async function establishWebsocketConnection() {
         console.log('FRONTEND USERS CHATS: ', data.users_chats)
 
         if (data.user_id === websocket_obj.user_id) {
+          console.log('last message: ', data.users_chats)
           websocket_obj.chat_data = data.users_chats
+          // console.log('message: ', data.message)
           console.log('USER: ', websocket_obj.username, ' -- chat_data: ', websocket_obj.chat_data)
           await renderChat()
         }
