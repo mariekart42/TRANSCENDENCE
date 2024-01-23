@@ -2,17 +2,6 @@
 // BUTTON TO SEND MESSAGE IN CHAT
 function addEventListenersIsAuth() {
 
-  function loadContentChat(file, targetId) {
-    fetch(file)
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById(targetId).innerHTML = html;
-        chatDom();
-      })
-      .catch(error => console.error('Error loading content:', error));
-  }
-  loadContentChat('html/chat.html', 'chat');
-
   function loadContentGame(file, targetId) {
     fetch(file)
       .then(response => response.text())
@@ -23,6 +12,18 @@ function addEventListenersIsAuth() {
       .catch(error => console.error('Error loading content:', error));
   }
   loadContentGame('html/game.html', 'gameSite');
+
+
+  function loadContentChat(file, targetId) {
+    fetch(file)
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById(targetId).innerHTML = html;
+        chatDom();
+      })
+      .catch(error => console.error('Error loading content:', error));
+  }
+  loadContentChat('html/chat.html', 'chat');
 
 
   document.getElementById('homeButton').addEventListener('click', function () {

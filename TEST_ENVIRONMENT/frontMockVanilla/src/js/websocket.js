@@ -1,5 +1,7 @@
 websocket_obj = {
 
+  active_game: null,
+
   username: null,
   password: null,
   avatar: 'https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg',
@@ -40,6 +42,21 @@ websocket_obj = {
       sender: null,
       text: null,
       timestamp: 0,
+    }
+  ],
+
+  game: [
+    {
+      game_id: null,
+      key_code: 0,
+      left_pedal: 0,
+      right_pedal: 0,
+      is_host: false,
+      ball_x: 0,
+      ball_y: 0,
+      host_score: 0,
+      guest_score: 0
+
     }
   ],
   userInCurrentChat: [
@@ -118,6 +135,69 @@ async function establishWebsocketConnection() {
           await renderChat()
           await setMessageWithTimout('message_with_timeout', 'Invite send successfully', 5000)
         }
+        break
+      case 'render_left':
+        // var canvas = document.getElementById("pongCanvas");
+        // websocket_obj.game.left_pedal = canvas.height * data.new_pedal_pos / 2
+        websocket_obj.game.left_pedal = data.new_pedal_pos
+        console.log("new left_pedal: ", websocket_obj.game.left_pedal);
+        await update();
+        // await renderGame()
+        break
+      case 'render_right':
+        // var canvas = document.getElementById("pongCanvas");
+        websocket_obj.game.right_pedal = data.new_pedal_pos
+        // websocket_obj.game.right_pedal = data.new_pedal_pos
+        console.log("new right_pedal: ", websocket_obj.game.right_pedal);
+        await update();
+        // await renderGame()
+        break
+      case 'init_game':
+        console.log(data);
+        document.getElementById("waitingScreen").style.display = "block";
+        if (data.is_host === 'True')
+        {
+          websocket_obj.game.is_host = true
+          console.log("game.is_host = true");
+          console.log(websocket_obj.game.is_host);
+        }
+        else
+          websocket_obj.game.is_host = false
+        break
+      case 'game_start':
+        console.log("GAME START");
+        document.getElementById("waitingScreen").style.display = "none";
+        launchGame();
+        break
+      case 'ball_update':
+        console.log("BALL_UPDATE");
+        // websocket_obj.game.ball_x = data.ball_x
+        const canvas = document.getElementById("pongCanvas");
+        websocket_obj.game.ball_x = data.ball_x * canvas.width / 4;
+        console.log("ball_x: ", websocket_obj.game.ball_x)
+        console.log("data.ball_x: ", data.ball_x)
+        console.log("data.ball_y: ", data.ball_y)
+        // // websocket_obj.game.ball_y = data.ball_y
+        websocket_obj.game.ball_y = data.ball_y * canvas.height / 2;
+        console.log("ball_y: ", websocket_obj.game.ball_y);
+        await update();
+        break
+      case 'score_update':
+        console.log("SCORE_UPDATE");
+        websocket_obj.game.host_score = data.host_score
+        websocket_obj.game.guest_score = data.guest_score
+        console.log("host_score: ", websocket_obj.game.host_score);
+        console.log("guest_score: ", websocket_obj.game.guest_score);
+        await updateScore();
+        break
+      case 'game_over':
+        console.log("GAME_OVER");
+        // document.getElementById("waitingScreen").style.display = "block";
+        websocket_obj.game.host_score = 0
+        websocket_obj.game.guest_score = 0
+        websocket_obj.game.game_id = 0
+        // await updateScore();
+        await updateScore();
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -215,6 +295,46 @@ async function sendDataToBackend(request_type) {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
             'invited_user_name': websocket_obj.invited_user_name
+          }
+          break
+        case 'game_new_move':
+          // const canvas = document.getElementById("pongCanvas");
+          console.log("in game_new_move");
+          console.log(websocket_obj.game.is_host);
+          // prev_pos =  websocket_obj.game.left_pedal;
+          if (websocket_obj.game.is_host === true)
+            pedal_pos = websocket_obj.game.left_pedal
+          else
+            pedal_pos = websocket_obj.game.right_pedal
+          // console.log(prev_pos);
+
+          // pedal_pos = pedal_pos * 2 / canvas.height;
+          console.log("pedal_pos: ", pedal_pos);
+          type = 'send_game_scene'
+          data = {
+            'user_id': websocket_obj.user_id,
+            // 'chat_id': websocket_obj.chat_id,
+            'game_id': websocket_obj.game.game_id,
+            'key_code': websocket_obj.game.key_code,
+            'prev_pos': pedal_pos,
+            // 'is_host': websocket_obj.game.is_host,
+          }
+          break
+        case 'init_game':
+          console.log("in init_game");
+          type = 'send_init_game'
+          data = {
+            'user_id': websocket_obj.user_id,
+            // 'chat_id': websocket_obj.chat_id,
+            'game_id': websocket_obj.game.game_id,
+          }
+          break
+        case 'send_ball_update':
+          type = 'send_ball_update'
+          data = {
+            'user_id': websocket_obj.user_id,
+            // 'chat_id': websocket_obj.chat_id,
+            'game_id': websocket_obj.game.game_id,
           }
           break
         default:

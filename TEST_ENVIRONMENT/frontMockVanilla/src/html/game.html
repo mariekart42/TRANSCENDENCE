@@ -1,0 +1,58 @@
+<button id="createGameButton">Create a new Game</button>
+
+<div id="gameInvitation" >
+
+  <label for="userName">Enter the name of the user to challenge to a game:</label>
+    <input type="text" id="guestUser" placeholder="Enter name">
+
+    <button onclick="sendGameInvitation()">Send Invitation</button>
+
+</div>
+
+<div id="game-session-container"></div>
+
+
+<button id="renderInv" onclick="renderInvites()">See my invites</button>
+
+<div id="waitingScreen" style="display: none;">
+  <h1>WAITING FOR THE SECOND PLAYER</h1>
+</div>
+
+<div id="showGameField">
+  <div id="leftPlayer" class="playerInfo">
+    <p>Player 1: John</p>
+  </div>
+
+  <div id="score" class="playerInfo">
+    <p>Score: <span id="score1">0</span> - <span id="score2">0</span></p>
+  </div>
+
+  <div id="rightPlayer" class="playerInfo">
+    <p>Player 2: Jane</p>
+  </div>
+</div>
+
+<canvas id="pongCanvas" width="800" height="400"></canvas>
+
+
+        <style>
+ #showGameField {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+  }
+
+  #pongCanvas {
+  width: 70vw;
+  height: 35vw;
+  /* display: block; Ensures the canvas is treated as a block element */
+  margin: 0 auto; /* Centers the canvas horizontally */
+}
+
+
+  .playerInfo {
+    flex: 1;
+    padding: 10px;
+  }
+        </style>

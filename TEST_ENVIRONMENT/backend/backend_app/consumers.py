@@ -2,7 +2,7 @@ import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse
-from .models import MyUser, Chat, Message
+from .models import MyUser, Chat, Message, Game
 from django.db.models import Q
 from . import utils
 from channels.db import database_sync_to_async
@@ -26,12 +26,20 @@ class test(AsyncWebsocketConsumer):
         }
     ]
 
+    game_states = {}
+
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.user = None
         self.channel_of_user = None
         self.my_group_id = None
+        self.my_game_id = None  # NEW since 23.01
         self.isOnline = 0
+        self.key_code = 0
+        self.prev_pos = 0
+        self.is_host = 0
+        self.game_id = 0
+        self.game_group_id = None
 
     async def connect(self):
         user_id = self.scope["url_route"]["kwargs"]["user_id"]
@@ -51,33 +59,65 @@ class test(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         what_type = text_data_json["type"]
-        chat_id = text_data_json["data"]["chat_id"]
-        # user_id = text_data_json["data"]["user_id"]
 
-        self.my_group_id = 'group_%s' % chat_id
-        print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
-        await self.channel_layer.group_add(self.my_group_id, self.channel_name)
+        # IF what_type is equal to a game request -> change later to something better
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update']:
+            await self.controlGameRequests(text_data_json, what_type)
+        else:
+            chat_id = text_data_json["data"]["chat_id"]
+            # user_id = text_data_json["data"]["user_id"]
+            self.my_group_id = 'group_%s' % chat_id
+            print('ADDED user ', self.user["user_id"], '  to group: ', self.my_group_id, ' || channel_name: ', self.channel_name, ' || type: ', text_data_json["type"])
+            await self.channel_layer.group_add(self.my_group_id, self.channel_name)
 
-        if what_type == 'save_message_in_db':
-            await self.handle_save_message_in_db(text_data_json)
-        elif what_type == 'send_chat_messages':
-            await self.handle_send_chat_messages(text_data_json)
-        elif what_type == 'send_online_stats':
-            await self.handle_send_online_stats()
-        elif what_type == 'send_user_in_current_chat':
-            await self.handle_send_user_in_current_chat(chat_id)
-        elif what_type == 'send_current_users_chats':
-            await self.handle_send_current_users_chats(text_data_json)
-        elif what_type == 'send_all_user':
-            await self.handle_send_all_user()
-        elif what_type == 'send_user_left_chat':
-            await self.handle_current_user_left_chat(text_data_json)
-        elif what_type == 'send_created_new_chat':
-            await self.handle_create_new_chat(text_data_json)
-        elif what_type == 'send_created_new_private_chat':
-            await self.handle_create_new_private_chat(text_data_json)
-        elif what_type == 'set_invited_user_to_chat':
-            await self.handle_invite_user_to_chat(text_data_json)
+            if what_type == 'save_message_in_db':
+                await self.handle_save_message_in_db(text_data_json)
+            elif what_type == 'send_chat_messages':
+                await self.handle_send_chat_messages(text_data_json)
+            elif what_type == 'send_online_stats':
+                await self.handle_send_online_stats()
+            elif what_type == 'send_user_in_current_chat':
+                await self.handle_send_user_in_current_chat(chat_id)
+            elif what_type == 'send_current_users_chats':
+                await self.handle_send_current_users_chats(text_data_json)
+            elif what_type == 'send_all_user':
+                await self.handle_send_all_user()
+            elif what_type == 'send_user_left_chat':
+                await self.handle_current_user_left_chat(text_data_json)
+            elif what_type == 'send_created_new_chat':
+                await self.handle_create_new_chat(text_data_json)
+            elif what_type == 'send_created_new_private_chat':
+                await self.handle_create_new_private_chat(text_data_json)
+            elif what_type == 'set_invited_user_to_chat':
+                await self.handle_invite_user_to_chat(text_data_json)
+            else:
+                print('IS SOMETHING ELSE')
+
+
+    async def controlGameRequests(self, text_data_json, what_type):
+        game_id = text_data_json["data"]["game_id"]
+        self.game_group_id = 'group_%s' % game_id
+
+        print(self.game_group_id)
+        print(self.user)
+        print('______________\n')
+
+        await self.init_game_struct()
+
+        await self.channel_layer.group_add(
+            self.game_group_id,
+            self.channel_name
+        )
+        if what_type == 'send_game_scene':
+            self.key_code = text_data_json["data"]["key_code"]
+            self.prev_pos = text_data_json["data"]["prev_pos"]
+            await self.handle_send_game_scene()
+        elif what_type == 'send_init_game':
+            self.game_id = game_id
+            await self.handle_send_init_game()
+        elif what_type == 'send_ball_update':
+            self.game_id = game_id
+            await self.handle_send_ball_update()
         else:
             print('IS SOMETHING ELSE')
 
@@ -575,3 +615,334 @@ class test(AsyncWebsocketConsumer):
 
         print("No messages in the chat.")
         return {'text': '', 'time': '0', 'status': 'Not found'}
+
+
+
+
+
+
+
+
+
+# *************** GAME *************** *************** *************** ***************
+
+# Update these methods
+    async def assign_left_pedal(cls, val):
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['left_pedal'] = val
+
+    async def assign_right_pedal(cls, val):
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['right_pedal'] = val
+
+    async def increment_joined_players(cls):
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['joined_players'] += 1
+
+    async def reset_joined_players(cls):
+        game_state = cls.game_states.get(cls.game_id, {})
+        game_state['joined_players'] = 0
+
+
+    async def calculate_ball_state(self):
+        # Adjust the paddle height as needed
+        print("left pedal")
+        print(self.game_states.get(self.game_id, {}).get('left_pedal'))
+        print("right pedal")
+        print(self.game_states.get(self.game_id, {}).get('right_pedal'))
+
+        paddle_height = 0.5
+        canvas_width = 4
+        canvas_height = 2
+
+        self.game_states[self.game_id]['ball_x'] += self.game_states[self.game_id]['ball_dx']
+        self.game_states[self.game_id]['ball_y'] += self.game_states[self.game_id]['ball_dy']
+
+        # Handle ball-wall collisions
+        if self.game_states[self.game_id]['ball_y'] - self.game_states[self.game_id]['ball_radius'] < 0 or \
+                self.game_states[self.game_id]['ball_y'] + self.game_states[self.game_id]['ball_radius'] > canvas_height:
+            self.game_states[self.game_id]['ball_dy'] *= -1
+
+        # Handle ball-paddle collisions with left paddle
+        if (
+                self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0.1 and
+                self.game_states[self.game_id]['left_pedal'] < self.game_states[self.game_id]['ball_y'] <
+                self.game_states[self.game_id]['left_pedal'] + paddle_height
+        ):
+            self.game_states[self.game_id]['ball_dx'] = abs(
+                self.game_states[self.game_id]['ball_dx'])  # Ensure the ball moves to the right
+
+        # Handle ball-paddle collisions with right paddle
+        if (
+                self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id][
+            'ball_radius'] > canvas_width - 0.1 and
+                self.game_states[self.game_id]['right_pedal'] < self.game_states[self.game_id]['ball_y'] <
+                self.game_states[self.game_id]['right_pedal'] + paddle_height
+        ):
+            self.game_states[self.game_id]['ball_dx'] = -abs(
+                self.game_states[self.game_id]['ball_dx'])  # Ensure the ball moves to the left
+
+        # Handle ball-wall collisions for left and right walls
+        if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 0.025 or \
+                self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id][
+            'ball_radius'] - 0.025 > canvas_width:
+            print("BALL HIT LEFT OR RIGHT WALL")
+            if self.game_states[self.game_id]['ball_x'] - self.game_states[self.game_id]['ball_radius'] < 0 + 0.025:
+                # Ball hit the left side
+
+                self.game_states[self.game_id]['guest_score'] += 1
+
+
+
+            elif self.game_states[self.game_id]['ball_x'] + self.game_states[self.game_id][
+                'ball_radius'] - 0.025 > canvas_width:
+                # Ball hit the right side
+
+                self.game_states[self.game_id]['host_score'] += 1
+
+            print("HOST SCORE")
+            print(self.game_states[self.game_id]['host_score'])
+            print("GUEST SCORE")
+            print(self.game_states[self.game_id]['guest_score'])
+
+            # Reset ball position to the center
+            self.game_states[self.game_id]['ball_x'] = canvas_width // 2
+            self.game_states[self.game_id]['ball_y'] = canvas_height // 2
+
+            if (self.game_states[self.game_id]['guest_score'] == self.game_states[self.game_id]['score_limit'] or
+                    self.game_states[self.game_id]['host_score'] == self.game_states[self.game_id]['score_limit']):
+                self.game_states[self.game_id]['game_active'] = False
+                print("GAME OVER")
+
+            print("GAME ACTIVE state = ")
+            print(self.game_states[self.game_id]['game_active'])
+            await self.handle_send_score_update()
+
+
+    async def game_loop(self):
+        # game_status = self.game_states.get(self.game_id, {}).get('game_active')
+        while True:
+            # print("game_status")
+            # print(game_status)
+            try:
+                print("CALCULATING BALL STATE")
+                await self.calculate_ball_state()
+                # await self.handle_send_ball_update()
+
+                # Use channel_layer to send a message to the group directly
+                await self.channel_layer.group_send(
+                    self.game_group_id,
+                    {
+                        'type': 'send.ball.update',
+                        'data': {
+                            'ball_x': self.game_states[self.game_id]['ball_x'],
+                            'ball_y': self.game_states[self.game_id]['ball_y'],
+                        },
+                    }
+                )
+                await asyncio.sleep(1 / 60)
+
+            except Exception as e:
+                print(f"Error in game_loop: {e}")
+                break
+            if self.game_states.get(self.game_id, {}).get('game_active') == False:
+                self.game_states.pop(self.game_id, None)
+                await self.channel_layer.group_send(
+                    self.game_group_id,
+                    {
+                        'type': 'send.game.over',
+                        'data': {
+
+                        },
+                    }
+                )
+                break
+
+        print("-----GAME LOOP OVER-----")
+
+    async def send_game_scene(self, event):
+
+        await self.send(text_data=json.dumps({
+            'type': event['data']['response_type'],
+            'new_pedal_pos': event['data']['new_pedal_pos']
+        }))
+
+    async def send_init_game(self, event):
+
+        await self.send(text_data=json.dumps({
+            'type': 'init_game',
+            'is_host': event['data']['is_host'],
+
+        }))
+
+    async def send_game_start(self, event):
+
+        await self.send(text_data=json.dumps({
+            'type': 'game_start',
+
+        }))
+
+    async def send_ball_update(self, event):
+        print("IN SEND BALL UPDATE")
+        await self.send(text_data=json.dumps({
+            'type': 'ball_update',
+            'ball_x': event['data']['ball_x'],
+            'ball_y': event['data']['ball_y'],
+
+        }))
+
+    async def send_score_update(self, event):
+        print("IN SEND SCORE UPDATE")
+        await self.send(text_data=json.dumps({
+            'type': 'score_update',
+            'host_score': event['data']['host_score'],
+            'guest_score': event['data']['guest_score'],
+
+        }))
+
+    async def send_game_over(self, event):
+        print("IN SEND BALL UPDATE")
+        await self.send(text_data=json.dumps({
+            'type': 'game_over',
+
+        }))
+
+    async def handle_send_game_scene(self):
+
+        if self.key_code == 38:
+            new_pedal_pos = self.prev_pos - 0.05
+        elif self.key_code == 40:
+            new_pedal_pos = self.prev_pos + 0.05
+        else:
+            new_pedal_pos = self.prev_pos
+
+        if (self.is_host == True):
+            response_type = 'render_left'
+            await self.assign_left_pedal(new_pedal_pos)
+        else:
+            response_type = 'render_right'
+            await self.assign_right_pedal(new_pedal_pos)
+
+        print("RESPONSE TYPE")
+
+        print(response_type)
+        await self.channel_layer.group_send(
+            self.game_group_id,
+            {
+                'type': 'send.game.scene',
+                'data': {
+                    # 'chat_id': chat_id,
+                    'new_pedal_pos': new_pedal_pos,
+                    'response_type': response_type
+
+                },
+            }
+        )
+
+    async def init_game_struct(self):
+        if self.game_id not in self.game_states:
+            self.game_states[self.game_id] = {
+                'left_pedal': 0.75,
+                'right_pedal': 0.75,
+                'ball_x': 2,  # Initial ball position
+                'ball_y': 1,  # Initial ball position
+                'ball_radius': 0.05,
+                'ball_speed': 0.015,
+                'ball_dx': 0.025,
+                'ball_dy': 0.025,
+                'joined_players': 0,
+                'host_score': 0,
+                'guest_score': 0,
+                'score_limit': 3,
+                'game_active': True,
+            }
+
+    async def handle_send_init_game(self):
+
+        await self.init_game_struct()
+        return_val = await self.get_host(self.game_id, self.user['user_id'])
+        print("is host status:")
+        print(return_val)
+
+        await self.increment_joined_players()
+        # self.game_states.get(self.game_id, {}).get('joined_players')
+        print("self.joined_players")
+        print(self.game_states.get(self.game_id, {}).get('joined_players'))
+
+        await self.channel_layer.send(
+            self.channel_name,
+            {
+                'type': 'send.init.game',
+                'data': {
+                    'is_host': return_val,
+                    'joined_players': self.game_states.get(self.game_id, {}).get('joined_players')
+                },
+            }
+        )
+        if (self.game_states.get(self.game_id, {}).get('joined_players') == 2):
+            print("TWO PLAYERS\n")
+            await self.reset_joined_players()
+            await self.channel_layer.group_send(
+                self.game_group_id,
+                {
+                    'type': 'send.game.start',
+                    'data': {
+                        'ball_x': self.game_states.get(self.game_id, {}).get('ball_x'),
+                        'ball_y': self.game_states.get(self.game_id, {}).get('ball_y')
+                    },
+                }
+            )
+            print("after TWO PLAYERS\n")
+
+            # await self.game_loop()
+            asyncio.create_task(self.game_loop())
+
+    async def handle_send_ball_update(self):
+        await self.calculate_ball_state()
+        print("BALL_UPDATEEEE")
+        await self.channel_layer.group_send(
+            self.game_group_id,
+            {
+                'type': 'send.ball.update',
+                'data': {
+                    'ball_x': self.ball_x,
+                    'ball_y': self.ball_y
+
+                },
+            }
+        )
+        print("sent")
+
+    async def handle_send_score_update(self):
+        print('IN HANDLE SEND SCORE UPDATE')
+
+        try:
+            await self.channel_layer.group_send(
+                self.game_group_id,
+                {
+                    'type': 'send.score.update',
+                    'data': {
+                        'host_score': self.game_states[self.game_id]['host_score'],
+                        'guest_score': self.game_states[self.game_id]['guest_score'],
+                    },
+                }
+            )
+        except Exception as e:
+            print(f"Error in handle_send_score: {e}")
+
+
+# ---------------------------- DATABASE FUNCTIONS ----------------------------
+
+    @database_sync_to_async
+    def get_host(self, game_id, user_id):
+        game_instance = Game.objects.get(id=game_id)
+        user_instance = MyUser.objects.get(id=user_id)
+        if user_instance.name == game_instance.hostId:
+            self.is_host = True
+            check_host = 'True'
+        else:
+            self.is_host = False
+            check_host = 'False'
+        return check_host
+
+
