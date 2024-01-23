@@ -38,8 +38,6 @@ class test(AsyncWebsocketConsumer):
         self.user = {'user_id': user_id, 'is_online': 'true'}
         self.connections.append(self.user)
 
-        #TODO: create a channel_zer0 where everybody gets set to that connects
-        # - online stats should use that group
         await self.channel_layer.group_add('channel_zer0', self.channel_name)
         self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
         self.channels.append(self.channel_of_user)
@@ -250,10 +248,6 @@ class test(AsyncWebsocketConsumer):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
         users_chats = await self.get_users_chats(user_id)
-        print('OK 3')
-        print(users_chats)
-        # info = await self.get_last_message_in_chat(chat_id)
-
         await self.channel_layer.group_send(
             self.my_group_id,
             {
@@ -262,8 +256,6 @@ class test(AsyncWebsocketConsumer):
                     'user_id': user_id,
                     'chat_id': chat_id,
                     'users_chats': users_chats,
-                    # 'last_message': info["last_message"], #TODO: implement in frontend
-                    # 'message': info["message"], #TODO: implement in frontend
                 },
             }
         )
@@ -343,7 +335,6 @@ class test(AsyncWebsocketConsumer):
         user_id = text_data_json["data"]["user_id"]
         invited_user_name = text_data_json["data"]["invited_user_name"]
         info = await self.inviteUserToChat(user_id, chat_id, invited_user_name)
-
         others_user_id = await self.get_id_with_name(invited_user_name)
         others_user_channel_name = await self.get_channel_name_with_id(others_user_id)
         if others_user_channel_name is not None:
@@ -386,10 +377,8 @@ class test(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_id_with_name(self, user_name):
         try:
-            # print('USER NAME: ', user_name)
             user_instance = MyUser.objects.get(name=user_name)
             user_id = user_instance.id
-            # print('USER ID: ', user_id)
             return user_id
         except Exception as e:
             return -1
@@ -445,41 +434,28 @@ class test(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_users_chats(self, user_id):
-        # print('........ what')
         user_instance = MyUser.objects.get(id=user_id)
         all_chats = user_instance.chats.all()
-        # print('all chats: ', all_chats)
         user_chats = [
             {
                 'chat_id': chat.id,
-                # 'chat_name': chat.chatName,
                 'chat_name': self.getChatName(chat, user_id),
                 'private_chat_names': self.getPrivateChatNames(chat, user_id),
                 'last_message': self.get_last_message_in_chat(chat.id),
-            #     'chat_name': {if (chat.private == true) {
-            #     chat.name = chat.users.notcurrentuser(user_id)
-            # }},
                 'isPrivate': chat.isPrivate
             }
             for chat in all_chats
         ]
-
-        # print('USER CHATS: ', user_chats)
-
         return user_chats
 
-    # @database_sync_to_async
     def getChatName(self, chat_instance, user_id):
         if not chat_instance.isPrivate:
             return chat_instance.chatName
-
         # if chat is private, need to figure out name of chat user that is not current user
         chat_id = chat_instance.id
         users_in_chat = MyUser.objects.filter(chats__id=chat_id)
-
         current_user_instance = MyUser.objects.get(id=user_id)
         current_user = current_user_instance.name
-
         # get other users name
         for user in users_in_chat:
             if not current_user == user.name:
@@ -489,16 +465,12 @@ class test(AsyncWebsocketConsumer):
     def getPrivateChatNames(self, chat_instance, user_id):
         if not chat_instance.isPrivate:
             return None
-
         # if chat is private, need to figure out name of chat user that is not current user
         chat_id = chat_instance.id
         users_in_chat = MyUser.objects.filter(chats__id=chat_id)
         chat_names_list = [user.name for user in users_in_chat]
-        # current_user_instance = MyUser.objects.get(id=user_id)
-        # current_user = current_user_instance.name
-        # print('------HERE chat names: ', chat_names_list)
+
         return chat_names_list
-        # return 'lol private shit backend CONSUMERS.py'
 
 
     @database_sync_to_async
@@ -551,23 +523,11 @@ class test(AsyncWebsocketConsumer):
             if not user_exists:
                 return 'User does not exist'
 
-            # user_instance = MyUser.objects.get(id=user_id)
-            # user_name = user_instance.name
-
-            # TODO: need to check if the two user combo chat already exists
-                # get all chats that are private
-                # from them, get all chats that user_id is in
-                # from them, check if in one of them, chat_name is also a user
             user_instance = MyUser.objects.get(id=user_id)
 
             # Filter all private chats that the user is part of
             private_chats = Chat.objects.filter(isPrivate=True, myuser__id=user_id)
-
             chat_already_exists = private_chats.filter(myuser__name=chat_name)
-
-            # for chat in private_chats_for_users2:
-            #     print('chat: ', chat.chatName)
-
             if chat_already_exists:
                 return "You are already in a private chat with this user"
 
@@ -603,34 +563,15 @@ class test(AsyncWebsocketConsumer):
         except Exception as e:
             return str(e)
 
-    # @database_sync_to_async
     def get_last_message_in_chat(self, chat_id):
         try:
             chat_instance = Chat.objects.get(id=chat_id)
-            print('OK 1')
             last_message = chat_instance.messages.order_by('-timestamp').first()
-            print('OK 2')
             if last_message:
-                print("Last Message:", last_message.text)
-                print("Sender:", last_message.sender)
-                print("Timestamp:", last_message.formatted_timestamp())
-                # return last_message
+
                 return {'text': last_message.text, 'time': last_message.formatted_timestamp(), 'status': 'ok'}
-                # return None
         except ObjectDoesNotExist:
             print("Chat does not exist.")
 
         print("No messages in the chat.")
         return {'text': '', 'time': '0', 'status': 'Not found'}
-        # messages_in_chat = chat_instance.messages.all()
-        # message_data = [
-        #     {
-        #         'id': message.id,
-        #         'sender_id': message.senderId,
-        #         'sender': message.sender,
-        #         'text': message.text,
-        #         'timestamp': message.formatted_timestamp(),
-        #     }
-        #     for message in messages_in_chat
-        # ]
-        # return message_data

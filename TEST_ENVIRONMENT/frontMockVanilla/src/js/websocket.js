@@ -48,6 +48,7 @@ websocket_obj = {
       user_id: null
     }
   ],
+
   invited_user_name: null,
   message: null,
   sender: null,
@@ -75,10 +76,8 @@ async function establishWebsocketConnection() {
         }
         break
       case 'online_stats':
-        console.log('USER ', websocket_obj.username, ' received online stats: ', data.online_stats)
         websocket_obj.onlineStats = data.online_stats
-          // await renderChat()// ?
-          await renderMessages()// ??
+          await renderMessages()
         break
       case 'user_left_chat_info':
         console.log('user removed from chat info: ', data.message)
@@ -91,29 +90,21 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
-        console.log('FRONTEND USERS CHATS: ', data.users_chats)
-
         if (data.user_id === websocket_obj.user_id) {
-          console.log('last message: ', data.users_chats)
           websocket_obj.chat_data = data.users_chats
-          // console.log('message: ', data.message)
-          console.log('USER: ', websocket_obj.username, ' -- chat_data: ', websocket_obj.chat_data)
           await renderChat()
         }
         break
       case 'created_chat':
-        console.log('PRIVATE chat | USER:', websocket_obj.username, ' -- data: ', data)
         if (data.message === 'ok') {
           websocket_obj.chat_id = data.chat_id
           await sendDataToBackend('get_current_users_chats')
-
           await setMessageWithTimout('info_create_chat', 'Created chat successfully', 5000)
         } else {
           await setErrorWithTimout('info_create_chat', 'Error: ' + data.message, 5000)
         }
         break
       case 'created_private_chat':
-        console.log('PRIVATE chat | USER:', websocket_obj.username, ' -- data: ', data)
           if (data.message === 'ok') {
             await setMessageWithTimout('info_create_private_chat', 'Created chat successfully', 5000)
           } else {
@@ -121,20 +112,17 @@ async function establishWebsocketConnection() {
           }
         break
       case 'invited_user_to_chat':
-        console.log('i got invited lol')
         if (data.message !== 'ok') {
           await setErrorWithTimout('message_with_timeout', data.message, 5000)
         } else {
           await renderChat()
           await setMessageWithTimout('message_with_timeout', 'Invite send successfully', 5000)
         }
-        console.log('Invited user to chat info: ', data.message)
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
     }
   };
-
 
   websocket_obj.websocket.onerror = function (error) {
     console.error("WebSocket error:", error);
@@ -288,7 +276,6 @@ async function renderMessages() {
       timestampElement.classList.add('receiver-timestamp');
       const currentUserId = myArray[i].sender_id
       function hasMatchingUserId(user) {
-        // console.log('CURRENT USER [', currentUserId, '] | OTHER [', user.user_id, ']')
         return user.user_id === currentUserId;
       }
 
@@ -321,7 +308,6 @@ function renderUserInChatList() {
   mainContainer.innerHTML = '';
 
   let myArray = websocket_obj.userInCurrentChat
-
   let title = document.createElement('h2');
   title.textContent = 'User in Chat:'
   mainContainer.appendChild(title);
@@ -330,9 +316,6 @@ function renderUserInChatList() {
   const own_user = document.createElement('div');
   own_user.classList.add('row', 'own-user-in-chat-profile');
   own_user.textContent = 'You';
-  // own_user.addEventListener('click', async function () {
-  //   await handleButtonClickChatsInProfile(websocket_obj.username);
-  // });
   mainContainer.appendChild(own_user)
 
   for (let i = 0; i < myArray.length; i++) {
@@ -349,22 +332,12 @@ function renderUserInChatList() {
 }
 
 
-
 async function handleButtonClickChatsInProfile(clickedUser) {
   // automatically render profile of clicked user
-  console.log('clicked user: ', clickedUser)
-
   const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));
-
   const lol = document.getElementById('lol')
   lol.style.opacity = 0.5;
-  // lol.classList.add('hidden')
-
-
   let private_profile_header = document.getElementById('backdropClickedUserLabel')
-
   private_profile_header.textContent = clickedUser
-modal.show(); // Open the modal
-
-
+  modal.show();
 }

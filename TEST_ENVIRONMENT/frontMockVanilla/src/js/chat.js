@@ -21,17 +21,10 @@ function chatDom() {
   })
 
   document.getElementById('create_public_chat_button').addEventListener('click', async function() {
-    // let chat_name = document.getElementById('new_chat_name').value
-    // const private_chat = false
-    // await createChat(chat_name, private_chat)
     await createPublicChat()
   })
 
   document.getElementById('create_private_chat_button').addEventListener('click', async function() {
-    // let chat_name = document.getElementById('new_private_chat_name').value
-    // const private_chat = true
-    // await createChat(chat_name, private_chat)
-    // const chat_name = document.getElementById('')
     await createPrivateChat()
   })
 
@@ -57,28 +50,16 @@ function chatDom() {
       $('#backdropClickedUser').modal('hide');
     } else {
       console.log('No matching chat, create one')
-      console.log(chatNameToFind);
-      // TODO create new chat here
       document.getElementById('new_private_chat_name').value = chatNameToFind
       console.log('BEFORE chat name: ', document.getElementById('new_private_chat_name').value)
       await sendDataToBackend('set_new_private_chat')
       await sendDataToBackend('get_current_users_chats')
       await showChat(chatNameToFind)
-
-      // foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chatNameToFind);
-      // if (foundChat) {
-      //   await handleButtonClickChats(foundChat);
-      //   const public_chat_backdrop = document.getElementById('lol')
-      //   public_chat_backdrop.style.opacity = 1;
-      //   $('#staticBackdropProfile').modal('hide');
-      //   $('#backdropClickedUser').modal('hide');
-      // } else {
-      //   console.log('unexpected error, should not happen!!!')
-      // }
     }
   })
 
   document.getElementById('blockUserButton').addEventListener('click', async function() {
+    // TODO: Marie: implement block user
     console.log('here block logic')
   })
 }
@@ -114,28 +95,6 @@ async function inviteUser(invited_user_name){
   websocket_obj.invited_user_name = invited_user_name
   await sendDataToBackend('set_invited_user_to_chat')
   await sendDataToBackend('get_current_users_chats')
-
-
-  // const url = `http://127.0.0.1:6969/user/inviteUserToChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/${invited_user_name}/`
-  // fetch(url)
-  //   .then(response => {
-  //     if (!response.ok) {
-  //       if (response.status === 404) {
-  //         throw new Error('This User does not exists');
-  //       } else {
-  //         throw new Error('Could not get Users Chats Data');
-  //       }
-  //     }
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     renderProfile()
-  //     setMessageWithTimout('message_with_timeout', 'Invite send!', 5000)
-  //   })
-  //   .catch(error => {
-  //     setErrorWithTimout('message_with_timeout', error, 5000)
-  //     console.error('Error during getUserChats:', error);
-  //   });
 }
 
 

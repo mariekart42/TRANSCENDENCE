@@ -1,0 +1,7 @@
+
+function gameDom() {
+  // HERE EVENTLISTENERS FOR GAME:
+
+}
+
+// HERE FUNCTIONS FOR GAME:
