@@ -6,7 +6,6 @@ YEL='\033[0;33m'
 GRN='\033[0;32m'
 RESET='\033[0m'
 
-
 echo -e " 🔔  ${YEL}ARE YOU IN VIRTUAL ENVIRONMENT?${RESET}"
 read -p "     [Y|N|?]: " response
 
