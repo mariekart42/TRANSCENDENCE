@@ -29,7 +29,6 @@ if [[ "$response" == "y" || "$response" == "Y" ]]; then
   python3 -m pip install channels_redis
 #  python3 -m pip install --upgrade channels_redis
 
-
   echo -e " 🗿  ${BLUE}Applying migrations...${RESET}"
   python3 backend/manage.py makemigrations
   python3 backend/manage.py migrate
