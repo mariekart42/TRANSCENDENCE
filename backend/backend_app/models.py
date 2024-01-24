@@ -27,10 +27,6 @@ class Message(models.Model):
     def formatted_timestamp(self):
         return self.timestamp.strftime('%H:%M %d.%m.%Y')
 
-
-# class Test(models.Model):
-#     test = models.CharField("test", max_length=69)
-
 class Game(models.Model):
     hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
     guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)

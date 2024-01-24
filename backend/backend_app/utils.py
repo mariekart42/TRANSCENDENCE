@@ -10,12 +10,9 @@ def createMessage(request, user_id, chat_id):
     try:
         user_instance = MyUser.objects.get(id=user_id)
         specific_timestamp = timezone.now()
-
         data = json.loads(request.body.decode('utf-8'))
         text = data.get('text')
-
         new_message = Message.objects.create(sender=user_instance.name, text=text, timestamp=specific_timestamp)
-
         # add new_message to chat:
         chat_instance = Chat.objects.get(id=chat_id)
         chat_instance.messages.add(new_message.id)
@@ -30,7 +27,6 @@ def getChatMessages(request, chat_id):
     try:
         chat_instance = Chat.objects.get(id=chat_id)
         messages_in_chat = chat_instance.messages.all()
-
         message_data = [
             {
                 'id': message.id,
@@ -40,7 +36,6 @@ def getChatMessages(request, chat_id):
             }
             for message in messages_in_chat
         ]
-
         return JsonResponse({'message_data': message_data}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in createMessage'}, status=500)
@@ -49,10 +44,6 @@ def get_user_in_chat(request, chat_id):
     try:
         chat_instance = Chat.objects.get(id=chat_id)
         all_user_in_current_chat = MyUser.objects.filter(chats=chat_instance)
-
-
-        print('USER IN CHAT: ', all_user_in_current_chat)
-
         user_in_chat = [
             {
                 'user_name': user.name,
@@ -60,7 +51,6 @@ def get_user_in_chat(request, chat_id):
             }
             for user in all_user_in_current_chat
         ]
-
         return JsonResponse({'user_in_chat': user_in_chat}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in createMessage'}, status=500)

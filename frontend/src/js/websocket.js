@@ -359,7 +359,7 @@ async function sendDataToBackend(request_type) {
 }
 
 
-
+// TODO: MARIE: MOVE THIS TO CHAT.JS
 async function renderMessages() {
 
   let myArray = websocket_obj.messages.message_data;
@@ -422,7 +422,7 @@ async function renderMessages() {
   mainContainer.scrollTo(0, mainContainer.scrollHeight);
 }
 
-
+// TODO: MARIE: MOVE THIS TO CHAT.JS
 function renderUserInChatList() {
   let mainContainer = document.getElementById('userInChatList');
   mainContainer.innerHTML = '';
@@ -451,7 +451,7 @@ function renderUserInChatList() {
   }
 }
 
-
+// TODO: MARIE: MOVE THIS TO CHAT.JS
 async function handleButtonClickChatsInProfile(clickedUser) {
   // automatically render profile of clicked user
   const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));

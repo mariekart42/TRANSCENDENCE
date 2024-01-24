@@ -26,15 +26,13 @@ def checkUserCredentials(request, username, password):
         user_exist_check = MyUser.objects.filter(name=username).exists()
         if not user_exist_check:
             return JsonResponse({'error': 'User not found'}, status=404)
-
         user_object = MyUser.objects.get(name=username)
-
         if password == user_object.password:
             return JsonResponse({'message': 'ALL RIGHT', 'user_id': user_object.id}, status=200)
         else:
             return JsonResponse({'error': 'Password is wrong'}, status=401)
     except Exception as e:
-        # print(f"An error occurred: {str(e)}")
+        print(f"An error occurred: {str(e)}")
         return JsonResponse({'error': 'something big in getUserData'}, status=500)
 
 
@@ -42,12 +40,10 @@ def checkUserCredentials(request, username, password):
 @require_GET
 def getUserData(request, username, provided_password):
     try:
-        print('IN BACKEND GET USER DATA')
         user = MyUser.objects.filter(name=username).exists()
         if not user:
             return JsonResponse({'error': 'User not found'}, status=404)
         user = MyUser.objects.get(name=username)
-
         if provided_password == user.password:
             user_data = {
                 'id': user.id,
@@ -59,10 +55,11 @@ def getUserData(request, username, provided_password):
         else:
             return JsonResponse({'error': 'Password is wrong'}, status=401)
     except Exception as e:
-        # print(f"An error occurred: {str(e)}")
+        print(f"An error occurred: {str(e)}")
         return JsonResponse({'error': 'something big in getUserData'}, status=500)
 
 
+# TODO: MARIE: DELETE LATER: (was for testing stuff)
 @require_POST
 def updateUserAge(request, user_id):
     try:
@@ -81,6 +78,7 @@ def updateUserAge(request, user_id):
         return JsonResponse({'error': 'something big in updateUserAge'}, status=500)
 
 
+# TODO: MARIE: DELETE LATER: user should not be able anymore to change username -> unique usernames
 @require_POST
 def updateUserName(request, user_id):
     try:
@@ -88,22 +86,20 @@ def updateUserName(request, user_id):
         user_exists = MyUser.objects.filter(id=user_id).exists()
         if not user_exists:
             return JsonResponse({'error': 'User not found'}, status=404)
-
         user = MyUser.objects.get(id=user_id)
         data = json.loads(request.body.decode('utf-8'))
         new_name = data.get('newName')
 
-        chek_name_duplicate = MyUser.objects.filter(name=new_name).exists()
-        if chek_name_duplicate:
+        name_duplicate_exist = MyUser.objects.filter(name=new_name).exists()
+        if name_duplicate_exist:
             return JsonResponse({'error': 'Username already exists!'}, status=409)
-
         user.name = new_name
         user.save()
         return JsonResponse({'message': 'Username updated successfully'}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in updateUserName'}, status=500)
 
-
+# TODO: MARIE: DELETE LATER?: should user be able to change password?
 @require_POST
 def updateUserPassword(request, user_id):
     try:
@@ -141,16 +137,14 @@ def createAccount(request, username, password, age):
     except Exception as e:
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
 
-
+# TODO: MARIE: do we even use that or ws?
 def createPublicChat(request, user_id, chat_name):
     try:
         chat_exists = Chat.objects.filter(chatName=chat_name).exists()
         if chat_exists:
             return JsonResponse({'error': 'lol'}, status=409)
-
         new_chat = Chat.objects.create(chatName=chat_name, isPrivate=False)
         user_instance = MyUser.objects.get(id=user_id)
-
         user_instance.chats.add(new_chat.id)
         new_chat.save()
         user_instance.save()
@@ -175,7 +169,6 @@ def getUserChats(request, user_id):
             }
             for chat in user_chats
         ]
-
         return JsonResponse({'chat_data': chat_data})
     except MyUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
@@ -188,10 +181,8 @@ def getChatName(chat_instance, user_id):
     # if chat is private, need to figure out name of chat user that is not current user
     chat_id = chat_instance.id
     users_in_chat = MyUser.objects.filter(chats__id=chat_id)
-
     current_user_instance = MyUser.objects.get(id=user_id)
     current_user = current_user_instance.name
-
     # get other users name
     for user in users_in_chat:
         if not current_user == user.name:
@@ -199,14 +190,10 @@ def getChatName(chat_instance, user_id):
 
     return 'AHHHHHH something wrong'
 
+# TODO: MARIE: do we even use that or ws?
 def getLastMessageInChat(chat_id):
-    # chat_exist = Chat.objects.filter(id=chat_id)
-    # if not chat_exist:
-    #     return {'message': 'Chat does not exist', 'last_message': 'Not found'}
-
     chat_instance = Chat.objects.get(id=chat_id)
     last_message = chat_instance.messages.order_by('-timestamp').first()
-
     if last_message:
         print("Last Message:", last_message.text)
         print("Sender:", last_message.sender)
@@ -214,9 +201,6 @@ def getLastMessageInChat(chat_id):
         return last_message
     else:
         print("No messages in the chat.")
-        # last_message.text = 'Message not found'
-        # last_message.formatted_timestamp = 0
-        # last_message.sender = 'Message not found'
         return None
 
 
@@ -230,17 +214,14 @@ def getChatData(request, user_id, chat_id):
         chat_exists = user.chats.filter(id=chat_id).exists()
         if not chat_exists:
             return JsonResponse({'error': 'chat in getChatData not found'}, status=404)
-
         chat_instance = Chat.objects.get(id=chat_id)
         users_in_chat = chat_instance.myuser_set.all()
         user_names = [user.name for user in users_in_chat]
-
         chat_data = {
             'id': chat_instance.id,
             'name': chat_instance.chatName,
             'user': user_names,
         }
-
         return JsonResponse({'chat_data': chat_data}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in getChatData'}, status=500)
@@ -254,20 +235,17 @@ def leaveChat(request, user_id, chat_id):
         chat_exists = Chat.objects.filter(id=chat_id).exists()
         if not chat_exists:
             return JsonResponse({'error': 'Chat in leaveChat not found'}, status=404)
-
         chat_instance = Chat.objects.get(id=chat_id)
         user_instance = MyUser.objects.get(id=user_id)
         user_instance.chats.remove(chat_instance)
         user_instance.save()
-
         return JsonResponse({'message': 'everything toggo'}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in leaveChat'}, status=500)
 
 
 
-# gettin user_id cause dis function should later only
-# return users friends and not all user
+# TODO: MARIE: DELETE LATER: testing purpose
 def getAllUser(request, user_id):
     try:
         all_users_info = MyUser.objects.values('id', 'name')
@@ -282,11 +260,9 @@ def inviteUserToChat(request, user_id, chat_id, invited_user):
         invited_user_exists = MyUser.objects.filter(name=invited_user).exists()
         if not invited_user_exists:
             return JsonResponse({'error': 'User you want to invite doesnt exists'}, status=404)
-
         inviting_user = MyUser.objects.get(id=user_id)
         invited_user = MyUser.objects.get(name=invited_user)
         chat = inviting_user.chats.get(id=chat_id)
-
         invited_user.chats.add(chat)
         return JsonResponse({"message": "Invite was send successfully"})
     except inviting_user.DoesNotExist:
@@ -324,7 +300,9 @@ def updateAvatar(request, id):
 
 
 
-######### GAMEEEEEEEEEEEEEEEEEEEE #########
+
+
+######### GAMEEEEEEEEEEEEEEEEEEEE ######### kristinas kingdom:
 
 
 def createGame(request, username):

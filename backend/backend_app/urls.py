@@ -13,21 +13,8 @@ urlpatterns = [
     path('user/name/post/<int:user_id>/', updateUserName, name='updateUserName'),
     path('user/password/post/<int:user_id>/', updateUserPassword, name='updateUserPassword'),
     path('user/account/create/<str:username>/<str:password>/<int:age>/', views.createAccount, name='create-account'),
-
     path('user/leaveChat/<int:user_id>/<int:chat_id>/', views.leaveChat),
-
     path('user/getAllUser/<int:user_id>/', views.getAllUser),
-
-
-    # path('user/inviteUser/<str:invited_user_name>/<int:chat_id>/', views.inviteUser),
-
-
-
-    # CHAT
-
-
-    # AUTH
-
 
     # GAME
     path('user/game/create/<str:username>/', views.createGame),

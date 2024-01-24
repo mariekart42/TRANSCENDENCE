@@ -33,7 +33,6 @@ class test(AsyncWebsocketConsumer):
         self.user = None
         self.channel_of_user = None
         self.my_group_id = None
-        self.my_game_id = None  # NEW since 23.01
         self.isOnline = 0
         self.key_code = 0
         self.prev_pos = 0

@@ -1,3 +1,5 @@
+
+// TODO: MARIE: DELETE LATER: testing purpose
 document.addEventListener('DOMContentLoaded', function () {
     // Get references to the checkbox and content divs
     const toggleCheckbox = document.getElementById('toggleCheckbox');
