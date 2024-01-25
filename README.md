@@ -1,57 +1,58 @@
 # TRANSCENDENCE
-
-Project Setup:
 <br></br>
+Project Setup:
+
 
 ```
 TRANSCENDENCE/
 │
 ├── backend/
 │   │ 
-│   ├── manage.py
-│   │ 
-│   ├── Dockerfile
+│   ├── backend_app/
+│   │   │
+│   │   ├── migrations/
+│   │   │   └── __init__.py
+│   │   │
+│   │   ├── middleware/
+│   │   │   └── cors.py
+│   │   │
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   └── modules.py
 │   │ 
 │   ├── backend/
 │   │   ├── __init__.py
 │   │   ├── settings.py
-│   │   ├── urls.py
-│   │   └── ...
+│   │   └── urls.py
 │   │ 
-│   ├── backend_app/
-│   │   │
-│   │   ├── migrations/
-│   │   │   ├── __init__.py
-│   │   │   └── ...
-│   │   │ 
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── modules.py
-│   │   └── ...
+│   ├── db.sqlite3
 │   │ 
+│   └── manage.py
+│
+│
+│
+├── frontMockVanilla/
+│   │ 
+│   ├── public/
+│   │   └── *.png/jpeg
+│   │
+│   ├── src/
+│   │   ├── html/
+│   │   ├── js/
+│   │   └── index.html
+│   │ 
+│   └── package.json
+│
+│
+├── .venv/
 │   └── ...
-│
-│
 │ 
-├── frontend/
-│   │ 
-│   ├── index.html
-│   │ 
-│   ├── styles/
-│   │   ├── styles.css
-│   │   └── ...
-│   │ 
-│   ├── scripts/
-│   │   ├── app.js
-│   │   └── ...
-│   │ 
-│   └── ...
-│
-│ 
-├── docker-compose.yml
-│ 
-├── shell script
-│ 
-└── ...
+├── debug.sh
+└── testing_stage.sh
 ```
+
+<br></br>
+
+![ARCHITECTURE](frontMock/frontTest/public/arch.png)
+<br></br>
