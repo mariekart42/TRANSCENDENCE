@@ -88,14 +88,12 @@ async function renderInvites() {
   theButton.style.display = 'none';
   try {
 
-// _+_+_+_+_+_+_
 
     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
     const htmlContent = await response.text();
 
     const container = document.getElementById('game-session-container');
     container.innerHTML = htmlContent;
-// _+_+_+_+_+_+_
 
 } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
@@ -231,10 +229,6 @@ function drawPaddles() {
 
   console.log ("canvas.width: ", canvas.width);
   console.log ("canvas.height: ", canvas.height);
-  // console.log ("canvas.width / 80: ", canvas.width / 80);
-  // console.log ("canvas.height / 8: ", canvas.height / 8);
-  // console.log ("canvas.height / 4: ", canvas.height / 4);
-
 
   ctx.fillStyle = "black";
 

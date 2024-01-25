@@ -47,6 +47,10 @@ class test(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add('channel_zer0', self.channel_name)
         self.channel_of_user = {'user_id': user_id, 'channel_name': self.channel_name}
+        print('channel_name')
+        print(self.channel_name)
+        print('end of channel name')
+
         self.channels.append(self.channel_of_user)
         await self.handle_send_online_stats()# ??
         await self.accept()
@@ -60,7 +64,7 @@ class test(AsyncWebsocketConsumer):
         what_type = text_data_json["type"]
 
         # IF what_type is equal to a game request -> change later to something better
-        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update']:
+        if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_new_invite']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
             chat_id = text_data_json["data"]["chat_id"]
@@ -717,6 +721,26 @@ class test(AsyncWebsocketConsumer):
             print(self.game_states[self.game_id]['game_active'])
             await self.handle_send_score_update()
 
+    @database_sync_to_async
+    def remove_ended_match(self, user_id):
+        try:
+            print("user_id")
+
+            print(user_id)
+            user1 = MyUser.objects.get(id=user_id)
+            game_instance = Game.objects.get(id=game_id)
+            user1.new_matches.remove(game_instance)
+
+        except MyUser.DoesNotExist:
+            return None
+
+    # @database_sync_to_async
+    # def get_game_by_id(self, game_id):
+    #     try:
+    #         game_instance = Game.objects.get(id=game_id)
+    #         return game_instance
+    #     except Game.DoesNotExist:
+    #         return None
 
     async def game_loop(self):
         # game_status = self.game_states.get(self.game_id, {}).get('game_active')
@@ -743,7 +767,6 @@ class test(AsyncWebsocketConsumer):
 
             except Exception as e:
                 print(f"Error in game_loop: {e}")
-                break
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
                 self.game_states.pop(self.game_id, None)
                 await self.channel_layer.group_send(
@@ -755,6 +778,21 @@ class test(AsyncWebsocketConsumer):
                         },
                     }
                 )
+                # try:
+                #     user1 = await self.get_user_by_id(self.user['user_id'])
+                #     if user1 is not None:
+                #         game_instance = await self.get_game_by_id(self.game_id)
+                #         if game_instance is not None:
+                #             user1.new_matches.remove(game_instance)
+                #         else:
+                #             print("Error: Game not found")
+                #     else:
+                #         print("Error: User not found")
+                # except Exception as e:
+                #     print(f"Error in game_loop: {e}")
+                self.remove_ended_match()
+                print("after remove")
+
                 break
 
         print("-----GAME LOOP OVER-----")
@@ -852,7 +890,7 @@ class test(AsyncWebsocketConsumer):
                 'joined_players': 0,
                 'host_score': 0,
                 'guest_score': 0,
-                'score_limit': 3,
+                'score_limit': 1,
                 'game_active': True,
             }
 

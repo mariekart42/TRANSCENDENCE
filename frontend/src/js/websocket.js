@@ -48,6 +48,8 @@ websocket_obj = {
   game: [
     {
       game_id: null,
+      invited_id: null,
+
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
@@ -335,6 +337,16 @@ async function sendDataToBackend(request_type) {
             'user_id': websocket_obj.user_id,
             // 'chat_id': websocket_obj.chat_id,
             'game_id': websocket_obj.game.game_id,
+          }
+          break
+
+        case 'send_new_invite':
+          type = 'send_new_invite'
+          data = {
+            'user_id': websocket_obj.user_id,
+            // 'chat_id': websocket_obj.chat_id,
+            'game_id': websocket_obj.active_game,
+            'invited_id': websocket_obj.invited_id
           }
           break
         default:
