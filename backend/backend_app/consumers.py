@@ -58,6 +58,17 @@ class test(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
+        if self.game_group_id is not None:
+            self.game_states[self.game_id]['game_active'] = False
+            await self.channel_layer.group_send(
+                self.game_group_id,
+                {
+                    'type': 'send.opponent.disconnected',
+                    'data': {
+
+                    },
+                }
+            )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -628,8 +639,6 @@ class test(AsyncWebsocketConsumer):
 
 
 # *************** GAME *************** *************** *************** ***************
-
-# Update these methods
     async def assign_left_pedal(cls, val):
         game_state = cls.game_states.get(cls.game_id, {})
         game_state['left_pedal'] = val
@@ -721,18 +730,18 @@ class test(AsyncWebsocketConsumer):
             print(self.game_states[self.game_id]['game_active'])
             await self.handle_send_score_update()
 
-    @database_sync_to_async
-    def remove_ended_match(self, user_id):
-        try:
-            print("user_id")
+    # @database_sync_to_async
+    # def remove_ended_match(self, user_id):
+    #     try:
+    #         print("user_id")
 
-            print(user_id)
-            user1 = MyUser.objects.get(id=user_id)
-            game_instance = Game.objects.get(id=game_id)
-            user1.new_matches.remove(game_instance)
+    #         print(user_id)
+    #         user1 = MyUser.objects.get(id=user_id)
+    #         game_instance = Game.objects.get(id=game_id)
+    #         user1.new_matches.remove(game_instance)
 
-        except MyUser.DoesNotExist:
-            return None
+    #     except MyUser.DoesNotExist:
+    #         return None
 
     # @database_sync_to_async
     # def get_game_by_id(self, game_id):
@@ -841,6 +850,13 @@ class test(AsyncWebsocketConsumer):
         print("IN SEND BALL UPDATE")
         await self.send(text_data=json.dumps({
             'type': 'game_over',
+
+        }))
+
+    async def send_opponent_disconnected(self, event):
+        print("in opponent disconnected")
+        await self.send(text_data=json.dumps({
+            'type': 'opponent_disconnected',
 
         }))
 
@@ -981,5 +997,17 @@ class test(AsyncWebsocketConsumer):
             self.is_host = False
             check_host = 'False'
         return check_host
+    
+    @database_sync_to_async
+    def remove_ended_match(self):
+        try:
+            # print("user_id")
 
+            # print(user_id)
+            user_id = self.user['user_id']
+            user1 = MyUser.objects.get(id=user_id)
+            game_instance = Game.objects.get(id=self.game_id)
+            user1.new_matches.remove(game_instance)
 
+        except MyUser.DoesNotExist:
+            return None

@@ -6,6 +6,13 @@ function gameDom() {
 
 // HERE FUNCTIONS FOR GAME:
 
+async function showExample() {
+
+  var theButton = document.getElementById('example');
+  theButton.style.display = 'block';
+}
+
+
 
 async function joinGame(gameId) {
 

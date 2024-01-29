@@ -428,9 +428,9 @@ def renderInvites(request, username):
         print(f"22222")
         print(f" {user}")
 
-        game_sessions = user.new_matches.all()
+        # game_sessions = user.new_matches.all()
         # game_sessions = user.new_matches.get(id=2)
-        # game_sessions = Game.objects.all()
+        game_sessions = Game.objects.all()
 
         print(f"333333")
         print(f" {game_sessions}")
