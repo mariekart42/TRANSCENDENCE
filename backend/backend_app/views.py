@@ -22,18 +22,17 @@ def inviteUser(request, invited_user_name):
 
 def checkUserCredentials(request, username, password):
     try:
-        print('IN BACKEND loginUser')
         user_exist_check = MyUser.objects.filter(name=username).exists()
         if not user_exist_check:
-            return JsonResponse({'error': 'User not found'}, status=404)
+            return JsonResponse({}, status=404)
         user_object = MyUser.objects.get(name=username)
         if password == user_object.password:
-            return JsonResponse({'message': 'ALL RIGHT', 'user_id': user_object.id}, status=200)
+            return JsonResponse({'user_id': user_object.id}, status=200)
         else:
-            return JsonResponse({'error': 'Password is wrong'}, status=401)
+            return JsonResponse({}, status=401)  # wrong credentials
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return JsonResponse({'error': 'something big in getUserData'}, status=500)
+        return JsonResponse({}, status=500)
 
 
 
@@ -120,11 +119,11 @@ def updateUserPassword(request, user_id):
 
 def createAccount(request, username, password, age):
     try:
-        user = MyUser.objects.filter(name=username).exists()
-        if user:
-            return JsonResponse({'error': 'Username already exist'}, status=409)
-        if age is not None and (age < 0 or age > 200):
-            return JsonResponse({"error": "Dude, there is no way you're " + str(age)}, status=409)
+        user_exist = MyUser.objects.filter(name=username).exists()
+        if user_exist:
+            return JsonResponse({}, status=409)
+        # if age is not None and (age < 0 or age > 200):
+        #     return JsonResponse({"error": "Dude, there is no way you're " + str(age)}, status=409)
         user_data = {
             "name": username,
             "password": password,
@@ -133,7 +132,7 @@ def createAccount(request, username, password, age):
         new_user = MyUser(**user_data)
         new_user.save()
         user_instance = MyUser.objects.get(name=username)
-        return JsonResponse({"message": "User created successfully", 'user_id': user_instance.id})
+        return JsonResponse({"message": "User created successfully", 'user_id': user_instance.id}, status=200)
     except Exception as e:
         return JsonResponse({'error': 'something big in createAccount'}, status=500)
 

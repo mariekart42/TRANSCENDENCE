@@ -191,26 +191,6 @@ async function createGame() {
 
 }
 
-async function leaveChat() {
-  const chatDiv = document.getElementById('showChat');
-  chatDiv.classList.add('hidden');
-  console.log('USER_ID | CHAT_ID: ', websocket_obj.user_id, websocket_obj.chat_id)
-  const url = `http://127.0.0.1:6969/user/leaveChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/`
-  fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Could not get Users Chats Data');
-      }
-      return response.json();
-    })
-    .then(data => {
-      renderProfile()
-    })
-    .catch(error => {
-      console.error('Error during getUserChats:', error);
-    });
-}
-
 
 function drawPaddles() {
 

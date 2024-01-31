@@ -112,19 +112,14 @@ function showSiteHideOthers(site_to_show) {
   const sites = ['gameSite', 'nothingSite', 'homeSite', 'chat'];
 
   sites.forEach(site => {
-    const element = document.getElementById(site);
-    if (site === site_to_show) {
-      element.classList.remove('hidden')
-    } else {
-      element.classList.add('hidden')
-    }
+    if (site === site_to_show) showDiv(site)
+    else hideDiv(site)
   });
 }
 
 function submitForm() {
 
   const img = document.getElementById('profilePictureInput')
-  // websocket_obj.avatar = img.files[0]
 
     if (img.files && img.files[0]) {
         const file = img.files[0];
@@ -170,4 +165,13 @@ async function setMessageWithTimout(element_id, message, timout) {
   setTimeout(async function() {
     obj.style.display = 'none';
   }, timout);
+}
+
+
+function hideDiv(element_id) {
+  document.getElementById(element_id).classList.add('hidden')
+}
+
+function showDiv(element_id) {
+  document.getElementById(element_id).classList.remove('hidden')
 }

@@ -80,14 +80,9 @@ async function showChat(chat_name){
 
 async function logoutUser() {
   let websocket_obj = null
-  const notAuth = document.getElementById('userIsNotAuth');
-  notAuth.classList.remove('hidden');
-  const isAuth = document.getElementById('userIsAuth');
-  isAuth.classList.add('hidden');
-  // const chatDiv = document.getElementById('showChat');
-  // chatDiv.classList.add('hidden');
-  const profileDiv = document.getElementById('showUserProfile');
-  profileDiv.classList.add('hidden');
+
+  showDiv('userIsNotAuth')
+  hideDiv('userIsAuth')
 }
 
 
@@ -141,24 +136,21 @@ async function renderProfile() {
 
 async function handleButtonClickChats(chat_obj) {
 
-  const chatDiv = document.getElementById('messageSide');
-  chatDiv.classList.remove('hidden');
+  showDiv('messageSide')
 
   const right_heading_name = document.getElementById('right-heading-name')
   right_heading_name.textContent = chat_obj.chat_name
 
-  let private_profile_button = document.getElementById('profile-in-private-chat-button')
   let private_profile_header = document.getElementById('backdropPrivateProfileLabel')
-  let public_profile_button = document.getElementById('profile-in-public-chat-button')
   let public_profile_header = document.getElementById('backdropPublicProfileLabel')
   if (chat_obj.isPrivate) {
-    private_profile_button.classList.remove('hidden')
+    showDiv('profile-in-private-chat-button')
+    hideDiv('profile-in-public-chat-button')
     private_profile_header.textContent = chat_obj.chat_name
-    public_profile_button.classList.add('hidden')
   } else {
-    public_profile_button.classList.remove('hidden')
+    showDiv('profile-in-public-chat-button')
+    hideDiv('profile-in-private-chat-button')
     public_profile_header.textContent = chat_obj.chat_name
-    private_profile_button.classList.add('hidden')
   }
 
   websocket_obj.chat_id = chat_obj.chat_id;

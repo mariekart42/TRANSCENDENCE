@@ -97,6 +97,7 @@ async function establishWebsocketConnection() {
           await renderMessages()
         break
       case 'user_left_chat_info':
+
         console.log('user removed from chat info: ', data.message)
         break
       case 'online_stats_on_disconnect':
@@ -257,7 +258,7 @@ async function sendDataToBackend(request_type) {
           }
           break
         case 'get_current_users_chats':
-          console.log('CHAT_ID: ', websocket_obj.chat_id)
+          console.log('HERE: ', websocket_obj.user_id)
           type = 'send_current_users_chats'
           data = {
             'user_id': websocket_obj.user_id,
