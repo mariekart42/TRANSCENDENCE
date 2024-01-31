@@ -7,7 +7,6 @@ websocket_paths = ProtocolTypeRouter(
     {
         "websocket": URLRouter(
             [
-                # re_path(r'ws/test/(?P<chat_id>\w+)/$', consumers.test.as_asgi()),
                 re_path(r'ws/test/(?P<user_id>\w+)/$', consumers.test.as_asgi()),
             ]
         ),
