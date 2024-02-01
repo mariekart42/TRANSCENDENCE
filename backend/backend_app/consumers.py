@@ -89,6 +89,10 @@ class test(AsyncWebsocketConsumer):
                 await self.handle_create_new_private_chat(text_data_json)
             elif what_type == 'set_invited_user_to_chat':
                 await self.handle_invite_user_to_chat(text_data_json)
+            elif what_type == 'block_user':
+                await self.handle_block_user(text_data_json)
+            elif what_type == 'get_blocked_by_user':
+                await self.handle_get_blocked_by_user(text_data_json)
             else:
                 print('IS SOMETHING ELSE')
 
@@ -195,6 +199,24 @@ class test(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'invited_user_to_chat',
             'message': event['data']['message'],
+        }))
+
+    async def send_blocked_user_info(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'blocked_user_info',
+            'message': event['data']['message'],
+            # 'blocked_by': event['data']['blocked_by'],
+            'status': event['data']['status'],
+            'user_id': event['data']['user_id'],
+            # 'other_user_name': event['data']['other_user_name'],
+        }))
+
+    async def send_blocked_user(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'blocked_user',
+            'blocked_by': event['data']['blocked_by'],
+            'status': event['data']['status'],
+            'user_id': event['data']['user_id'],
         }))
 
 
@@ -409,6 +431,54 @@ class test(AsyncWebsocketConsumer):
 
 
 
+    async def handle_block_user(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        user_to_block = text_data_json["data"]["user_to_block"]
+
+        response = await self.block_user(user_id, user_to_block)
+        print('RESPONSE: ', response)
+        # blocked_by = await self.getBlockedByUser(user_id, user_to_block)
+        # print("RESPONSE FOR BLOCK USER: ", info)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.blocked.user.info',
+                'data': {
+                    'message': 'delerte me later',
+                    'status': response["status"],
+                    # 'blocked_by': response["blocked_by"],
+                    'user_id': user_id,
+                    'other_user_name': user_to_block
+                },
+            }
+        )
+
+    async def handle_get_blocked_by_user(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+
+        response = await self.get_blocked_user(user_id)
+        print('RESPONSE: ', response)
+        # blocked_by = await self.getBlockedByUser(user_id, user_to_block)
+        # print("RESPONSE FOR BLOCK USER: ", info)
+        await self.send(text_data=json.dumps({
+            'type': 'blocked_user',
+            'blocked_by': response["blocked_by"],
+            'status': response["status"],
+            'user_id': user_id,
+        }))
+        # await self.channel_layer.group_send(
+        #     self.my_group_id,
+        #     {
+        #         'type': 'send.blocked.user',
+        #         'data': {
+        #             'status': response["status"],
+        #             'blocked_by': response["blocked_by"],
+        #             'user_id': user_id,
+        #         },
+        #     }
+        # )
+
+
 
 
 # ---------------------------- DATABASE FUNCTIONS ----------------------------
@@ -481,7 +551,8 @@ class test(AsyncWebsocketConsumer):
                 'chat_name': self.getChatName(chat, user_id),
                 'private_chat_names': self.getPrivateChatNames(chat, user_id),
                 'last_message': self.get_last_message_in_chat(chat.id),
-                'isPrivate': chat.isPrivate
+                'isPrivate': chat.isPrivate,
+                # 'blocked_by': self.getBlockedByUser(user_id, chat.chatName)
             }
             for chat in all_chats
         ]
@@ -510,6 +581,20 @@ class test(AsyncWebsocketConsumer):
         chat_names_list = [user.name for user in users_in_chat]
 
         return chat_names_list
+
+    # @database_sync_to_async
+    # def getBlockedByUser(self, user_id, other_user_name):
+    #     user_instance = MyUser.objects.get(id=user_id)
+    #
+    #     # Get the names from the blocked_by field
+    #     blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
+    #
+    #     # Convert the queryset to a list
+    #     blocked_by_names_list = list(blocked_by_names)
+    #     print("BLOCKED BY: ", blocked_by_names)
+    #
+    #     return blocked_by_names_list
+
 
 
     @database_sync_to_async
@@ -607,7 +692,6 @@ class test(AsyncWebsocketConsumer):
             chat_instance = Chat.objects.get(id=chat_id)
             last_message = chat_instance.messages.order_by('-timestamp').first()
             if last_message:
-
                 return {'text': last_message.text, 'time': last_message.formatted_timestamp(), 'status': 'ok'}
         except ObjectDoesNotExist:
             print("Chat does not exist.")
@@ -616,14 +700,55 @@ class test(AsyncWebsocketConsumer):
         return {'text': '', 'time': '0', 'status': 'Not found'}
 
 
+    @database_sync_to_async
+    def block_user(self, user_id, user_to_block):
+        # find instance of user_id && user_to_block
+
+        current_user_exists = MyUser.objects.filter(id=user_id)
+        other_user_exists = MyUser.objects.filter(name=user_to_block)
+        if not current_user_exists or not other_user_exists:
+            return {'status': 404, 'blocked_by': None}
+        current_user_instance = MyUser.objects.get(id=user_id)
+        other_user_instance = MyUser.objects.get(name=user_to_block)
+
+        # create blocked_by field in instance of user_to_block and add there the name of instance user_id
+        # Check if the other user is already blocked
+        if current_user_instance in other_user_instance.blockedBy.all():
+            # User is already blocked, return a response or handle accordingly
+            return {'status': 409, 'blocked_by': None} #'User already blocked'
+
+        # Block the other user
+        other_user_instance.blockedBy.add(current_user_instance)
+
+        # Save the current_user instance to persist changes
+        other_user_instance.save()
+#------------------------------------------------------------
+        # current_user_instance = MyUser.objects.get(id=user_id)
+        #
+        # # Get the names from the blocked_by field
+        # blocked_by_names = other_user_instance.blockedBy.values_list('name', flat=True)
+        #
+        # # Convert the queryset to a list
+        # blocked_by_names_list = list(blocked_by_names)
+        # print("BLOCKED BY: ", blocked_by_names)
+
+        return {'status': 200}
+
+    @database_sync_to_async
+    def get_blocked_user(self, user_id):
+        user_instance = MyUser.objects.get(id=user_id)
+
+        # Get the names from the blocked_by field
+        blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
+
+        # Convert the queryset to a list
+        blocked_by_names_list = list(blocked_by_names)
+        print("BLOCKED BY: ", blocked_by_names)
+
+        return {'status': 200, 'blocked_by': blocked_by_names_list}
 
 
-
-
-
-
-
-# *************** GAME *************** *************** *************** ***************
+    # *************** GAME *************** *************** *************** ***************
 
 # Update these methods
     async def assign_left_pedal(cls, val):

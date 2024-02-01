@@ -6,6 +6,7 @@ websocket_obj = {
   password: null,
   avatar: 'https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg',
   age: null,
+  blocked_by: [],
 
   chat_name: null,
   chat_id: null,
@@ -33,6 +34,7 @@ websocket_obj = {
       private_chat_names: [],
       isPrivate: null,
       last_message: null,
+      // blocked_by: [],// NEW implement in backend
     }
   ],
   messages: [
@@ -83,7 +85,7 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
-    console.log('ONMESSAGE DATA: ', data)
+    // console.log('ONMESSAGE DATA: ', data)
     switch (data.type) {
       case 'all_chat_messages':
          if (data.chat_id === websocket_obj.chat_id) {
@@ -110,6 +112,7 @@ async function establishWebsocketConnection() {
       case 'current_users_chats':
         if (data.user_id === websocket_obj.user_id) {
           websocket_obj.chat_data = data.users_chats
+          console.log('CHAT_DATA: ', websocket_obj.chat_data)
           await renderChat()
         }
         break
@@ -200,8 +203,25 @@ async function establishWebsocketConnection() {
         // await updateScore();
         await updateScore();
         break
+      case 'blocked_user_info':
+        // TODO: MARIE: display info about success or failure
+        console.log('BLOCKED USER INFO: ', data)
+
+        // if (data.status === 200 && data.other_user_name === websocket_obj.username) {
+        //   websocket_obj.blocked_by = data.blocked_by
+        // }
+        // console.log('BLOCKED BY: ', websocket_obj.blocked_by)
+          await sendDataToBackend('get_blocked_by_user')
+        break
+      case 'message_save_success':
+        break
+      case 'blocked_user':
+        console.log('GET REQ: BLOCKED BY: ', data.blocked_by)
+        websocket_obj.blocked_by = data.blocked_by
+        break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
+        console.log('DATA: ', data)
     }
   };
 
@@ -253,7 +273,7 @@ async function sendDataToBackend(request_type) {
         case 'get_user_in_current_chat':
           type = 'send_user_in_current_chat'
           data = {
-            'user_id': websocket_obj.user_id,// new
+            'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
@@ -338,6 +358,22 @@ async function sendDataToBackend(request_type) {
             'game_id': websocket_obj.game.game_id,
           }
           break
+        case 'block_user':
+          type = 'block_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'user_to_block': websocket_obj.chat_name // implement this in backend
+          }
+          break
+        case 'get_blocked_by_user':
+          type = 'get_blocked_by_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          }
+          break
+
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }
