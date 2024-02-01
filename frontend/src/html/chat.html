@@ -1,6 +1,3 @@
-
-
-
 <div class="row app g-0">
   <div id="chat-area" class="col-sm-4">
     <div class="row left-heading">
@@ -48,7 +45,6 @@
       </div>
       <div class="col">
 
-
 <!--?   FOR PRIVATE CHATS-->
         <button id="profile-in-private-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#backdropPrivateProfile">PRIV Profile</button>
         <div class="modal fade" id="backdropPrivateProfile" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -61,7 +57,7 @@
               </div>
               <!-- Body -->
               <div class="modal-body">
-                <button id="blockUserButton" class="btn btn-outline-danger">block User [coming soon]</button>
+                <button id="blockUserButton" class="btn btn-outline-danger">block User</button>
 <!--?           TODO: KRISTINA:-->
                 <button id="challengeUserToGame" class="btn btn-outline-success">challenge User [coming soon]</button>
               </div>
@@ -74,7 +70,7 @@
         </div>
 
 <!--?   FOR PUBLIC CHATS-->
-        <div id="lol">
+        <div id="publicChatModal">
         <button id="profile-in-public-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile">PUB Profile</button>
         <div class="modal fade" id="staticBackdropProfile" data-bs-backdrop="static" data-bs-keyboard="false"
              tabindex="-1" aria-labelledby="backdropPublicProfileLabel" aria-hidden="true">
@@ -87,25 +83,16 @@
               <!-- Body -->
               <div class="modal-body">
                 <div id="userInChatList"></div><br>
-
-<!--?                <div class="input-group mb-3">-->
-<!--?                  <input type="text" class="form-control" placeholder="Invite User..."-->
-<!--?                         aria-label="Recipient's username" id="invite_user" aria-describedby="invite_user_button">-->
-<!--?                  <button class="btn btn-outline-success" type="button" id="invite_user_button">Invite</button>-->
-<!--?                </div>-->
-
                 <div class="input-group mb-3">
                   <input type="text" class="form-control" placeholder="Invite User..."
                          aria-label="Recipient's username" id="invite_user" aria-describedby="invite_user_button">
                   <button class="btn btn-outline-success" type="button" id="invite_user_button">Invite</button>
                 </div>
-
                 <div id="message_with_timeout"></div><br>
                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop2">Leave Chat
                 </button><br><br>
               </div>
-              <!-- Footer -->
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close
                 </button>
@@ -113,7 +100,7 @@
             </div>
           </div>
         </div>
-</div>
+      </div>
 
 <!--?   FOR CLICKED USER-->
         <div class="modal fade" id="backdropClickedUser" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -168,7 +155,8 @@
       <div id="messageContainer" class="scroll-messages"></div>
       <div class="input-group format-input-group">
         <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
-        <button id="sendMessageButton" class="btn btn-dark">Send</button>
+<!--     TODO: MARIE: disable this button if user is blocked-->
+         <button id="sendMessageButton" class="btn btn-dark">Send</button>
       </div>
     </div>
   </div>
@@ -305,7 +293,7 @@
     background-color: #212121 !important;
   }
 
-  .lol {
+  .navbar_background {
     background: url("https://i0.wp.com/digital-photography-school.com/wp-content/uploads/2021/03/horizontal-lines-photography-1.jpg?w=1500&ssl=1");
     color: #212121;
   }

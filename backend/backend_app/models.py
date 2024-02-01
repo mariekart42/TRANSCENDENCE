@@ -9,8 +9,7 @@ class MyUser(models.Model):
     avatar = models.FileField(upload_to='avatars/', null=True, blank=True)
     chats = models.ManyToManyField('Chat', blank=True)
     new_matches = models.ManyToManyField('Game', blank=True)
-    # can hold multiple Chat instances
-
+    blockedBy = models.ManyToManyField('self', blank=True, symmetrical=False)
 
 class Chat(models.Model):
     chatName = models.CharField("chatName", max_length=100)

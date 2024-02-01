@@ -31,7 +31,9 @@ function addEventListenersIsAuth() {
   })
 
   document.getElementById('showChatButton').addEventListener('click', async function () {
-    await sendDataToBackend('get_current_users_chats') // NEW since 22.01
+    await sendDataToBackend('get_current_users_chats')
+    await sendDataToBackend('get_blocked_by_user') // NEW since 01.02
+    // get_blocked_by_user
     showSiteHideOthers('chat')
   })
 

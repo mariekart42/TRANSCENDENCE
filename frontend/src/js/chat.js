@@ -1,6 +1,43 @@
 
 function chatDom() {
   document.getElementById('sendMessageButton').addEventListener('click', async function () {
+
+
+    // console.log('Chat name: ', websocket_obj.chat_name)
+    // // find chat with name in chat_date:
+    // const foundChatData = websocket_obj.chat_data.find(chat => chat.chat_name === websocket_obj.chat_name);
+    // if (foundChatData) {
+    //   console.log('FOUND')
+    //   console.log('Is private: ', foundChatData.isPrivate)
+    //   if (foundChatData.isPrivate) {
+    //     // both names
+    //     console.log('ME: ', websocket_obj.username)
+    //     console.log('OTHER: ', websocket_obj.chat_name)
+    //
+    //     // check if OTHER is in the list of blocked_by
+    //     const isBlocked = foundChatData.blocked_by && foundChatData.blocked_by.includes(websocket_obj.chat_name);
+    //     if (isBlocked) {
+    //       // TODO: MARIE: send warning and do not save message
+    //       alert('CURRENT USER IS blocked by: ', websocket_obj.chat_name)
+    //       return
+    //     } else {
+    //       console.log('CURRENT USER IS NOT blocked by: ', websocket_obj.chat_name)
+    //     }
+    //   }
+    // } else {
+    //   alert('NOT FOUND, should never happen though')
+    // }
+
+
+    const isBlocked = websocket_obj.blocked_by && websocket_obj.blocked_by.includes(websocket_obj.chat_name);
+    if (isBlocked) {
+      // TODO: MARIE: send warning and do not save message
+      alert('CURRENT USER IS blocked by: ', websocket_obj.chat_name)
+      return
+    } else {
+      console.log('CURRENT USER IS NOT blocked by: ', websocket_obj.chat_name)
+    }
+
     websocket_obj.message = document.getElementById('messageInput').value
     websocket_obj.sender = websocket_obj.username
 
@@ -29,7 +66,7 @@ function chatDom() {
   })
 
   document.getElementById('close_button_clicked_user').addEventListener('click', async function() {
-    const public_chat_backdrop = document.getElementById('lol')
+    const public_chat_backdrop = document.getElementById('publicChatModal')
     public_chat_backdrop.style.opacity = 1;
   })
 
@@ -43,8 +80,8 @@ function chatDom() {
 
     if (foundChat) {
       console.log(foundChat);
-      await handleButtonClickChats(foundChat);
-      const public_chat_backdrop = document.getElementById('lol')
+      await handleClickedOnChatElement(foundChat);
+      const public_chat_backdrop = document.getElementById('publicChatModal')
       public_chat_backdrop.style.opacity = 1;
       $('#staticBackdropProfile').modal('hide');
       $('#backdropClickedUser').modal('hide');
@@ -59,21 +96,49 @@ function chatDom() {
   })
 
   document.getElementById('blockUserButton').addEventListener('click', async function() {
-    // TODO: Marie: implement block user
     console.log('here block logic')
+    // TODO: Marie: implement block user
+
+    console.log(websocket_obj.username, ' wants to block ', websocket_obj.chat_name)
+    // find in chat_data fitting element where websocke.chatname is right
+    // const foundChatData = websocket_obj.chat_data.find(chat => chat.chat_name === websocket_obj.chat_name);
+    // if (foundChatData) {
+    //   console.log('FOUND')
+    //   // check is blocked before
+    //   // if (foundChatData.blocked_by) {
+    //     // TODO: MARIE: render info about success/failure of blocking user
+
+        if (websocket_obj.blocked_by && websocket_obj.blocked_by.includes(websocket_obj.username)) {
+          alert('U already blocked this user')
+        } else {
+          // foundChatData.blocked_by.push(websocket_obj.username);
+          // make ws call to add this user to blocked list
+          await sendDataToBackend('block_user')
+
+          console.log(websocket_obj.username, ' BLOCKED ', websocket_obj.chat_name)
+        }
+
+      // } else {
+      // }
+    // } else {
+    //   alert('NOT FOUND in block user, should never happen though')
+    // }
+
+
+    $('#backdropPrivateProfile').modal('hide');
   })
 }
 
 async function showChat(chat_name){
   let foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chat_name);
   if (foundChat) {
-    await handleButtonClickChats(foundChat);
-    const public_chat_backdrop = document.getElementById('lol')
+    await handleClickedOnChatElement(foundChat);
+    const public_chat_backdrop = document.getElementById('publicChatModal')
     public_chat_backdrop.style.opacity = 1;
     $('#staticBackdropProfile').modal('hide');
     $('#backdropClickedUser').modal('hide');
   } else {
-    console.log('unexpected error, should not happen!!!')
+    alert('unexpected error, should not happen!!!')
   }
 }
 
@@ -134,7 +199,7 @@ async function renderProfile() {
   sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
 }
 
-async function handleButtonClickChats(chat_obj) {
+async function handleClickedOnChatElement(chat_obj) {
 
   showDiv('messageSide')
 
@@ -243,18 +308,18 @@ function renderUserInChatList() {
       chat_element.classList.add('row', 'contacts-in-chat-profile');
       chat_element.textContent = myArray[i].user_name;
       chat_element.addEventListener('click', async function () {
-        await handleButtonClickChatsInProfile(myArray[i].user_name);
+        await handleClickedElementInPublicChatModal(myArray[i].user_name);
       });
       mainContainer.appendChild(chat_element)
     }
   }
 }
 
-async function handleButtonClickChatsInProfile(clickedUser) {
+async function handleClickedElementInPublicChatModal(clickedUser) {
   // automatically render profile of clicked user
   const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));
-  const lol = document.getElementById('lol')
-  lol.style.opacity = 0.5;
+  const publicChatModal = document.getElementById('publicChatModal')
+  publicChatModal.style.opacity = 0.5;
   let private_profile_header = document.getElementById('backdropClickedUserLabel')
   private_profile_header.textContent = clickedUser
   modal.show();
@@ -299,7 +364,7 @@ async function renderChat() {
     }
 
     chat_element.addEventListener('click', async function () {
-      await handleButtonClickChats(chat);
+      await handleClickedOnChatElement(chat);
     });
 
     nameCol.appendChild(chatName);
