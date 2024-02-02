@@ -748,7 +748,7 @@ class test(AsyncWebsocketConsumer):
             user1 = MyUser.objects.get(id=user_id)
             game_instance = Game.objects.get(id=game_id)
             user1.new_matches.remove(game_instance)
-
+            game_instance.delete()
         except MyUser.DoesNotExist:
             return None
 
