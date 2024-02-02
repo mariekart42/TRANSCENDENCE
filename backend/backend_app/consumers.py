@@ -60,6 +60,7 @@ class test(AsyncWebsocketConsumer):
         await self.handle_send_online_stats_on_disconnect()
         if self.game_group_id is not None:
             self.game_states[self.game_id]['game_active'] = False
+
             await self.channel_layer.group_send(
                 self.game_group_id,
                 {
@@ -784,23 +785,26 @@ class test(AsyncWebsocketConsumer):
                     }
                 )
                 await asyncio.sleep(1 / 60)
+                # game_status = self.game_states.get(self.game_id, {}).get('game_active')
+
 
             except Exception as e:
                 print(f"Error in game_loop: {e}")
+                break
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
                 print("in game_active = false")
                 self.game_states.pop(self.game_id, None)
                 print("111111")
 
-                # await self.channel_layer.group_send(
-                #     self.game_group_id,
-                #     {
-                #         'type': 'send.game.over',
-                #         'data': {
+                await self.channel_layer.group_send(
+                    self.game_group_id,
+                    {
+                        'type': 'send.game.over',
+                        'data': {
 
-                #         },
-                #     }
-                # )
+                        },
+                    }
+                )
                 try:
                     # # user1 = self.user['user_id']
                     # user1 = await get_myuser_by_id(self.user['user_id'])
