@@ -113,14 +113,40 @@ class Chats:
 
     async def handle_get_blocked_by_user(self, text_data_json):
         user_id = text_data_json["data"]["user_id"]
-        response = await self.get_blocked_user(user_id)
+        response = await self.get_blocked_by_user(user_id)
         await self.send(text_data=json.dumps({
-            'type': 'blocked_user',
+            'type': 'blocked_by_user',
             'blocked_by': response["blocked_by"],
             'status': response["status"],
             'user_id': user_id,
         }))
 
+
+    async def handle_unblock_user(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        user_to_unblock = text_data_json["data"]["user_to_unblock"]
+        response = await self.unblock_user(user_id, user_to_unblock)
+        await self.channel_layer.group_send(
+            self.my_group_id,
+            {
+                'type': 'send.unblocked.user.info',
+                'data': {
+                    'status': response["status"],
+                    'user_id': user_id,
+                    'other_user_name': user_to_unblock
+                },
+            }
+        )
+
+    async def handle_get_blocked_user(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        response = await self.get_blocked_user(user_id)
+        await self.send(text_data=json.dumps({
+            'type': 'blocked_user',
+            'blocked_user': response["blocked_user"],
+            'status': response["status"],
+            'user_id': user_id,
+        }))
 
 
 # ---------- SEND FUNCTIONS ---------------------------------------
@@ -167,6 +193,13 @@ class Chats:
         await self.send(text_data=json.dumps({
             'type': 'blocked_user',
             'blocked_by': event['data']['blocked_by'],
+            'status': event['data']['status'],
+            'user_id': event['data']['user_id'],
+        }))
+
+    async def send_unblocked_user_info(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'unblocked_user_info',
             'status': event['data']['status'],
             'user_id': event['data']['user_id'],
         }))
@@ -278,12 +311,35 @@ class Chats:
         return {'status': 200}
 
     @database_sync_to_async
-    def get_blocked_user(self, user_id):
+    def unblock_user(self, user_id, user_to_unblock):
+        current_user_exists = MyUser.objects.filter(id=user_id)
+        other_user_exists = MyUser.objects.filter(name=user_to_unblock)
+        if not current_user_exists or not other_user_exists:
+            return {'status': 404, 'unblocked_by': None}
+        current_user_instance = MyUser.objects.get(id=user_id)
+        other_user_instance = MyUser.objects.get(name=user_to_unblock)
+
+        if current_user_instance in other_user_instance.blockedBy.all():
+            other_user_instance.blockedBy.remove(current_user_instance)
+            other_user_instance.save()
+            return {'status': 200}
+        # User is already blocked, return a response or handle accordingly
+        return {'status': 409, 'unblocked_by': None}  # 'User already blocked'
+
+    @database_sync_to_async
+    def get_blocked_by_user(self, user_id):
         user_instance = MyUser.objects.get(id=user_id)
         blocked_by_names = user_instance.blockedBy.values_list('name', flat=True)
         blocked_by_names_list = list(blocked_by_names)
         return {'status': 200, 'blocked_by': blocked_by_names_list}
 
+    @database_sync_to_async
+    def get_blocked_user(self, user_id):
+        current_user = MyUser.objects.get(id=user_id)
+        users_blocking_current_user = MyUser.objects.filter(blockedBy=current_user)
+        blocked_by_current_user_names = users_blocking_current_user.values_list('name', flat=True)
+        blocked_by_names_list = list(blocked_by_current_user_names)
+        return {'status': 200, 'blocked_user': blocked_by_names_list}
 
 # ---------- UTILS FUNCTIONS ----------------------------------------
 

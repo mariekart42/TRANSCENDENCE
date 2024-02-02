@@ -7,6 +7,7 @@ websocket_obj = {
   avatar: 'https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg',
   age: null,
   blocked_by: [],
+  blocked_user: [],
 
   chat_name: null,
   chat_id: null,
@@ -203,11 +204,22 @@ async function establishWebsocketConnection() {
         // TODO: MARIE: display info about success or failure
         console.log('BLOCKED USER INFO: ', data)
         await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_user')
+        break
+      case 'unblocked_user_info':
+        console.log('USER UNBLOCKED INFO: ', data)
+        await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_user')
         break
       case 'message_save_success':
         break
-      case 'blocked_user':
+      case 'blocked_by_user':
         websocket_obj.blocked_by = data.blocked_by
+        console.log('BLOCKED BY: ', websocket_obj.blocked_by)
+        break
+      case 'blocked_user':
+        websocket_obj.blocked_user = data.blocked_user
+        console.log('I BLOCKED: ', websocket_obj.blocked_user)
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -355,8 +367,23 @@ async function sendDataToBackend(request_type) {
             'user_to_block': websocket_obj.chat_name
           }
           break
+        case 'unblock_user':// implement in backend
+          type = 'unblock_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'user_to_unblock': websocket_obj.chat_name
+          }
+          break
         case 'get_blocked_by_user':
           type = 'get_blocked_by_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          }
+          break
+        case 'get_blocked_user':
+          type = 'get_blocked_user'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
