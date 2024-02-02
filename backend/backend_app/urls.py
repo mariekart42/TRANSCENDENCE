@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from . import utils
-from .views import updateUserPassword
+# from .views import updateUserPassword
 
 urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port

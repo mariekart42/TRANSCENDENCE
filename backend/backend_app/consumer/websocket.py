@@ -2,16 +2,17 @@ import asyncio
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.http import JsonResponse
-from .models import MyUser, Chat, Message, Game
+# from .models import MyUser, Chat, Message, Game
+from backend_app.models import MyUser, Chat, Message, Game
 from django.db.models import Q
-from . import utils
+from backend_app import utils
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from django.utils import timezone
 from django.db.models import Max
 from django.core.exceptions import ObjectDoesNotExist
 
-class test(AsyncWebsocketConsumer):
+class WebsocketConsumer(AsyncWebsocketConsumer):
     connections = [
         {
             'user_id': '',
@@ -205,10 +206,8 @@ class test(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'blocked_user_info',
             'message': event['data']['message'],
-            # 'blocked_by': event['data']['blocked_by'],
             'status': event['data']['status'],
             'user_id': event['data']['user_id'],
-            # 'other_user_name': event['data']['other_user_name'],
         }))
 
     async def send_blocked_user(self, event):
