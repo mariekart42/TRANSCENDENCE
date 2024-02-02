@@ -436,7 +436,7 @@ def renderInvites(request, username):
 
         print(f"333333")
         print(f" {game_sessions}")
-
+        
         return render(request, 'openGameSessions.html', {'game_sessions': game_sessions})
     # except ValueError:
     #     return JsonResponse({"error": "Invalid username"}, status=400)
