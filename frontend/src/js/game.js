@@ -177,6 +177,8 @@ async function createGame() {
 
     console.log('DATA ', data);
     websocket_obj.active_game = data.id;
+    console.log('active game ', data.id);
+
 
     if (response.ok) {
     displayError(null);

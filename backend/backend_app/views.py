@@ -381,6 +381,8 @@ def createGame(request, username, invited_username):
         # Add the new game to the new_matches field of both users
         user.new_matches.add(new_gameroom)
         invited_user.new_matches.add(new_gameroom)
+        print(f"new_matches")
+        print(user.new_matches.all())
 
         return JsonResponse({"message": "Gameroom was created successfully", "id": new_gameroom.id})
     except MyUser.DoesNotExist:
@@ -428,9 +430,9 @@ def renderInvites(request, username):
         print(f"22222")
         print(f" {user}")
 
-        # game_sessions = user.new_matches.all()
+        game_sessions = user.new_matches.all()
         # game_sessions = user.new_matches.get(id=2)
-        game_sessions = Game.objects.all()
+        # game_sessions = Game.objects.all()
 
         print(f"333333")
         print(f" {game_sessions}")

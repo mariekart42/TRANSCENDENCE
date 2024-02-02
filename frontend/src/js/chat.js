@@ -63,15 +63,30 @@ function chatDom() {
     console.log('here block logic')
   })
 
+
+
   document.getElementById('challengeUserToGame').addEventListener('click', async function() {
     
     console.log('In inviting through chat')
     // const username = websocket_obj.username;
-    const invited_username = 'test'
+    sendDataToBackend('get_user_in_current_chat')
+    console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
+
+    function findOtherUserName(users, username) {
+      for (let i = 0; i < users.length; i++) {
+          if (users[i].user_name !== username) {
+              return users[i].user_name;
+          }
+      }
+      return null; // Return null if the username is not found
+  }
+    const invited_username = findOtherUserName(websocket_obj.userInCurrentChat, websocket_obj.username);
+    console.log('invited_username ', invited_username)
+    // const invited_username = 'test'
     websocket_obj.invited_id = invited_username
     
     try {
-      const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/invited_username`);
+      const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
       const data = await response.json();
   
   
