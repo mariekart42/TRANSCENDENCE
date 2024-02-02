@@ -26,25 +26,6 @@ def checkUserCredentials(request, username, password):
         return JsonResponse({}, status=500)
 
 
-
-# TODO: MARIE: DELETE LATER?: should user be able to change password?
-@require_POST
-def updateUserPassword(request, user_id):
-    try:
-        # should technically never happen but just in case lol:
-        user_exists = MyUser.objects.filter(id=user_id).exists()
-        if not user_exists:
-            return JsonResponse({}, status=404)
-        user = MyUser.objects.get(id=user_id)
-        data = json.loads(request.body.decode('utf-8'))
-        new_password = data.get('newPassword')
-        user.password = new_password
-        user.save()
-        return JsonResponse({}, status=200)
-    except Exception as e:
-        return JsonResponse({}, status=500)
-
-
 def createAccount(request, username, password, age):
     try:
         user_exist = MyUser.objects.filter(name=username).exists()

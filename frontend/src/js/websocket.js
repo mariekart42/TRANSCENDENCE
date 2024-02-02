@@ -76,12 +76,9 @@ websocket_obj = {
 
 async function establishWebsocketConnection() {
 
-  websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/test/${websocket_obj.user_id}/`);
+  websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/init/${websocket_obj.user_id}/`);
 
-  websocket_obj.websocket.onopen = function (event) {
-    console.log("WebSocket onopen");
-    renderProfile()
-  };
+  websocket_obj.websocket.onopen = function () { renderProfile() };
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
@@ -99,7 +96,6 @@ async function establishWebsocketConnection() {
           await renderMessages()
         break
       case 'user_left_chat_info':
-
         console.log('user removed from chat info: ', data.message)
         break
       case 'online_stats_on_disconnect':
@@ -206,17 +202,11 @@ async function establishWebsocketConnection() {
       case 'blocked_user_info':
         // TODO: MARIE: display info about success or failure
         console.log('BLOCKED USER INFO: ', data)
-
-        // if (data.status === 200 && data.other_user_name === websocket_obj.username) {
-        //   websocket_obj.blocked_by = data.blocked_by
-        // }
-        // console.log('BLOCKED BY: ', websocket_obj.blocked_by)
-          await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_by_user')
         break
       case 'message_save_success':
         break
       case 'blocked_user':
-        console.log('GET REQ: BLOCKED BY: ', data.blocked_by)
         websocket_obj.blocked_by = data.blocked_by
         break
       default:
@@ -299,7 +289,6 @@ async function sendDataToBackend(request_type) {
             'chat_id': websocket_obj.chat_id,
             'chat_name': document.getElementById('new_chat_name').value,
             'isPrivate': false,
-            // 'isPrivate': websocket_obj.chat_is_private
           }
           break
         case 'set_new_private_chat':
@@ -363,7 +352,7 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
-            'user_to_block': websocket_obj.chat_name // implement this in backend
+            'user_to_block': websocket_obj.chat_name
           }
           break
         case 'get_blocked_by_user':
@@ -373,7 +362,6 @@ async function sendDataToBackend(request_type) {
             'chat_id': websocket_obj.chat_id,
           }
           break
-
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }

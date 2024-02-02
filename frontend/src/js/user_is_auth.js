@@ -33,7 +33,6 @@ function addEventListenersIsAuth() {
   document.getElementById('showChatButton').addEventListener('click', async function () {
     await sendDataToBackend('get_current_users_chats')
     await sendDataToBackend('get_blocked_by_user') // NEW since 01.02
-    // get_blocked_by_user
     showSiteHideOthers('chat')
   })
 
@@ -141,7 +140,7 @@ function displayImagePreview(imageData) {
   const previewImage = document.getElementById('previewImage');
   const previewContainer = document.getElementById('previewContainer');
 
-  // Set the src attribute of the preview image
+  // Set the consumer attribute of the preview image
   previewImage.src = imageData;
 
   // Show the preview container
