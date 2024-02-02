@@ -5,7 +5,7 @@ from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
-class Messages:
+class _Message:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
     async def handle_send_online_stats(self):
         online_stats = [

@@ -8,13 +8,13 @@ from channels.layers import get_channel_layer
 from django.utils import timezone
 from django.db.models import Max
 from django.core.exceptions import ObjectDoesNotExist
-from backend_app.consumer.chat.user import User
-from backend_app.consumer.chat.messages import Messages
-from backend_app.consumer.chat.chats import Chats
-from backend_app.consumer.game.game import Game
+from backend_app.consumer.chat.user import _User
+from backend_app.consumer.chat.messages import _Message
+from backend_app.consumer.chat.chats import _Chat
+from backend_app.consumer.game.game import _Game
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class WebsocketConsumer(AsyncWebsocketConsumer, User, Messages, Chats, Game):
+class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
     connections = [
         {
             'user_id': '',

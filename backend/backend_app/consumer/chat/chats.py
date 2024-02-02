@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
 
-class Chats:
+class _Chat:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
 
     async def handle_send_current_users_chats(self, text_data_json):
