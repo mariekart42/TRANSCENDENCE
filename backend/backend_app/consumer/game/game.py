@@ -4,7 +4,7 @@ from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
 
-class Game:
+class _Game:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
 # ---------- SEND FUNCTIONS ---------------------------------------
 # ---------- DATABASE REQUEST FUNCTIONS -----------------------------

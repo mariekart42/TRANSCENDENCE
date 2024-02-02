@@ -5,7 +5,7 @@ from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
 
 
-class User:
+class _User:
 
 # ---------- HANDLE FUNCTIONS ---------------------------------------
     async def handle_send_user_in_current_chat(self, chat_id):
