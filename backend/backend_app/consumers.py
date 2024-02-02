@@ -730,23 +730,34 @@ class test(AsyncWebsocketConsumer):
             print(self.game_states[self.game_id]['game_active'])
             await self.handle_send_score_update()
 
+    @database_sync_to_async
+    def get_game_by_id(self, game_id):
+        try:
+            game_instance = Game.objects.get(id=game_id)
+            return game_instance
+        except Game.DoesNotExist:
+            return None
+
+    @database_sync_to_async
+    def remove_ended_match(self, user_id, game_id):
+        print("in remove_ended_match")
+        try:
+            print("user_id")
+
+            print(user_id)
+            user1 = MyUser.objects.get(id=user_id)
+            game_instance = Game.objects.get(id=game_id)
+            user1.new_matches.remove(game_instance)
+
+        except MyUser.DoesNotExist:
+            return None
+
+
+    
     # @database_sync_to_async
-    # def remove_ended_match(self, user_id):
+    # def get_myuser_by_id(self, user_id):
     #     try:
-    #         print("user_id")
-
-    #         print(user_id)
-    #         user1 = MyUser.objects.get(id=user_id)
-    #         game_instance = Game.objects.get(id=game_id)
-    #         user1.new_matches.remove(game_instance)
-
-    #     except MyUser.DoesNotExist:
-    #         return None
-
-    # @database_sync_to_async
-    # def get_game_by_id(self, game_id):
-    #     try:
-    #         game_instance = Game.objects.get(id=game_id)
+    #         game_instance = MyUser.objects.get(id=user_id)
     #         return game_instance
     #     except Game.DoesNotExist:
     #         return None
@@ -777,29 +788,36 @@ class test(AsyncWebsocketConsumer):
             except Exception as e:
                 print(f"Error in game_loop: {e}")
             if self.game_states.get(self.game_id, {}).get('game_active') == False:
+                print("in game_active = false")
                 self.game_states.pop(self.game_id, None)
-                await self.channel_layer.group_send(
-                    self.game_group_id,
-                    {
-                        'type': 'send.game.over',
-                        'data': {
+                print("111111")
 
-                        },
-                    }
-                )
-                # try:
-                #     user1 = await self.get_user_by_id(self.user['user_id'])
-                #     if user1 is not None:
-                #         game_instance = await self.get_game_by_id(self.game_id)
-                #         if game_instance is not None:
-                #             user1.new_matches.remove(game_instance)
-                #         else:
-                #             print("Error: Game not found")
-                #     else:
-                #         print("Error: User not found")
-                # except Exception as e:
-                #     print(f"Error in game_loop: {e}")
-                self.remove_ended_match()
+                # await self.channel_layer.group_send(
+                #     self.game_group_id,
+                #     {
+                #         'type': 'send.game.over',
+                #         'data': {
+
+                #         },
+                #     }
+                # )
+                try:
+                    # # user1 = self.user['user_id']
+                    # user1 = await get_myuser_by_id(self.user['user_id'])
+                    # if user1 is not None:
+                    #     game_instance = await self.get_game_by_id(self.game_id)
+                    #     if game_instance is not None:
+                    #         user1.new_matches.remove(game_instance)
+                    #     else:
+                    #         print("Error: Game not found")
+                    # else:
+                    #     print("Error: User not found")
+                    # game_instance = await self.get_game_by_id(self.game_id)
+
+                    await self.remove_ended_match(self.user['user_id'], self.game_id)
+                except Exception as e:
+                    print(f"Error in game_over: {e}")
+
                 print("after remove")
 
                 break
@@ -998,16 +1016,16 @@ class test(AsyncWebsocketConsumer):
             check_host = 'False'
         return check_host
     
-    @database_sync_to_async
-    def remove_ended_match(self):
-        try:
-            # print("user_id")
+    # @database_sync_to_async
+    # def remove_ended_match(self):
+    #     try:
+    #         # print("user_id")
 
-            # print(user_id)
-            user_id = self.user['user_id']
-            user1 = MyUser.objects.get(id=user_id)
-            game_instance = Game.objects.get(id=self.game_id)
-            user1.new_matches.remove(game_instance)
+    #         # print(user_id)
+    #         user_id = self.user['user_id']
+    #         user1 = MyUser.objects.get(id=user_id)
+    #         game_instance = Game.objects.get(id=self.game_id)
+    #         user1.new_matches.remove(game_instance)
 
-        except MyUser.DoesNotExist:
-            return None
+    #     except MyUser.DoesNotExist:
+    #         return None
