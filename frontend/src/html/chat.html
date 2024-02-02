@@ -45,23 +45,21 @@
       </div>
       <div class="col">
 
-<!--?   FOR PRIVATE CHATS-->
-        <button id="profile-in-private-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#backdropPrivateProfile">PRIV Profile</button>
+        <!-- MODAL FOR PRIVATE CHATS-->
+        <button id="profile-in-private-chat-button" class="right-heading-settings btn btn-outline-dark hidden">PRIV Profile</button>
         <div class="modal fade" id="backdropPrivateProfile" data-bs-backdrop="static" data-bs-keyboard="false"
              tabindex="-1" aria-labelledby="backdropPrivateProfileLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
-              <!-- Header -->
               <div class="modal-header">
                 <h1 class="modal-title" id="backdropPrivateProfileLabel"></h1>
               </div>
-              <!-- Body -->
               <div class="modal-body">
-                <button id="blockUserButton" class="btn btn-outline-danger">block User</button>
+                <button id="blockUserButton" class="btn btn-outline-danger hidden">block User</button>
+                <button id="unblockUserButton" class="btn btn-outline-warning hidden">unblock User</button>
 <!--?           TODO: KRISTINA:-->
                 <button id="challengeUserToGame" class="btn btn-outline-success">challenge User [coming soon]</button>
               </div>
-              <!-- Footer -->
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="close_button" data-bs-dismiss="modal">Close</button>
               </div>
@@ -69,18 +67,16 @@
           </div>
         </div>
 
-<!--?   FOR PUBLIC CHATS-->
+        <!-- MODAL FOR PUBLIC CHATS-->
         <div id="publicChatModal">
         <button id="profile-in-public-chat-button" class="right-heading-settings btn btn-outline-dark hidden" data-bs-toggle="modal" data-bs-target="#staticBackdropProfile">PUB Profile</button>
         <div class="modal fade" id="staticBackdropProfile" data-bs-backdrop="static" data-bs-keyboard="false"
              tabindex="-1" aria-labelledby="backdropPublicProfileLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
-              <!-- Header -->
               <div class="modal-header">
                 <h1 class="modal-title" id="backdropPublicProfileLabel"></h1>
               </div>
-              <!-- Body -->
               <div class="modal-body">
                 <div id="userInChatList"></div><br>
                 <div class="input-group mb-3">
@@ -102,21 +98,18 @@
         </div>
       </div>
 
-<!--?   FOR CLICKED USER-->
+        <!-- MODAL FOR CLICKED USER-->
         <div class="modal fade" id="backdropClickedUser" data-bs-backdrop="static" data-bs-keyboard="false"
              tabindex="-1" aria-labelledby="backdropClickedUserLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
-              <!-- Header -->
               <div class="modal-header">
                 <h1 class="modal-title" id="backdropClickedUserLabel"></h1>
               </div>
-              <!-- Body -->
               <div class="modal-body">
                 <button id="goToChatButton" class="btn btn-outline-dark">Message</button>
                clicked user lol
               </div>
-              <!-- Footer -->
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="close_button_clicked_user" data-bs-dismiss="modal">Close</button>
               </div>
@@ -124,22 +117,18 @@
           </div>
         </div>
 
-
-        <!-- Inner Modal (Leave Chat) -->
+        <!-- NESTED MODAL, LEAVE CHAT -->
         <div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false"
              tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
-              <!-- Header -->
               <div class="modal-header">
                 <h1 class="modal-title fs-5" id="staticBackdropLabel2">Leave Chat</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-              <!-- Body -->
               <div class="modal-body">
                 Are you sure you want to leave the Chat?
               </div>
-              <!-- Footer -->
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="leaveChat()">Yes, I
@@ -151,12 +140,22 @@
         </div>
       </div>
     </div>
+
+    <!-- MODAL FOR IF USER IS BLOCKED -->
+    <div class="modal fade" id="userBlockedYouWarning" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content user-blocked-you-warning">
+          <div class="modal-body">
+            ❗️This User blocked you
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="messageSide" class="row hidden">
       <div id="messageContainer" class="scroll-messages"></div>
       <div class="input-group format-input-group">
         <input type="text" class="lel form-control" style="color: white; background-color: #212121; border: none" placeholder="Type your message..." id="messageInput"/>
-<!--     TODO: MARIE: disable this button if user is blocked-->
-         <button id="sendMessageButton" class="btn btn-dark">Send</button>
+        <button id="sendMessageButton" class="btn btn-dark">Send</button>
       </div>
     </div>
   </div>
@@ -181,6 +180,14 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+  }
+
+  .user-blocked-you-warning {
+      border: 3px solid rgba(255, 56, 56, 0.35);
+      border-radius: 8px;
+      font-weight: bold;
+      color: #c02c43;
+      background-color: white;
   }
 
   #sendMessageButton {

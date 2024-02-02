@@ -95,6 +95,10 @@ class WebsocketConsumer(AsyncWebsocketConsumer, User, Messages, Chats, Game):
                 await self.handle_block_user(text_data_json)
             elif what_type == 'get_blocked_by_user':
                 await self.handle_get_blocked_by_user(text_data_json)
+            elif what_type == 'get_blocked_user':
+                await self.handle_get_blocked_user(text_data_json)
+            elif what_type == 'unblock_user':
+                await self.handle_unblock_user(text_data_json)
             else:
                 print('IS SOMETHING ELSE')
 
