@@ -431,13 +431,21 @@ def renderInvites(request, username):
         print(f" {user}")
 
         game_sessions = user.new_matches.all()
+        test_var = game_sessions.get(id=1)
+        # usernames = []
+        # for session in game_sessions:
+        #     usernames.append(session.username)
+
         # game_sessions = user.new_matches.get(id=2)
         # game_sessions = Game.objects.all()
 
         print(f"333333")
         print(f" {game_sessions}")
-        
-        return render(request, 'openGameSessions.html', {'game_sessions': game_sessions})
+        print(f"444444")
+        print(f" {test_var}")
+
+        # return render(request, 'openGameSessions.html', {'game_sessions': game_sessions})
+        return JsonResponse({"game_sessions": game_sessions})
     # except ValueError:
     #     return JsonResponse({"error": "Invalid username"}, status=400)
     except Exception as e:
