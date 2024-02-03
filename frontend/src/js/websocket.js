@@ -200,6 +200,13 @@ async function establishWebsocketConnection() {
         // await updateScore();
         await updateScore();
         break
+      case 'opponent_disconnected':
+        console.log("YOUR APPONENT LEFT THE GAME");
+        websocket_obj.game.host_score = 0
+        websocket_obj.game.guest_score = 0
+        websocket_obj.game.game_id = 0
+        await updateScore();
+        break  
       case 'blocked_user_info':
         // TODO: MARIE: display info about success or failure
         console.log('BLOCKED USER INFO: ', data)

@@ -56,6 +56,19 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
     async def disconnect(self, close_code):
         self.connections.remove(self.user)
         await self.handle_send_online_stats_on_disconnect()
+        if self.game_group_id is not None:
+            self.game_states[self.game_id]['game_active'] = False
+
+            await self.channel_layer.group_send(
+                self.game_group_id,
+                {
+                    'type': 'send.opponent.disconnected',
+                    'data': {
+
+                    },
+                }
+            )
+
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
