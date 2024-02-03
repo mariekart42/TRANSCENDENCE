@@ -6,6 +6,8 @@ websocket_obj = {
   password: null,
   avatar: 'https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg',
   age: null,
+  blocked_by: [],
+  blocked_user: [],
 
   chat_name: null,
   chat_id: null,
@@ -33,6 +35,7 @@ websocket_obj = {
       private_chat_names: [],
       isPrivate: null,
       last_message: null,
+      // blocked_by: [],// NEW implement in backend
     }
   ],
   messages: [
@@ -48,8 +51,6 @@ websocket_obj = {
   game: [
     {
       game_id: null,
-      invited_id: null,
-
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
@@ -76,16 +77,13 @@ websocket_obj = {
 
 async function establishWebsocketConnection() {
 
-  websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/test/${websocket_obj.user_id}/`);
+  websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/init/${websocket_obj.user_id}/`);
 
-  websocket_obj.websocket.onopen = function (event) {
-    console.log("WebSocket onopen");
-    renderProfile()
-  };
+  websocket_obj.websocket.onopen = function () { renderProfile() };
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
-    console.log('ONMESSAGE DATA: ', data)
+    // console.log('ONMESSAGE DATA: ', data)
     switch (data.type) {
       case 'all_chat_messages':
          if (data.chat_id === websocket_obj.chat_id) {
@@ -111,6 +109,7 @@ async function establishWebsocketConnection() {
       case 'current_users_chats':
         if (data.user_id === websocket_obj.user_id) {
           websocket_obj.chat_data = data.users_chats
+          console.log('CHAT_DATA: ', websocket_obj.chat_data)
           await renderChat()
         }
         break
@@ -208,8 +207,30 @@ async function establishWebsocketConnection() {
         websocket_obj.game.game_id = 0
         await updateScore();
         break  
+      case 'blocked_user_info':
+        // TODO: MARIE: display info about success or failure
+        console.log('BLOCKED USER INFO: ', data)
+        await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_user')
+        break
+      case 'unblocked_user_info':
+        console.log('USER UNBLOCKED INFO: ', data)
+        await sendDataToBackend('get_blocked_by_user')
+        await sendDataToBackend('get_blocked_user')
+        break
+      case 'message_save_success':
+        break
+      case 'blocked_by_user':
+        websocket_obj.blocked_by = data.blocked_by
+        console.log('BLOCKED BY: ', websocket_obj.blocked_by)
+        break
+      case 'blocked_user':
+        websocket_obj.blocked_user = data.blocked_user
+        console.log('I BLOCKED: ', websocket_obj.blocked_user)
+        break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
+        console.log('DATA: ', data)
     }
   };
 
@@ -261,12 +282,12 @@ async function sendDataToBackend(request_type) {
         case 'get_user_in_current_chat':
           type = 'send_user_in_current_chat'
           data = {
-            'user_id': websocket_obj.user_id,// new
+            'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
           }
           break
         case 'get_current_users_chats':
-          console.log('CHAT_ID: ', websocket_obj.chat_id)
+          console.log('HERE: ', websocket_obj.user_id)
           type = 'send_current_users_chats'
           data = {
             'user_id': websocket_obj.user_id,
@@ -287,7 +308,6 @@ async function sendDataToBackend(request_type) {
             'chat_id': websocket_obj.chat_id,
             'chat_name': document.getElementById('new_chat_name').value,
             'isPrivate': false,
-            // 'isPrivate': websocket_obj.chat_is_private
           }
           break
         case 'set_new_private_chat':
@@ -346,14 +366,34 @@ async function sendDataToBackend(request_type) {
             'game_id': websocket_obj.game.game_id,
           }
           break
-
-        case 'send_new_invite':
-          type = 'send_new_invite'
+        case 'block_user':
+          type = 'block_user'
           data = {
             'user_id': websocket_obj.user_id,
-            // 'chat_id': websocket_obj.chat_id,
-            'game_id': websocket_obj.active_game,
-            'invited_id': websocket_obj.invited_id
+            'chat_id': websocket_obj.chat_id,
+            'user_to_block': websocket_obj.chat_name
+          }
+          break
+        case 'unblock_user':// implement in backend
+          type = 'unblock_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+            'user_to_unblock': websocket_obj.chat_name
+          }
+          break
+        case 'get_blocked_by_user':
+          type = 'get_blocked_by_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          }
+          break
+        case 'get_blocked_user':
+          type = 'get_blocked_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
           }
           break
         default:
@@ -375,108 +415,4 @@ async function sendDataToBackend(request_type) {
       reject(new Error("WebSocket connection is not open."));
     }
   });
-}
-
-
-// TODO: MARIE: MOVE THIS TO CHAT.JS
-async function renderMessages() {
-
-  let myArray = websocket_obj.messages.message_data;
-  renderUserInChatList()
-
-  let mainContainer = document.getElementById('messageContainer');
-  mainContainer.innerHTML = '';
-
-  if (!myArray) { return }
-  let tmpDiv = [];
-  for (let i = 0; i < myArray.length; i++) {
-    let messageDiv = document.createElement('div');
-    let contentDiv = document.createElement('div');
-    let titleElement = document.createElement('div');
-    let timestampElement = document.createElement('div');
-    let textDiv = document.createElement('div');
-
-    textDiv.classList.add('text-break');
-    textDiv.textContent = myArray[i].text;
-    timestampElement.textContent = myArray[i].timestamp;
-
-    if (websocket_obj.username === myArray[i].sender)
-    {
-      titleElement.classList.add('sender-title')
-      titleElement.textContent = 'You';
-      messageDiv.style.textAlign = 'right';
-      contentDiv.classList.add('sender-message-content');
-      timestampElement.classList.add('sender-timestamp');
-    }
-    else
-    {
-      titleElement.classList.add('receiver-title')
-      contentDiv.classList.add('receiver-message-content');
-      timestampElement.classList.add('receiver-timestamp');
-      const currentUserId = myArray[i].sender_id
-      function hasMatchingUserId(user) {
-        return user.user_id === currentUserId;
-      }
-
-      if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
-        titleElement.textContent = myArray[i].sender + ' 🟢';
-      } else {
-        titleElement.textContent = myArray[i].sender + ' 🔴';
-      }
-    }
-    contentDiv.appendChild(titleElement);
-    contentDiv.appendChild(textDiv);
-    contentDiv.appendChild(timestampElement);
-    messageDiv.appendChild(contentDiv);
-    tmpDiv.push(messageDiv);
-  }
-
-  for (let i = 0; i < myArray.length; i++) {
-    mainContainer.appendChild(tmpDiv[i]);
-    if (i < tmpDiv.length - 1) {
-      mainContainer.appendChild(document.createElement('br'));
-    }
-  }
-  // THIS scrolls to the bottom of messageDiv by default (user sees last messages first)
-  mainContainer.scrollTo(0, mainContainer.scrollHeight);
-}
-
-// TODO: MARIE: MOVE THIS TO CHAT.JS
-function renderUserInChatList() {
-  let mainContainer = document.getElementById('userInChatList');
-  mainContainer.innerHTML = '';
-
-  let myArray = websocket_obj.userInCurrentChat
-  let title = document.createElement('h2');
-  title.textContent = 'User in Chat:'
-  mainContainer.appendChild(title);
-
-  // own user always first in the list
-  const own_user = document.createElement('div');
-  own_user.classList.add('row', 'own-user-in-chat-profile');
-  own_user.textContent = 'You';
-  mainContainer.appendChild(own_user)
-
-  for (let i = 0; i < myArray.length; i++) {
-    if (myArray[i].user_name !== websocket_obj.username) {
-      const chat_element = document.createElement('div');
-      chat_element.classList.add('row', 'contacts-in-chat-profile');
-      chat_element.textContent = myArray[i].user_name;
-      chat_element.addEventListener('click', async function () {
-        await handleButtonClickChatsInProfile(myArray[i].user_name);
-      });
-      mainContainer.appendChild(chat_element)
-    }
-  }
-}
-
-// TODO: MARIE: MOVE THIS TO CHAT.JS
-async function handleButtonClickChatsInProfile(clickedUser) {
-  // automatically render profile of clicked user
-  const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));
-  const lol = document.getElementById('lol')
-  lol.style.opacity = 0.5;
-  let private_profile_header = document.getElementById('backdropClickedUserLabel')
-  private_profile_header.textContent = clickedUser
-  modal.show();
 }

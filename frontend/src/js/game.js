@@ -6,13 +6,6 @@ function gameDom() {
 
 // HERE FUNCTIONS FOR GAME:
 
-async function showExample() {
-
-  var theButton = document.getElementById('example');
-  theButton.style.display = 'block';
-}
-
-
 
 async function joinGame(gameId) {
 
@@ -95,12 +88,14 @@ async function renderInvites() {
   theButton.style.display = 'none';
   try {
 
+// _+_+_+_+_+_+_
 
     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
     const htmlContent = await response.text();
 
     const container = document.getElementById('game-session-container');
     container.innerHTML = htmlContent;
+// _+_+_+_+_+_+_
 
 } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
@@ -159,63 +154,43 @@ async function sendGameInvitation() {
 async function createGame() {
 
 
-    console.log("IN CREATEGAME");
+  console.log("IN CREATEGAME");
 
 
-    var element = document.getElementById('createGameButton');
-    console.log(element);
-
-
-
-  var theButton = document.getElementById('createGameButton');
-  theButton.style.display = 'none';
-  try {
-    const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
-    const data = await response.json();
+  var element = document.getElementById('createGameButton');
+  console.log(element);
 
 
 
-    console.log('DATA ', data);
-    websocket_obj.active_game = data.id;
-    console.log('active game ', data.id);
+var theButton = document.getElementById('createGameButton');
+theButton.style.display = 'none';
+try {
+  const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
+  const data = await response.json();
 
 
-    if (response.ok) {
-    displayError(null);
-    websocket_obj.active_game = data.id;
-    // console.log(data.id); // Check the console for the result
 
-    // Perform actions on successful login, e.g., set isLoggedIn and userData
-        console.log(data);
-    } else {
-    displayError(data.error);
-    }
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    displayError('Error fetching user data');
+  console.log('DATA ', data);
+  websocket_obj.active_game = data.id;
+  console.log('active game ', data.id);
+
+
+  if (response.ok) {
+  displayError(null);
+  websocket_obj.active_game = data.id;
+  // console.log(data.id); // Check the console for the result
+
+  // Perform actions on successful login, e.g., set isLoggedIn and userData
+      console.log(data);
+  } else {
+  displayError(data.error);
   }
-
-
+} catch (error) {
+  console.error('Error fetching user data:', error);
+  displayError('Error fetching user data');
 }
 
-async function leaveChat() {
-  const chatDiv = document.getElementById('showChat');
-  chatDiv.classList.add('hidden');
-  console.log('USER_ID | CHAT_ID: ', websocket_obj.user_id, websocket_obj.chat_id)
-  const url = `http://127.0.0.1:6969/user/leaveChat/${websocket_obj.user_id}/${websocket_obj.chat_id}/`
-  fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Could not get Users Chats Data');
-      }
-      return response.json();
-    })
-    .then(data => {
-      renderProfile()
-    })
-    .catch(error => {
-      console.error('Error during getUserChats:', error);
-    });
+
 }
 
 
@@ -238,6 +213,10 @@ function drawPaddles() {
 
   console.log ("canvas.width: ", canvas.width);
   console.log ("canvas.height: ", canvas.height);
+  // console.log ("canvas.width / 80: ", canvas.width / 80);
+  // console.log ("canvas.height / 8: ", canvas.height / 8);
+  // console.log ("canvas.height / 4: ", canvas.height / 4);
+
 
   ctx.fillStyle = "black";
 

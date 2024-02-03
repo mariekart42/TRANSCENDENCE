@@ -31,7 +31,9 @@ function addEventListenersIsAuth() {
   })
 
   document.getElementById('showChatButton').addEventListener('click', async function () {
-    await sendDataToBackend('get_current_users_chats') // NEW since 22.01
+    await sendDataToBackend('get_current_users_chats')
+    await sendDataToBackend('get_blocked_by_user')
+    await sendDataToBackend('get_blocked_user') // NEW since 02.02
     showSiteHideOthers('chat')
   })
 
@@ -112,19 +114,14 @@ function showSiteHideOthers(site_to_show) {
   const sites = ['gameSite', 'nothingSite', 'homeSite', 'chat'];
 
   sites.forEach(site => {
-    const element = document.getElementById(site);
-    if (site === site_to_show) {
-      element.classList.remove('hidden')
-    } else {
-      element.classList.add('hidden')
-    }
+    if (site === site_to_show) showDiv(site)
+    else hideDiv(site)
   });
 }
 
 function submitForm() {
 
   const img = document.getElementById('profilePictureInput')
-  // websocket_obj.avatar = img.files[0]
 
     if (img.files && img.files[0]) {
         const file = img.files[0];
@@ -144,7 +141,7 @@ function displayImagePreview(imageData) {
   const previewImage = document.getElementById('previewImage');
   const previewContainer = document.getElementById('previewContainer');
 
-  // Set the src attribute of the preview image
+  // Set the consumer attribute of the preview image
   previewImage.src = imageData;
 
   // Show the preview container
@@ -170,4 +167,13 @@ async function setMessageWithTimout(element_id, message, timout) {
   setTimeout(async function() {
     obj.style.display = 'none';
   }, timout);
+}
+
+
+function hideDiv(element_id) {
+  document.getElementById(element_id).classList.add('hidden')
+}
+
+function showDiv(element_id) {
+  document.getElementById(element_id).classList.remove('hidden')
 }
