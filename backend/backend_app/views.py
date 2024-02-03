@@ -51,21 +51,40 @@ def createAccount(request, username, password, age):
 ######### GAMEEEEEEEEEEEEEEEEEEEE ######### kristinas kingdom:
 
 
-def createGame(request, username):
+from django.http import JsonResponse
+from .models import Game, MyUser
+
+def createGame(request, username, invited_username):
     try:
         print(f"Entering createGameroom function with username: {username}")
-        # user = "lol_name"
-        new_gameroom = Game.objects.create(hostId=username, guestId="")
+
+        # Get the user instances
+        user = MyUser.objects.get(name=username)
+        invited_user = MyUser.objects.get(name=invited_username)
+
+        # Check if a game already exists with the given pair of users in new_matches
+        existing_game = user.new_matches.filter(hostId=invited_username, guestId=username).exists()
+        if existing_game:
+            return JsonResponse({"error": "A game already exists with these users"}, status=400)
+
+        # Check if the users are reversed (host and guest swapped) in new_matches
+        existing_game_reversed = invited_user.new_matches.filter(hostId=username, guestId=invited_username).exists()
+        if existing_game_reversed:
+            return JsonResponse({"error": "A game already exists with these users"}, status=400)
+
+        # If no existing game found in new_matches, create a new game
+        new_gameroom = Game.objects.create(hostId=username, guestId=invited_username)
         print(f"11111")
-
         new_gameroom.save()
-        # user_instance = MyUser.objects.get(Name=username)
 
-        # Add new chat to user
-        # user_instance.games.add(new_gameroom.id)
-        # user_instance.save()
+        # Add the new game to the new_matches field of both users
+        user.new_matches.add(new_gameroom)
+        invited_user.new_matches.add(new_gameroom)
+        print(f"new_matches")
+        print(user.new_matches.all())
+
         return JsonResponse({"message": "Gameroom was created successfully", "id": new_gameroom.id})
-    except ValueError:
+    except MyUser.DoesNotExist:
         return JsonResponse({"error": "Invalid username"}, status=400)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -110,12 +129,19 @@ def renderInvites(request, username):
         print(f"22222")
         print(f" {user}")
 
-        # game_sessions = user.new_matches.all()
+        game_sessions = user.new_matches.all()
+        # test_var = game_sessions.get(id=1)
+        # usernames = []
+        # for session in game_sessions:
+        #     usernames.append(session.username)
+
         # game_sessions = user.new_matches.get(id=2)
-        game_sessions = Game.objects.all()
+        # game_sessions = Game.objects.all()
 
         print(f"333333")
         print(f" {game_sessions}")
+        # print(f"444444")
+        # print(f" {test_var}")
 
         return render(request, 'openGameSessions.html', {'game_sessions': game_sessions})
     # except ValueError:

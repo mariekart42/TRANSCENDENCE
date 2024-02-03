@@ -76,6 +76,7 @@ function chatDom() {
     $('#backdropPrivateProfile').modal('show');
   })
 
+
   document.getElementById('profile-in-public-chat-button').addEventListener('click',  async function () {
     const dropdownMenu = document.getElementById('dynamicContactsDropdown');
     dropdownMenu.innerHTML = ''
@@ -105,18 +106,122 @@ function chatDom() {
 }
 
 
-// async function showChat(chat_name){
-//   console.log('THEN THIS')
-//   let foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chat_name);
-//   if (foundChat) {
-//     await handleClickedOnChatElement(foundChat);
-//     document.getElementById('publicChatModal').style.opacity = 1;
-//     $('#staticBackdropProfile').modal('hide');
-//     $('#backdropClickedUser').modal('hide');
-//   } else {
-//     alert('unexpected error, should not happen!!!')
-//   }
-// }
+
+  document.getElementById('challengeUserToGame').addEventListener('click', async function() {
+    
+    console.log('In inviting through chat')
+    // const username = websocket_obj.username;
+    sendDataToBackend('get_user_in_current_chat')
+    console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
+
+    function findOtherUserName(users, username) {
+      for (let i = 0; i < users.length; i++) {
+          if (users[i].user_name !== username) {
+              return users[i].user_name;
+          }
+      }
+      return null; // Return null if the username is not found
+  }
+    const invited_username = findOtherUserName(websocket_obj.userInCurrentChat, websocket_obj.username);
+    console.log('invited_username ', invited_username)
+    // const invited_username = 'test'
+    websocket_obj.invited_id = invited_username
+    
+    try {
+      const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+      const data = await response.json();
+  
+  
+  
+      console.log('DATA ', data);
+      // websocket_obj.active_game = data.id;
+  
+      if (response.ok) {
+      displayError(null);
+      websocket_obj.active_game = data.id;
+      // console.log(data.id); // Check the console for the result
+  
+      // Perform actions on successful login, e.g., set isLoggedIn and userData
+          console.log(data);
+      } else {
+      displayError(data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      displayError('Error fetching user data');
+    }
+  })
+
+
+
+  document.getElementById('challengeUserToGame').addEventListener('click', async function() {
+    
+    console.log('In inviting through chat')
+    // const username = websocket_obj.username;
+    sendDataToBackend('get_user_in_current_chat')
+    console.log('get_user_in_current_chat ', websocket_obj.userInCurrentChat)
+
+    function findOtherUserName(users, username) {
+      for (let i = 0; i < users.length; i++) {
+          if (users[i].user_name !== username) {
+              return users[i].user_name;
+          }
+      }
+      return null; // Return null if the username is not found
+  }
+    const invited_username = findOtherUserName(websocket_obj.userInCurrentChat, websocket_obj.username);
+    console.log('invited_username ', invited_username)
+    // const invited_username = 'test'
+    websocket_obj.invited_id = invited_username
+    
+    try {
+      const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+      const data = await response.json();
+  
+  
+  
+      console.log('DATA ', data);
+      // websocket_obj.active_game = data.id;
+  
+      if (response.ok) {
+      displayError(null);
+      websocket_obj.active_game = data.id;
+      // console.log(data.id); // Check the console for the result
+  
+      // Perform actions on successful login, e.g., set isLoggedIn and userData
+          console.log(data);
+      } else {
+      displayError(data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      displayError('Error fetching user data');
+    }
+  
+
+  //   try {
+  
+
+  //     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+  //     const htmlContent = await response.text();
+  
+  //     const container = document.getElementById('game-session-container');
+  //     container.innerHTML = htmlContent;
+  
+  // } catch (error) {
+  //     console.error('There was a problem with the fetch operation:', error);
+  // }
+  
+
+    // await sendDataToBackend('new_invite')
+
+    
+
+  })
+}
+
+
+
 
 async function logoutUser() {
   let websocket_obj = null

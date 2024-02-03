@@ -154,39 +154,41 @@ async function sendGameInvitation() {
 async function createGame() {
 
 
-    console.log("IN CREATEGAME");
+  console.log("IN CREATEGAME");
 
 
-    var element = document.getElementById('createGameButton');
-    console.log(element);
-
-
-
-  var theButton = document.getElementById('createGameButton');
-  theButton.style.display = 'none';
-  try {
-    const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
-    const data = await response.json();
+  var element = document.getElementById('createGameButton');
+  console.log(element);
 
 
 
-    console.log('DATA ', data);
-    websocket_obj.active_game = data.id;
+var theButton = document.getElementById('createGameButton');
+theButton.style.display = 'none';
+try {
+  const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
+  const data = await response.json();
 
-    if (response.ok) {
-    displayError(null);
-    websocket_obj.active_game = data.id;
-    // console.log(data.id); // Check the console for the result
 
-    // Perform actions on successful login, e.g., set isLoggedIn and userData
-        console.log(data);
-    } else {
-    displayError(data.error);
-    }
-  } catch (error) {
-    console.error('Error fetching user data:', error);
-    displayError('Error fetching user data');
+
+  console.log('DATA ', data);
+  websocket_obj.active_game = data.id;
+  console.log('active game ', data.id);
+
+
+  if (response.ok) {
+  displayError(null);
+  websocket_obj.active_game = data.id;
+  // console.log(data.id); // Check the console for the result
+
+  // Perform actions on successful login, e.g., set isLoggedIn and userData
+      console.log(data);
+  } else {
+  displayError(data.error);
   }
+} catch (error) {
+  console.error('Error fetching user data:', error);
+  displayError('Error fetching user data');
+}
 
 
 }
