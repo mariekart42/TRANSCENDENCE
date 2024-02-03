@@ -8,6 +8,7 @@ websocket_obj = {
   age: null,
   blocked_by: [],
   blocked_user: [],
+  new_private_chat_name: null,
 
   chat_name: null,
   chat_id: null,
@@ -23,8 +24,8 @@ websocket_obj = {
 
   all_user: [
     {
-      user_id: null,
-      user_name: null,
+      id: null,
+      name: null,
     }
   ],
 
@@ -35,7 +36,6 @@ websocket_obj = {
       private_chat_names: [],
       isPrivate: null,
       last_message: null,
-      // blocked_by: [],// NEW implement in backend
     }
   ],
   messages: [
@@ -79,14 +79,18 @@ async function establishWebsocketConnection() {
 
   websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/init/${websocket_obj.user_id}/`);
 
-  websocket_obj.websocket.onopen = function () { renderProfile() };
+  websocket_obj.websocket.onopen = function () {
+    renderProfile()
+    sendDataToBackend('get_all_user') // NEW since 03.02 | this should also happen on refresh!
+  };
 
   websocket_obj.websocket.onmessage = async function (event) {
     const data = JSON.parse(event.data);
     // console.log('ONMESSAGE DATA: ', data)
     switch (data.type) {
       case 'all_chat_messages':
-         if (data.chat_id === websocket_obj.chat_id) {
+        console.log('TEST 2')
+        if (data.chat_id === websocket_obj.chat_id) {
           await renderProfile()
           websocket_obj.messages = data
           await renderMessages()
@@ -107,6 +111,7 @@ async function establishWebsocketConnection() {
         websocket_obj.userInCurrentChat = data.user_in_chat
         break
       case 'current_users_chats':
+        console.log('SHOULD HAPPEN BEFORE THAT')
         if (data.user_id === websocket_obj.user_id) {
           websocket_obj.chat_data = data.users_chats
           console.log('CHAT_DATA: ', websocket_obj.chat_data)
@@ -201,13 +206,10 @@ async function establishWebsocketConnection() {
         await updateScore();
         break
       case 'blocked_user_info':
-        // TODO: MARIE: display info about success or failure
-        console.log('BLOCKED USER INFO: ', data)
         await sendDataToBackend('get_blocked_by_user')
         await sendDataToBackend('get_blocked_user')
         break
       case 'unblocked_user_info':
-        console.log('USER UNBLOCKED INFO: ', data)
         await sendDataToBackend('get_blocked_by_user')
         await sendDataToBackend('get_blocked_user')
         break
@@ -220,6 +222,10 @@ async function establishWebsocketConnection() {
       case 'blocked_user':
         websocket_obj.blocked_user = data.blocked_user
         console.log('I BLOCKED: ', websocket_obj.blocked_user)
+        break
+      case 'all_user':
+        console.log('RECEIVED ALL USER: ', data.all_user)
+        websocket_obj.all_user = data.all_user
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -308,7 +314,7 @@ async function sendDataToBackend(request_type) {
             data = {
               'user_id': websocket_obj.user_id,
               'chat_id': websocket_obj.chat_id,
-              'chat_name': document.getElementById('new_private_chat_name').value,
+              'chat_name': websocket_obj.new_private_chat_name
             }
           break
         case 'set_invited_user_to_chat':
@@ -384,6 +390,13 @@ async function sendDataToBackend(request_type) {
           break
         case 'get_blocked_user':
           type = 'get_blocked_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          }
+          break
+        case 'get_all_user':
+          type = 'get_all_user'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,

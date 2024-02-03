@@ -47,9 +47,12 @@ function chatDom() {
       $('#staticBackdropProfile').modal('hide');
       $('#backdropClickedUser').modal('hide');
     } else {
+      websocket_obj.new_private_chat_name = chatNameToFind
       await sendDataToBackend('set_new_private_chat')
       await sendDataToBackend('get_current_users_chats')
-      await showChat(chatNameToFind)
+      const create_chat_button = document.getElementById('goToChatButton')
+      create_chat_button.textContent = 'Go to Chat'
+      document.getElementById('create_chat_alert').classList.add('hidden')
     }
   })
 
@@ -74,9 +77,76 @@ function chatDom() {
     $('#backdropPrivateProfile').modal('show');
   })
 
+  document.getElementById('profile-in-public-chat-button').addEventListener('click',  async function () {
+    const dropdownMenu = document.getElementById('dynamicContactsDropdown');
+    dropdownMenu.innerHTML = ''
+
+    // const privateChatNames = websocket_obj.chat_data
+    //   .filter(chat => chat.isPrivate)
+    //   .map(chat => chat.chat_name);
+    // const items = [];
+    // for (const chat of websocket_obj.all_user) {
+    //   if (chat.name && !privateChatNames.includes(chat.name)) {
+    //     items.push(chat.name);
+    //   }
+    // }
+    //
+    // const usersNotInCurrentChat = websocket_obj.all_user.filter(user =>
+    //   !websocket_obj.userInCurrentChat.some(currentChatUser => currentChatUser.user_name === user.name)
+    // );
+    //
+    // usersNotInCurrentChat.forEach((user, index) => {
+    //   const listItem = document.createElement('li');
+    //   const button = document.createElement('button');
+    //   button.className = 'dropdown-item';
+    //   button.type = 'button';
+    //   button.textContent = user.name;
+    //
+    //   button.addEventListener('click', async function () {
+    //     await inviteUser(user.name)
+    //   })
+    //   listItem.appendChild(button);
+    //   dropdownMenu.appendChild(listItem);
+    // });
+
+    const privateChatNames = websocket_obj.chat_data
+      .filter(chat => chat.isPrivate)
+      .map(chat => chat.chat_name);
+
+    const usersNotInCurrentChat = websocket_obj.all_user
+      .filter(user => user.name && !privateChatNames.includes(user.name))
+      .filter(user => !websocket_obj.userInCurrentChat.some(currentChatUser => currentChatUser.user_name === user.name));
+
+    usersNotInCurrentChat.forEach(user => {
+      const listItem = document.createElement('li');
+      const button = document.createElement('button');
+      button.className = 'dropdown-item';
+      button.type = 'button';
+      button.textContent = user.name;
+
+      button.addEventListener('click', async () => {
+        await inviteUser(user.name);
+      });
+
+      listItem.appendChild(button);
+      dropdownMenu.appendChild(listItem);
+    });
+
+
+
+
+
+    $('#staticBackdropProfile').modal('show');
+  })
+}
+
+
+function renderModalToShowChat() {
+
 }
 
 async function showChat(chat_name){
+  console.log('THEN THIS')
   let foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chat_name);
   if (foundChat) {
     await handleClickedOnChatElement(foundChat);
@@ -127,6 +197,7 @@ async function createPrivateChat() {
     setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
     return;
   }
+  websocket_obj.new_private_chat_name = chat_name
   await sendDataToBackend('set_new_private_chat')
   await sendDataToBackend('get_current_users_chats')
   let chatNameLabel = document.getElementById('new_private_chat_name');
@@ -242,6 +313,19 @@ async function handleClickedElementInPublicChatModal(clickedUser) {
   const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));
   document.getElementById('publicChatModal').style.opacity = 0.5;
   document.getElementById('backdropClickedUserLabel').textContent = clickedUser
+
+  // if clickeUser is not in chat_data, put button text -> create chat with this user
+  // otherwise, go to chat
+  const isMyUsernameInList = websocket_obj.chat_data.some(chat => chat.chat_name === clickedUser);
+
+  if (!isMyUsernameInList) {
+    console.log(`${clickedUser} is not in the chat_data.`);
+
+    const create_chat_button = document.getElementById('goToChatButton')
+    create_chat_button.textContent = 'Create Chat'
+    document.getElementById('create_chat_alert').classList.remove('hidden')
+  }
+
   modal.show();
 }
 
