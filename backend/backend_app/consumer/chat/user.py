@@ -28,11 +28,16 @@ class _User:
             {
                 'type': 'send.all.user',
                 'data': {
-                    # 'chat_id': chat_id,
-                    'all_user': all_user,
+                    'all_user': all_user
                 },
             }
         )
+
+
+        # await self.send(text_data=json.dumps({
+        #     'type': 'all_user',
+        #     'all_user': all_user
+        # }))
 
     async def handle_current_user_left_chat(self, text_data_json):
         chat_id = text_data_json["data"]["chat_id"]

@@ -4,25 +4,27 @@ function addEventListenersIsAuth() {
 
   function loadContentGame(file, targetId) {
     fetch(file)
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById(targetId).innerHTML = html;
-        gameDom();
-      })
-      .catch(error => console.error('Error loading content:', error));
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById(targetId).innerHTML = html;
+          gameDom();
+        })
+        .catch(error => console.error('Error loading content:', error));
   }
+
   loadContentGame('html/game.html', 'gameSite');
 
 
   function loadContentChat(file, targetId) {
     fetch(file)
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById(targetId).innerHTML = html;
-        chatDom();
-      })
-      .catch(error => console.error('Error loading content:', error));
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById(targetId).innerHTML = html;
+          chatDom();
+        })
+        .catch(error => console.error('Error loading content:', error));
   }
+
   loadContentChat('html/chat.html', 'chat');
 
 
@@ -37,10 +39,9 @@ function addEventListenersIsAuth() {
     showSiteHideOthers('chat')
   })
 
-  document.getElementById('gameButton').addEventListener('click', async function() {
+  document.getElementById('gameButton').addEventListener('click', async function () {
     showSiteHideOthers('gameSite')
   })
-
 
   document.getElementById('nothingButton').addEventListener('click', async function () {
     showSiteHideOthers('nothingSite')
@@ -63,53 +64,17 @@ function addEventListenersIsAuth() {
     </form>  
     <p>Name: ${websocket_obj.username}</p><p>ID: ${websocket_obj.user_id}</p>
   `;
-
-    const previewImage = document.getElementById('previewImage');
+    document.getElementById('previewImage').src = websocket_obj.avatar;
     const previewContainer = document.getElementById('previewContainer');
-    previewImage.src = websocket_obj.avatar
     previewContainer.style.display = 'block';
-
     previewContainer.addEventListener('click', function () {
       const profilePictureInput = document.getElementById('profilePictureInput');
       profilePictureInput.click();
     });
-
     userModal.show();
   })
 
-
-
-
-
-  // TEST GO BACK AND FORWARD - DELETE LATER
-  document.getElementById('goBack').addEventListener('click', function (event){
-    console.log('event: ', event)
-    console.log('state: ', event.state)
-    // history.back()
-  })
-  document.getElementById('goForward').addEventListener('click', function (){
-    // New state object representing the state of the 'about' page
-    var newStateData = { page: 'about', timestamp: Date.now() };
-
-    // New title for the document (can be an empty string or null)
-    var newPageTitle = 'About Page';
-
-    // New URL to be displayed in the address bar
-    var newUrl = '/about';
-
-    // Replace the current entry in the session history with the new state
-    history.replaceState(newStateData, newPageTitle, newUrl);
-      })
-    //   window.addEventListener('popstate', function(event) {
-    //   var state = event.state;
-    //
-    //   // Use 'state' to determine the current state and update your UI accordingly
-    //   // You can retrieve the state data that you pushed when using pushState
-    //   console.log('Pop State:', state);
-    // });
 }
-
-
 function showSiteHideOthers(site_to_show) {
   const sites = ['gameSite', 'nothingSite', 'homeSite', 'chat'];
 
@@ -120,13 +85,10 @@ function showSiteHideOthers(site_to_show) {
 }
 
 function submitForm() {
-
   const img = document.getElementById('profilePictureInput')
-
     if (img.files && img.files[0]) {
         const file = img.files[0];
         const reader = new FileReader();
-
         reader.onload = function (e) {
             const imageData = e.target.result;
             websocket_obj.avatar = imageData
@@ -136,18 +98,11 @@ function submitForm() {
       reader.readAsDataURL(file);
     }
 }
+
 function displayImagePreview(imageData) {
-  // Get the preview elements
-  const previewImage = document.getElementById('previewImage');
-  const previewContainer = document.getElementById('previewContainer');
-
-  // Set the consumer attribute of the preview image
-  previewImage.src = imageData;
-
-  // Show the preview container
-  previewContainer.style.display = 'block';
+  document.getElementById('previewImage').src = imageData;
+  document.getElementById('previewContainer').style.display = 'block';
 }
-
 
 function setErrorWithTimout(element_id, error_message, timout) {
   const obj = document.getElementById(element_id)
@@ -168,7 +123,6 @@ async function setMessageWithTimout(element_id, message, timout) {
     obj.style.display = 'none';
   }, timout);
 }
-
 
 function hideDiv(element_id) {
   document.getElementById(element_id).classList.add('hidden')

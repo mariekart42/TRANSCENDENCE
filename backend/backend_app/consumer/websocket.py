@@ -94,7 +94,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
                 await self.handle_send_user_in_current_chat(chat_id)
             elif what_type == 'send_current_users_chats':
                 await self.handle_send_current_users_chats(text_data_json)
-            elif what_type == 'send_all_user':
+            elif what_type == 'get_all_user':
                 await self.handle_send_all_user()
             elif what_type == 'send_user_left_chat':
                 await self.handle_current_user_left_chat(text_data_json)

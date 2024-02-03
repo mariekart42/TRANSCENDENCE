@@ -47,9 +47,11 @@ function chatDom() {
       $('#staticBackdropProfile').modal('hide');
       $('#backdropClickedUser').modal('hide');
     } else {
+      websocket_obj.new_private_chat_name = chatNameToFind
       await sendDataToBackend('set_new_private_chat')
       await sendDataToBackend('get_current_users_chats')
-      await showChat(chatNameToFind)
+      document.getElementById('goToChatButton').textContent = 'Go to Chat'
+      hideDiv('create_chat_alert')
     }
   })
 
@@ -73,6 +75,37 @@ function chatDom() {
     }
     $('#backdropPrivateProfile').modal('show');
   })
+
+
+  document.getElementById('profile-in-public-chat-button').addEventListener('click',  async function () {
+    const dropdownMenu = document.getElementById('dynamicContactsDropdown');
+    dropdownMenu.innerHTML = ''
+
+    const all_private_chats = websocket_obj.chat_data
+      .filter(chat => chat.isPrivate)
+      .map(chat => chat.chat_name);
+
+    const user_not_in_chat = websocket_obj.all_user
+      .filter(user => user.name && !all_private_chats.includes(user.name))
+      .filter(user => !websocket_obj.userInCurrentChat.some(currentChatUser => currentChatUser.user_name === user.name));
+
+    user_not_in_chat.forEach(user => {
+      const listItem = document.createElement('li');
+      const button = document.createElement('button');
+      button.className = 'dropdown-item';
+      button.type = 'button';
+      button.textContent = user.name;
+      button.addEventListener('click', async () => {
+        await inviteUser(user.name);
+      });
+      listItem.appendChild(button);
+      dropdownMenu.appendChild(listItem);
+    });
+    $('#staticBackdropProfile').modal('show');
+  })
+}
+
+
 
   document.getElementById('challengeUserToGame').addEventListener('click', async function() {
     
@@ -188,25 +221,13 @@ function chatDom() {
 }
 
 
-async function showChat(chat_name){
-  let foundChat = websocket_obj.chat_data.find(chat => chat.chat_name === chat_name);
-  if (foundChat) {
-    await handleClickedOnChatElement(foundChat);
-    document.getElementById('publicChatModal').style.opacity = 1;
-    $('#staticBackdropProfile').modal('hide');
-    $('#backdropClickedUser').modal('hide');
-  } else {
-    alert('unexpected error, should not happen!!!')
-  }
-}
+
 
 async function logoutUser() {
   let websocket_obj = null
-
   showDiv('userIsNotAuth')
   hideDiv('userIsAuth')
 }
-
 
 async function inviteUser(invited_user_name){
   websocket_obj.invited_user_name = invited_user_name
@@ -221,7 +242,6 @@ async function leaveChat() {
 
 async function createPublicChat() {
   let chat_name = document.getElementById('new_chat_name').value
-
   if (chat_name.trim() === '') {
     setErrorWithTimout('info_create_chat', 'Chat name cannot be empty',  5000)
     return;
@@ -239,6 +259,7 @@ async function createPrivateChat() {
     setErrorWithTimout('info_create_private_chat', 'Username cannot be empty',  5000)
     return;
   }
+  websocket_obj.new_private_chat_name = chat_name
   await sendDataToBackend('set_new_private_chat')
   await sendDataToBackend('get_current_users_chats')
   let chatNameLabel = document.getElementById('new_private_chat_name');
@@ -246,10 +267,8 @@ async function createPrivateChat() {
   chatNameLabel.textContent = '';
 }
 
-
 async function renderProfile() {
-  let sender_title = document.getElementById('displayUserName');
-  sender_title.textContent = 'Hey ' + websocket_obj.username + ' 🫠'
+  document.getElementById('displayUserName').textContent = 'Hey '+websocket_obj.username+' 🫠';
 }
 
 async function handleClickedOnChatElement(chat_obj) {
@@ -354,6 +373,11 @@ async function handleClickedElementInPublicChatModal(clickedUser) {
   const modal = new bootstrap.Modal(document.getElementById('backdropClickedUser'));
   document.getElementById('publicChatModal').style.opacity = 0.5;
   document.getElementById('backdropClickedUserLabel').textContent = clickedUser
+  const chat_exist = websocket_obj.chat_data.some(chat => chat.chat_name === clickedUser);
+  if (!chat_exist) {
+    document.getElementById('goToChatButton').textContent = 'Create Chat'
+    showDiv('create_chat_alert')
+  }
   modal.show();
 }
 
