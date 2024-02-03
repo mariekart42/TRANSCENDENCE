@@ -12,7 +12,7 @@ urlpatterns = [
 
 
     # GAME
-    path('user/game/create/<str:username>/', views.createGame),
+    path('user/game/create/<str:username>/<str:invited_username>', views.createGame),
     path('user/game/invite/<str:username>/<int:game_id>/<str:guest_user_name>/', views.inviteUserToGame),
     path('user/game/render/invites/<str:username>/', views.renderInvites),
 
