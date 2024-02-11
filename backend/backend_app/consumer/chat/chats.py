@@ -209,16 +209,17 @@ class _Chat:
     def get_users_chats(self, user_id):
         user_instance = MyUser.objects.get(id=user_id)
         all_chats = user_instance.chats.all()
-        user_chats = [
-            {
+        user_chats = []
+        for chat in all_chats:
+            chat_name = self.getChatName(chat, user_id)
+            user_chats.append({
                 'chat_id': chat.id,
-                'chat_name': self.getChatName(chat, user_id),
+                'chat_name': chat_name,
                 'private_chat_names': self.getPrivateChatNames(chat, user_id),
                 'last_message': self.get_last_message_in_chat(chat.id),
                 'isPrivate': chat.isPrivate,
-            }
-            for chat in all_chats
-        ]
+                'avatar': self.getAvatar(chat_name)
+            })
         return user_chats
 
     @database_sync_to_async
@@ -375,8 +376,6 @@ class _Chat:
                 return {'text': last_message.text, 'time': last_message.formatted_timestamp(), 'status': 'ok'}
         except ObjectDoesNotExist:
             print("Chat does not exist.")
-
-        print("No messages in the chat.")
         return {'text': '', 'time': '0', 'status': 'Not found'}
 
     async def get_channel_name_with_id(self, user_id):
@@ -384,4 +383,14 @@ class _Chat:
             if channel['user_id'] == str(user_id):
                 return channel['channel_name']
         return None
+
+    def getAvatar(self, chat_name):
+        user_exist = MyUser.objects.filter(name=chat_name).exists()
+        if not user_exist:
+            return None
+        user_instance = MyUser.objects.get(name=chat_name)
+        avatar_url = user_instance.avatar.url if user_instance.avatar else None
+        result = '../../backend' + str(avatar_url) if avatar_url else None
+        return result
+
 
