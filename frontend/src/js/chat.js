@@ -65,46 +65,16 @@ function chatDom() {
     $('#backdropPrivateProfile').modal('hide');
   })
 
-  document.getElementById('profile-in-private-chat-button').addEventListener('click',  async function () {
-    if (websocket_obj.blocked_user && websocket_obj.blocked_user.includes(websocket_obj.chat_name)) {
-      showDiv('unblockUserButton')
-      hideDiv('blockUserButton')
+  document.getElementById('right-heading-name').addEventListener('click', async function() {
+    const state = document.getElementById('right-heading-name').dataset.state
+    console.log('STATE: ', state)
+
+    if (state === 'private') {
+      await showPrivateChatModal()
     } else {
-      showDiv('blockUserButton')
-      hideDiv('unblockUserButton')
+      await showPublicChatModal()
     }
-    $('#backdropPrivateProfile').modal('show');
   })
-
-
-  document.getElementById('profile-in-public-chat-button').addEventListener('click',  async function () {
-    const dropdownMenu = document.getElementById('dynamicContactsDropdown');
-    dropdownMenu.innerHTML = ''
-
-    const all_private_chats = websocket_obj.chat_data
-      .filter(chat => chat.isPrivate)
-      .map(chat => chat.chat_name);
-
-    const user_not_in_chat = websocket_obj.all_user
-      .filter(user => user.name && !all_private_chats.includes(user.name))
-      .filter(user => !websocket_obj.userInCurrentChat.some(currentChatUser => currentChatUser.user_name === user.name));
-
-    user_not_in_chat.forEach(user => {
-      const listItem = document.createElement('li');
-      const button = document.createElement('button');
-      button.className = 'dropdown-item';
-      button.type = 'button';
-      button.textContent = user.name;
-      button.addEventListener('click', async () => {
-        await inviteUser(user.name);
-      });
-      listItem.appendChild(button);
-      dropdownMenu.appendChild(listItem);
-    });
-    $('#staticBackdropProfile').modal('show');
-  })
-
-
 
 
 //   document.getElementById('challengeUserToGame').addEventListener('click', async function() {
@@ -222,6 +192,42 @@ function chatDom() {
 }
 
 
+async function showPrivateChatModal() {
+  if (websocket_obj.blocked_user && websocket_obj.blocked_user.includes(websocket_obj.chat_name)) {
+    showDiv('unblockUserButton')
+    hideDiv('blockUserButton')
+  } else {
+    showDiv('blockUserButton')
+    hideDiv('unblockUserButton')
+  }
+  $('#backdropPrivateProfile').modal('show');
+}
+
+async function showPublicChatModal() {
+  const dropdownMenu = document.getElementById('dynamicContactsDropdown');
+  dropdownMenu.innerHTML = ''
+  const all_private_chats = websocket_obj.chat_data
+    .filter(chat => chat.isPrivate)
+    .map(chat => chat.chat_name);
+
+  const user_not_in_chat = websocket_obj.all_user
+    .filter(user => user.name && !all_private_chats.includes(user.name))
+    .filter(user => !websocket_obj.userInCurrentChat.some(currentChatUser => currentChatUser.user_name === user.name));
+  user_not_in_chat.forEach(user => {
+    const listItem = document.createElement('li');
+    const button = document.createElement('button');
+    button.className = 'dropdown-item';
+    button.type = 'button';
+    button.textContent = user.name;
+    button.addEventListener('click', async () => {
+      await inviteUser(user.name);
+    });
+    listItem.appendChild(button);
+    dropdownMenu.appendChild(listItem);
+  });
+  $('#staticBackdropProfile').modal('show');
+}
+
 
 async function logoutUser() {
   let websocket_obj = null
@@ -273,15 +279,23 @@ async function renderProfile() {
 
 async function handleClickedOnChatElement(chat_obj) {
   showDiv('messageSide')
+  const chat_avatar = document.getElementById('chat_avatar')
+  if (!chat_obj.isPrivate) {
+    // avatar for group picture
+    chat_avatar.src = 'https://www.shareicon.net/data/512x512/2016/01/09/700702_network_512x512.png'
+  } else if (chat_obj.avatar) {
+    chat_avatar.src = chat_obj.avatar
+  } else {
+    // default avatar
+    chat_avatar.src = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
+  }
   document.getElementById('right-heading-name').textContent = chat_obj.chat_name
   if (chat_obj.isPrivate) {
-    showDiv('profile-in-private-chat-button')
-    hideDiv('profile-in-public-chat-button')
     document.getElementById('backdropPrivateProfileLabel').textContent = chat_obj.chat_name
+    document.getElementById('right-heading-name').dataset.state = 'private'
   } else {
-    showDiv('profile-in-public-chat-button')
-    hideDiv('profile-in-private-chat-button')
     document.getElementById('backdropPublicProfileLabel').textContent = chat_obj.chat_name
+    document.getElementById('right-heading-name').dataset.state = 'public'
   }
   websocket_obj.chat_id = chat_obj.chat_id;
   websocket_obj.chat_name = chat_obj.chat_name;
@@ -321,7 +335,6 @@ async function renderMessages() {
       function hasMatchingUserId(user) {
         return user.user_id === currentUserId;
       }
-
       if (websocket_obj.onlineStats.some(hasMatchingUserId)) {
         titleElement.textContent = myArray[i].sender + ' 🟢';
       } else {
@@ -393,7 +406,16 @@ async function renderChat() {
     const avatarIcon = document.createElement('div');
     avatarIcon.classList.add('avatar-icon');
     const avatarImg = document.createElement('img');
-    avatarImg.src = "https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg";
+
+    if (!chat.isPrivate) {
+      // avatar for group picture
+      avatarImg.src = 'https://www.shareicon.net/data/512x512/2016/01/09/700702_network_512x512.png'
+    } else if (chat.avatar) {
+      avatarImg.src = chat.avatar
+    } else {
+      // default avatar
+      avatarImg.src = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
+    }
     avatarIcon.appendChild(avatarImg);
     avatarCol.appendChild(avatarIcon);
     const mainCol = document.createElement('div');
@@ -403,11 +425,7 @@ async function renderChat() {
     const nameCol = document.createElement('div');
     nameCol.classList.add('col-sm-8', 'col-xs-8', 'sideBar-name');
     let chatName = document.createElement('div');
-    if (chat.isPrivate) {
-      chatName.textContent = chat.chat_name + ' [PRIVATE]';
-    } else {
-      chatName.textContent = chat.chat_name + ' [PUBLIC]';
-    }
+    chatName.textContent = chat.chat_name;
     chat_element.addEventListener('click', async function () {
       await handleClickedOnChatElement(chat);
     });

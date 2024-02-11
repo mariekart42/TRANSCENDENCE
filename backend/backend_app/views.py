@@ -1,10 +1,5 @@
 from django.shortcuts import render
-from .models import MyUser, Game
-from django.http import JsonResponse
-import json  # build in python module
-from django.views.decorators.http import require_GET, require_POST
-from django.db import models
-from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 
 def goToFrontend(request):
@@ -45,14 +40,32 @@ def createAccount(request, username, password, age):
     except Exception as e:
         return JsonResponse({}, status=500)
 
+@require_POST
+def uploadAvatar(request, username):
+    try:
+        print('username: ', username)
+        user_exist = MyUser.objects.filter(name=username).exists()
+        if not user_exist:
+            return JsonResponse({}, status=409)
 
+        if request.method == 'POST':
+            user_instance = MyUser.objects.get(name=username)
+            avatar_file = request.FILES.get('avatar')
+            print('response file: ', avatar_file)
+            if avatar_file:
+                user_instance.avatar = avatar_file
+                user_instance.save()
+
+        return JsonResponse({}, status=200)
+    except Exception as e:
+        return JsonResponse({}, status=500)
 
 
 ######### GAMEEEEEEEEEEEEEEEEEEEE ######### kristinas kingdom:
 
 
 from django.http import JsonResponse
-from .models import Game, MyUser
+from backend_app.models import Game, MyUser
 
 def createGame(request, username, invited_username):
     try:

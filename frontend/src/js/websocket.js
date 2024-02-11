@@ -4,7 +4,8 @@ websocket_obj = {
 
   username: null,
   password: null,
-  avatar: 'https://files.cults3d.com/uploaders/24252348/illustration-file/8a3219aa-d7d4-4194-bede-ccc90a6f2103/B8QC6DAZ9PWRK7M2.jpg',
+  avatar: '../../backend/media/avatars/Abitur_Jaderberg.JPG',
+  // avatar: null,
   age: null,
   blocked_by: [],
   blocked_user: [],
@@ -36,6 +37,7 @@ websocket_obj = {
       private_chat_names: [],
       isPrivate: null,
       last_message: null,
+      avatar: null,
     }
   ],
   messages: [
@@ -82,6 +84,7 @@ async function establishWebsocketConnection() {
   websocket_obj.websocket.onopen = function () {
     renderProfile()
     sendDataToBackend('get_all_user') // NEW since 03.02 | this should also happen on refresh!
+    sendDataToBackend('get_avatar')// NEW since 07.02
   };
 
   websocket_obj.websocket.onmessage = async function (event) {
@@ -226,6 +229,14 @@ async function establishWebsocketConnection() {
         break
       case 'all_user':
         websocket_obj.all_user = data.all_user
+        break
+      case 'get_avatar':
+        if (data.avatar) {
+          websocket_obj.avatar = data.avatar
+        } else {
+          // default avatar
+          websocket_obj.avatar = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
+        }
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -397,6 +408,13 @@ async function sendDataToBackend(request_type) {
           break
         case 'get_all_user':
           type = 'get_all_user'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'chat_id': websocket_obj.chat_id,
+          }
+          break
+        case 'get_avatar':
+          type = 'get_avatar'
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,

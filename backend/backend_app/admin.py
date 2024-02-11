@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MyUser, Chat, Message, Game
+from backend_app.models import MyUser, Chat, Message, Game
 
 
 admin.site.register(MyUser)

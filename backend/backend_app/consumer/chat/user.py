@@ -33,12 +33,6 @@ class _User:
             }
         )
 
-
-        # await self.send(text_data=json.dumps({
-        #     'type': 'all_user',
-        #     'all_user': all_user
-        # }))
-
     async def handle_current_user_left_chat(self, text_data_json):
         chat_id = text_data_json["data"]["chat_id"]
         user_id = text_data_json["data"]["user_id"]
@@ -52,6 +46,16 @@ class _User:
                 },
             }
         )
+
+    async def handle_get_avatar(self, text_data_json):
+        user_id = text_data_json["data"]["user_id"]
+        response = await self.get_avatar(user_id)
+
+        await self.send(text_data=json.dumps({
+            'type': 'get_avatar',
+            'avatar': response,
+        }))
+
 
 # ---------- SEND FUNCTIONS ---------------------------------------
     # TODO: MARIE: ever used? delete?
@@ -110,5 +114,15 @@ class _User:
         all_users_info = MyUser.objects.values('id', 'name')
         all_user = list(all_users_info)
         return all_user
+
+    @database_sync_to_async
+    def get_avatar(self, user_id):
+        user_exists = MyUser.objects.filter(id=user_id).exists()
+        if not user_exists:
+            return None
+        user_instance = MyUser.objects.get(id=user_id)
+        avatar_url = user_instance.avatar.url if user_instance.avatar else None
+        result = '../../backend' + str(avatar_url) if avatar_url else None
+        return result
 
 # ---------- UTILS FUNCTIONS ----------------------------------------

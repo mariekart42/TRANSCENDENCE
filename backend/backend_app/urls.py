@@ -10,6 +10,8 @@ urlpatterns = [
     path('user/check_user_credentials/<str:username>/<str:password>/', views.checkUserCredentials),
     path('user/account/create/<str:username>/<str:password>/<int:age>/', views.createAccount),
 
+    # CHAT
+    path('user/upload/avatar/<str:username>/', views.uploadAvatar),
 
     # GAME
     path('user/game/create/<str:username>/<str:invited_username>', views.createGame),

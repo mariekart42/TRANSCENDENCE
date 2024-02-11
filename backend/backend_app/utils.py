@@ -1,7 +1,7 @@
-from .models import MyUser, Chat, Message
+from backend_app.models import MyUser, Chat, Message
 from django.http import JsonResponse
 import json  # build in python module
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from django.utils import timezone
 
 

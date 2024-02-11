@@ -11,9 +11,7 @@ function addEventListenersIsAuth() {
         })
         .catch(error => console.error('Error loading content:', error));
   }
-
   loadContentGame('html/game.html', 'gameSite');
-
 
   function loadContentChat(file, targetId) {
     fetch(file)
@@ -24,9 +22,7 @@ function addEventListenersIsAuth() {
         })
         .catch(error => console.error('Error loading content:', error));
   }
-
   loadContentChat('html/chat.html', 'chat');
-
 
   document.getElementById('homeButton').addEventListener('click', function () {
     showSiteHideOthers('homeSite')
@@ -52,32 +48,28 @@ function addEventListenersIsAuth() {
     const label = document.getElementById('userModalLabel2');
     label.innerHTML = `<h5>${websocket_obj.username}</h5>`;
     const modalBody = document.getElementById('userProfileModalBody2');
-
     modalBody.innerHTML = `
-    <div id="previewContainer">
-      <img id="previewImage" alt="Profile Preview">
-      <div id="onHoverText">CHANGE PROFILEPICTURE</div>
-    </div>
-    <form id="profileForm">
-      <span id="selectedFileName"></span>
-      <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="submitForm()">
-    </form>  
-    <p>Name: ${websocket_obj.username}</p><p>ID: ${websocket_obj.user_id}</p>
-  `;
+      <div id="previewContainer">
+        <img id="previewImage" alt="Profile Preview">
+        <div id="onHoverText">CHANGE PROFILEPICTURE</div>
+      </div>
+      <form id="profileForm">
+        <span id="selectedFileName"></span>
+        <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="submitForm()">
+      </form>
+      <p>Name: ${websocket_obj.username}</p><p>ID: ${websocket_obj.user_id}</p>`
     document.getElementById('previewImage').src = websocket_obj.avatar;
     const previewContainer = document.getElementById('previewContainer');
     previewContainer.style.display = 'block';
     previewContainer.addEventListener('click', function () {
-      const profilePictureInput = document.getElementById('profilePictureInput');
-      profilePictureInput.click();
+      document.getElementById('profilePictureInput').click();
     });
     userModal.show();
   })
-
 }
+
 function showSiteHideOthers(site_to_show) {
   const sites = ['gameSite', 'nothingSite', 'homeSite', 'chat'];
-
   sites.forEach(site => {
     if (site === site_to_show) showDiv(site)
     else hideDiv(site)
@@ -86,17 +78,30 @@ function showSiteHideOthers(site_to_show) {
 
 function submitForm() {
   const img = document.getElementById('profilePictureInput')
-    if (img.files && img.files[0]) {
-        const file = img.files[0];
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const imageData = e.target.result;
-            websocket_obj.avatar = imageData
-            displayImagePreview(imageData);
-        };
-      displayImagePreview(websocket_obj.avatar)
-      reader.readAsDataURL(file);
-    }
+  if (img.files && img.files[0]) {
+      const file = img.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imageData = e.target.result;
+        const formData = new FormData();
+        formData.append('avatar', file);
+        // if response good, assign new image && display Image
+        const url = `http://127.0.0.1:6969/user/upload/avatar/${websocket_obj.username}/`
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          websocket_obj.avatar = imageData
+          displayImagePreview(imageData);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+      };
+    reader.readAsDataURL(file);
+  }
 }
 
 function displayImagePreview(imageData) {

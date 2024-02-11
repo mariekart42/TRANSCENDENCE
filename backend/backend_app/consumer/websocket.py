@@ -112,6 +112,8 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
                 await self.handle_get_blocked_user(text_data_json)
             elif what_type == 'unblock_user':
                 await self.handle_unblock_user(text_data_json)
+            elif what_type == 'get_avatar':
+                await self.handle_get_avatar(text_data_json)
             else:
                 print('IS SOMETHING ELSE')
 
