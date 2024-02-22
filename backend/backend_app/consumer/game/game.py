@@ -3,6 +3,8 @@ import asyncio
 from channels.db import database_sync_to_async
 from backend_app.models import MyUser, Chat, Message, Game
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
+
 
 class _Game:
 # ---------- HANDLE FUNCTIONS ---------------------------------------
@@ -217,6 +219,15 @@ class _Game:
 
         }))
 
+    async def send_request_invites(self, event):
+        print("in send_request_invites")
+        await self.send(text_data=json.dumps({
+            'type': 'recieve_invites',
+            'matches': event['data'],
+
+        }))
+
+
 
     async def handle_send_game_scene(self):
         if self.key_code == 38:
@@ -343,6 +354,19 @@ class _Game:
         except Exception as e:
             print(f"Error in handle_send_score: {e}")
 
+    async def handle_send_invites(self):
+        return_data = await self.get_mathces(self.user['user_id'])
+
+        # matches_data = await self.get_mathces(self.user['user_id'])
+        # return_data = render(self, 'openGameSessions.html', {'game_sessions': matches_data})
+        await self.channel_layer.send(
+        self.channel_name,
+        {
+            'type': 'send.request.invites',
+            'data': return_data,
+        })
+
+
 
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
 
@@ -350,6 +374,40 @@ class _Game:
     def get_host(self, game_id, user_id):
         game_instance = Game.objects.get(id=game_id)
         user_instance = MyUser.objects.get(id=user_id)
+        if user_instance.name == game_instance.hostId:
+            self.is_host = True
+            check_host = 'True'
+        else:
+            self.is_host = False
+            check_host = 'False'
+        return check_host
+    
+    @database_sync_to_async
+    def get_mathces(self, user_id):
+        user_instance = MyUser.objects.get(id=user_id)
+        game_sessions = user_instance.new_matches.all()
+
+        match_data = []
+
+        # Iterate through game_sessions
+        for game_session in game_sessions:
+            # Extract opponent name and game id
+            opponent_name = game_session.hostId
+            game_id = game_session.id
+            
+            # Append data to the match_data list
+            match_data.append({
+                'opponent_name': opponent_name,
+                'game_id': game_id
+            })
+
+
+        json_data = json.dumps(match_data)
+
+
+        return json_data
+
+
         if user_instance.name == game_instance.hostId:
             self.is_host = True
             check_host = 'True'
