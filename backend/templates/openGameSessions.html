@@ -2,7 +2,7 @@
 <div>
   {% for game_session in game_sessions %}
   <!-- <button onclick="joinGame('{{ game_session.id }}')">Join Game {{ game_session.id }}</button> -->
-  <button id="joinGameButton" onclick="joinGame('{{ game_session.id }}')">Join Game {{ game_session.id }}</button>
+  <button id="joinGameButton" onclick="joinGame('{{ game_session.id }}')">Join Game {{ game_session.id }} against {{ game_session.opponent }}</button>
 
   {% endfor %}
 </div>
