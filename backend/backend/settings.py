@@ -29,7 +29,7 @@ DEBUG = True
 
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'backend', '127.0.0.1']
 
 
 
@@ -112,27 +112,24 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:4242', 'http://127.0.0.1:4242']
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#
-#         # Data from docker-compose file:
-#         'NAME': 'postgres',
-#         'USER': 'mmensing',
-#         'PASSWORD': '0000',
-#
-#         # Service name of the PostgreSQL container in the Docker network:
-#         'HOST': 'postgres',
-#         'PORT': '5432',
-#     }
-# }
-# DEFAULT:
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
-        'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
+        'ENGINE': os.environ.get('POSTGRES_ENGINE'),
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT')
     }
 }
+
+# DEFAULT:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
+#         'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
+#     }
+# }
 
 
 

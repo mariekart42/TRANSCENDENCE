@@ -139,7 +139,7 @@ async function renderInvites() {
 
 // // _+_+_+_+_+_+_
 
-//     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+//     const response = await fetch(`http://localhost/user/game/render/invites/${username}/`);
 //     const htmlContent = await response.text();
 
 //     const container = document.getElementById('game-session-container');
@@ -180,7 +180,7 @@ async function sendGameInvitation() {
   var game_id = websocket_obj.active_game;
   var guest_user_name = guestUser;
   try {
-    const response = await fetch(`http://127.0.0.1:6969/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
+    const response = await fetch(`http://localhost:4242/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
     const data = await response.json();
 
     console.log('DATA ', data);
@@ -214,7 +214,7 @@ async function createGame() {
 var theButton = document.getElementById('createGameButton');
 theButton.style.display = 'none';
 try {
-  const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
+  const response = await fetch(`http://localhost:4242/user/game/create/${websocket_obj.username}/`);
   const data = await response.json();
 
 
