@@ -86,7 +86,7 @@ function submitForm() {
         const formData = new FormData();
         formData.append('avatar', file);
         // if response good, assign new image && display Image
-        const url = `http://localhost:4242/user/upload/avatar/${websocket_obj.username}/`
+        const url = `https://playpong.duckdns.org/user/upload/avatar/${websocket_obj.username}/`
         fetch(url, {
             method: 'POST',
             body: formData

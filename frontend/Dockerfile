@@ -4,6 +4,6 @@ RUN apk update; apk upgrade; apk add nginx; apk add openssl
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 443
+EXPOSE 4242
 
 CMD ["nginx", "-g", "daemon off;"]
