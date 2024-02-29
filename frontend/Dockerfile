@@ -1,9 +1,9 @@
 FROM alpine:3.19.1
 
-RUN apk update; apk upgrade; apk add nginx; apk add openssl
+RUN apk update; apk upgrade; apk add nginx; apk add openssl; apk add --no-cache gettext
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx_start.sh /nginx_start.sh
 
-EXPOSE 4242
+# EXPOSE 4242
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/nginx_start.sh"]
