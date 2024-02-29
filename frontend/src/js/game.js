@@ -180,7 +180,7 @@ async function sendGameInvitation() {
   var game_id = websocket_obj.active_game;
   var guest_user_name = guestUser;
   try {
-    const response = await fetch(`https://playpong.duckdns.org/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
+    const response = await fetch(`https://${window.location.hostname}/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
     const data = await response.json();
 
     console.log('DATA ', data);
@@ -214,7 +214,7 @@ async function createGame() {
 var theButton = document.getElementById('createGameButton');
 theButton.style.display = 'none';
 try {
-  const response = await fetch(`https://playpong.duckdns.org/user/game/create/${websocket_obj.username}/`);
+  const response = await fetch(`https://${window.location.hostname}/user/game/create/${websocket_obj.username}/`);
   const data = await response.json();
 
 

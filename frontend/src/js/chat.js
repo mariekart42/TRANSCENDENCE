@@ -146,7 +146,7 @@ function chatDom() {
     websocket_obj.invited_id = invited_username
     
     try {
-      const response = await fetch(`https://playpong.duckdns.org/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+      const response = await fetch(`https://${window.location.hostname}/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
       const data = await response.json();
   
   

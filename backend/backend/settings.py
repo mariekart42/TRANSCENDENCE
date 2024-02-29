@@ -27,11 +27,7 @@ SECRET_KEY = 'django-insecure-!l1#n)(q==6k0w3#*w92ilmkltpzf9d1ep4*39yiqz*$$z%ve^
 DEBUG = True
 # -> prints (sensitive) data to the console, should not be readable by others
 
-
-
-ALLOWED_HOSTS = ['localhost', 'backend', '127.0.0.1', 'playpong.duckdns.org']
-
-
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend']
 
 # Application definition
 INSTALLED_APPS = [
@@ -107,7 +103,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 ASGI_APPLICATION = 'backend.asgi.application'
 
-CSRF_TRUSTED_ORIGINS = ['https://playpong.duckdns.org', 'http://127.0.0.1:4242']
+current_host = os.environ.get('CURRENT_HOST')
+if current_host:
+    current_host = 'https://' +  current_host
+    CSRF_TRUSTED_ORIGINS = [current_host]
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -130,8 +131,6 @@ DATABASES = {
 #         'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
 #     }
 # }
-
-
 
 
 # Password validation

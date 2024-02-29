@@ -19,7 +19,7 @@ function addEventListenersNotAuth() {
     usernameElement.style.border = ""
     passwordElement.style.border = ""
 
-    const url = `https://playpong.duckdns.org/user/check_user_credentials/${usernameElement.value}/${passwordElement.value}/`
+    const url = `https://${window.location.hostname}/user/check_user_credentials/${usernameElement.value}/${passwordElement.value}/`
     fetch(url)
       .then(response => {
         if (!response.ok) {
@@ -57,7 +57,7 @@ function addEventListenersNotAuth() {
 
     const age = document.getElementById('registerAge').value;
 
-    const url = `https://playpong.duckdns.org/user/account/create/${usernameElement.value}/${passwordElement.value}/${age}/`
+    const url = `https://${window.location.hostname}/user/account/create/${usernameElement.value}/${passwordElement.value}/${age}/`
     fetch(url)
       .then(response => {
         if (!response.ok) {
