@@ -19,7 +19,7 @@ function addEventListenersNotAuth() {
     usernameElement.style.border = ""
     passwordElement.style.border = ""
 
-    const url = `http://127.0.0.1:6969/user/check_user_credentials/${usernameElement.value}/${passwordElement.value}/`
+    const url = `${window.location.origin}/user/check_user_credentials/${usernameElement.value}/${passwordElement.value}/`
     fetch(url)
       .then(response => {
         if (!response.ok) {
@@ -57,7 +57,7 @@ function addEventListenersNotAuth() {
 
     const age = document.getElementById('registerAge').value;
 
-    const url = `http://127.0.0.1:6969/user/account/create/${usernameElement.value}/${passwordElement.value}/${age}/`
+    const url = `${window.location.origin}/user/account/create/${usernameElement.value}/${passwordElement.value}/${age}/`
     fetch(url)
       .then(response => {
         if (!response.ok) {

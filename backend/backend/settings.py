@@ -27,11 +27,7 @@ SECRET_KEY = 'django-insecure-!l1#n)(q==6k0w3#*w92ilmkltpzf9d1ep4*39yiqz*$$z%ve^
 DEBUG = True
 # -> prints (sensitive) data to the console, should not be readable by others
 
-
-
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend']
 
 # Application definition
 INSTALLED_APPS = [
@@ -60,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware'
@@ -107,34 +103,34 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 ASGI_APPLICATION = 'backend.asgi.application'
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:4242', 'http://127.0.0.1:4242']
+current_host = os.environ.get('CURRENT_HOST')
+if current_host:
+    current_host = 'https://' +  current_host
+    CSRF_TRUSTED_ORIGINS = [current_host]
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#
-#         # Data from docker-compose file:
-#         'NAME': 'postgres',
-#         'USER': 'mmensing',
-#         'PASSWORD': '0000',
-#
-#         # Service name of the PostgreSQL container in the Docker network:
-#         'HOST': 'postgres',
-#         'PORT': '5432',
-#     }
-# }
-# DEFAULT:
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
-        'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
+        'ENGINE': os.environ.get('POSTGRES_ENGINE'),
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT')
     }
 }
 
-
+# DEFAULT:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',  # Use SQLite as the default database backend
+#         'NAME': BASE_DIR / 'db.sqlite3',        # Database file name (SQLite-specific)
+#     }
+# }
 
 
 # Password validation
