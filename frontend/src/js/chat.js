@@ -98,7 +98,7 @@ function chatDom() {
 //     websocket_obj.invited_id = invited_username
     
 //     try {
-//       const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+//       const response = await fetch(`http://localhost/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
 //       const data = await response.json();
   
   
@@ -146,7 +146,7 @@ function chatDom() {
     websocket_obj.invited_id = invited_username
     
     try {
-      const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
+      const response = await fetch(`${window.location.origin}/user/game/create/${websocket_obj.username}/${websocket_obj.invited_id}`);
       const data = await response.json();
   
   
@@ -173,7 +173,7 @@ function chatDom() {
   //   try {
   
 
-  //     const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
+  //     const response = await fetch(`http://localhost/user/game/render/invites/${username}/`);
   //     const htmlContent = await response.text();
   
   //     const container = document.getElementById('game-session-container');

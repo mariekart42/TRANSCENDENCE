@@ -74,37 +74,86 @@ async function joinGame(gameId) {
 
 }
 
+async function requestInvites() {
+  await sendDataToBackend('request_invites');
 
-async function renderInvites() {
-
-  console.log('In renderInvites:');
-
-
-  const username = websocket_obj.username;
-
-
-
-  var theButton = document.getElementById('createGameButton');
-  theButton.style.display = 'none';
-  try {
-
-// _+_+_+_+_+_+_
-
-    const response = await fetch(`http://127.0.0.1:6969/user/game/render/invites/${username}/`);
-    const htmlContent = await response.text();
-
-    const container = document.getElementById('game-session-container');
-    container.innerHTML = htmlContent;
-// _+_+_+_+_+_+_
-
-} catch (error) {
-    console.error('There was a problem with the fetch operation:', error);
 }
 
 
 
+async function renderInvites() {
 
+  if (websocket_obj.game.invites != 0)
+  {
+    // const htmlContent = await response.text();
+
+    // const container = document.getElementById('game-session-container');
+    // container.innerHTML = htmlContent;
+
+    const username = websocket_obj.username;
+    const matches = websocket_obj.game.invites;
+    console.log(matches);
+    const container = document.getElementById('game-session-container');
+    container.innerHTML = generateHTMLContent(matches);
+    
+    function generateHTMLContent(matches) {
+      let htmlContent = '';
+      if (matches.length > 0) {
+        htmlContent += '<ul>';
+        matches.forEach(match => {
+          htmlContent += `<li>Opponent: ${match.opponent_name}, Game ID: ${match.game_id}</li>`;
+          htmlContent += `<button class="join-game-btn" data-gameid="${match.game_id}">Join Game</button></li>`;
+
+        });
+        htmlContent += '</ul>';
+      } else {
+        htmlContent = '<p>No matches found.</p>';
+      }
+      return htmlContent;
+    }
+
+    container.querySelectorAll('.join-game-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const gameId = this.getAttribute('data-gameid');
+        joinGame(gameId); // Call your function with gameId
+      });
+    });
   }
+
+
+}
+
+// async function renderInvites() {
+
+//   console.log('In renderInvites:');
+
+
+//   const username = websocket_obj.username;
+//   const matches = websocket_obj.matches_data;
+
+
+
+//   // var theButton = document.getElementById('createGameButton');
+//   // theButton.style.display = 'none';
+//   try {
+
+// // _+_+_+_+_+_+_
+
+//     const response = await fetch(`http://localhost/user/game/render/invites/${username}/`);
+//     const htmlContent = await response.text();
+
+//     const container = document.getElementById('game-session-container');
+//     container.innerHTML = htmlContent;
+// // _+_+_+_+_+_+_
+
+// } catch (error) {
+//     console.error('There was a problem with the fetch operation:', error);
+// }
+
+
+
+
+//   }
 
   async function  displayError(){
     console.log('hi');
@@ -131,7 +180,7 @@ async function sendGameInvitation() {
   var game_id = websocket_obj.active_game;
   var guest_user_name = guestUser;
   try {
-    const response = await fetch(`http://127.0.0.1:6969/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
+    const response = await fetch(`${window.location.origin}/user/game/invite/${username}/${game_id}/${guest_user_name}/`);
     const data = await response.json();
 
     console.log('DATA ', data);
@@ -165,7 +214,7 @@ async function createGame() {
 var theButton = document.getElementById('createGameButton');
 theButton.style.display = 'none';
 try {
-  const response = await fetch(`http://127.0.0.1:6969/user/game/create/${websocket_obj.username}/`);
+  const response = await fetch(`${window.location.origin}/user/game/create/${websocket_obj.username}/`);
   const data = await response.json();
 
 

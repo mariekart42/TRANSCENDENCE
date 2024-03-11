@@ -53,6 +53,7 @@ websocket_obj = {
   game: [
     {
       game_id: null,
+      invites: 0,
       key_code: 0,
       left_pedal: 0,
       right_pedal: 0,
@@ -79,7 +80,7 @@ websocket_obj = {
 
 async function establishWebsocketConnection() {
 
-  websocket_obj.websocket = new WebSocket(`ws://localhost:6969/ws/init/${websocket_obj.user_id}/`);
+  websocket_obj.websocket = new WebSocket(`wss://${window.location.hostname}/ws/init/${websocket_obj.user_id}/`);
 
   websocket_obj.websocket.onopen = function () {
     renderProfile()
@@ -237,6 +238,15 @@ async function establishWebsocketConnection() {
           // default avatar
           websocket_obj.avatar = 'https://miro.medium.com/v2/resize:fit:720/1*W35QUSvGpcLuxPo3SRTH4w.png'
         }
+        break
+
+
+      case 'recieve_invites':
+        // websocket_obj.game.invites = data.matches
+        websocket_obj.game.invites = JSON.parse(data.matches);
+
+        console.log('DATA: ', websocket_obj.game.invites)
+        renderInvites();
         break
       default:
         console.log('SOMETHING ELSE [something wrong in onmessage type]')
@@ -418,6 +428,14 @@ async function sendDataToBackend(request_type) {
           data = {
             'user_id': websocket_obj.user_id,
             'chat_id': websocket_obj.chat_id,
+          }
+          break
+        case 'request_invites':
+          type = 'send_request_invites'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 1,
+
           }
           break
         default:

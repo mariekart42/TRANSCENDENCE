@@ -1,0 +1,21 @@
+events {}
+
+http {
+
+    server {
+        listen 4242 default_server;
+        server_name _;
+
+        return 404;
+    }
+
+    server {
+        listen 4242;
+        server_name ${CURRENT_HOST};
+
+        location / {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ =404;
+        }
+    }
+}
