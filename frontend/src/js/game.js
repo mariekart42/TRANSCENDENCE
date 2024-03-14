@@ -1,9 +1,9 @@
 
 function gameDom() {
   // HERE EVENTLISTENERS FOR GAME:
-  // document.getElementById('createGameButton').addEventListener('click', createGame);
-  // document.getElementById('renderInv').addEventListener('click', requestInvites());
-  // document.getElementById('joinTour').addEventListener('click', joinTournament());
+  document.getElementById('createGameButton').addEventListener('click', createGame);
+  document.getElementById('renderInv').addEventListener('click', requestInvites());
+  document.getElementById('joinTour').addEventListener('click', joinTournament());
 
 
 }
