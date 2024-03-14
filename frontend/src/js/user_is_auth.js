@@ -66,7 +66,18 @@ function addEventListenersIsAuth() {
     });
     userModal.show();
   })
-}
+
+  document.getElementById('renderInv').addEventListener('click', function () {
+    await sendDataToBackend('request_invites');
+
+
+  });
+
+  document.getElementById('joinTour').addEventListener('click', function () {
+    
+    await sendDataToBackend('join_tournament');
+
+  });}
 
 function showSiteHideOthers(site_to_show) {
   const sites = ['gameSite', 'nothingSite', 'homeSite', 'chat'];

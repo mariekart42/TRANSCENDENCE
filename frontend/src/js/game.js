@@ -1,7 +1,11 @@
 
 function gameDom() {
   // HERE EVENTLISTENERS FOR GAME:
-  document.getElementById('createGameButton').addEventListener('click', createGame);
+  // document.getElementById('createGameButton').addEventListener('click', createGame);
+  // document.getElementById('renderInv').addEventListener('click', requestInvites());
+  // document.getElementById('joinTour').addEventListener('click', joinTournament());
+
+
 }
 
 // HERE FUNCTIONS FOR GAME:
@@ -75,7 +79,13 @@ async function joinGame(gameId) {
 }
 
 async function requestInvites() {
+  console.log("in requestInvites")
   await sendDataToBackend('request_invites');
+
+}
+
+async function joinTournament() {
+  await sendDataToBackend('join_tournament');
 
 }
 
