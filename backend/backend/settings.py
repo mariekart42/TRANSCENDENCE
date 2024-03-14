@@ -110,16 +110,13 @@ if current_host:
 else:
     CSRF_TRUSTED_ORIGINS = []
 
-
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('POSTGRES_ENGINE'),
         'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
+        'HOST': 'game_chat_db',
         'PORT': os.environ.get('POSTGRES_PORT')
     }
 }
