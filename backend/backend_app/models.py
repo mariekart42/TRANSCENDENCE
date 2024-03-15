@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.postgres.fields import ArrayField
 
 # inherits from "models.Model" which means it's a database model
 class MyUser(models.Model):
@@ -29,3 +30,8 @@ class Message(models.Model):
 class Game(models.Model):
     hostId = models.CharField("hostId", max_length=69, default=None, blank=True, null=True)
     guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)
+
+class Tournament(models.Model):
+    quarterMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    semiMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    finalMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)

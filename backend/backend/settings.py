@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-!l1#n)(q==6k0w3#*w92ilmkltpzf9d1ep4*39yiqz*$$z%ve^
 DEBUG = True
 # -> prints (sensitive) data to the console, should not be readable by others
 
-ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend']
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [

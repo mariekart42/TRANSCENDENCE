@@ -1,9 +1,11 @@
 import json
 import asyncio
 from channels.db import database_sync_to_async
-from backend_app.models import MyUser, Chat, Message, Game
+from backend_app.models import MyUser, Chat, Message, Game, Tournament
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+
+
 
 
 class _Game:
@@ -366,9 +368,24 @@ class _Game:
             'data': return_data,
         })
 
+    async def handle_send_join_tournament(self):
+        await self.add_to_tourn(self.game_id, self.user['user_id'])
+
 
 
     # ---------------------------- DATABASE FUNCTIONS ----------------------------
+
+
+    @database_sync_to_async
+    def add_to_tourn(self, game_id, user_id):
+        tourn_instance = Tournament.objects.order_by('-id').first()
+        if tourn_instance is not None:
+            if len(tourn_instance.quarterMatch) == 8:
+                tourn_instance = Tournament.objects.create()
+        else:
+            tourn_instance = Tournament.objects.create()
+
+        tourn_instance.quarterMatch.append(user_id)
 
     @database_sync_to_async
     def get_host(self, game_id, user_id):

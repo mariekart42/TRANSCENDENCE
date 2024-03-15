@@ -80,6 +80,12 @@ async function requestInvites() {
 }
 
 
+async function joinTournament() {
+  await sendDataToBackend('join_tournament');
+
+}
+
+
 
 async function renderInvites() {
 
