@@ -446,6 +446,14 @@ async function sendDataToBackend(request_type) {
 
           }
           break
+        case 'join_tournament':
+          type = 'send_join_tournament'
+          data = {
+            'user_id': websocket_obj.user_id,
+            'game_id': 1,
+
+          }
+          break
         default:
           console.log('SOMETHING ELSE [something wrong in onmessage type]')
       }

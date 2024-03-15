@@ -32,6 +32,7 @@ class Game(models.Model):
     guestId = models.CharField("guestId", max_length=69, default=None, blank=True, null=True)
 
 class Tournament(models.Model):
-    quarterMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    # quarterMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
+    quarterMatch = ArrayField(models.IntegerField(), blank=True, default=list)
     semiMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)
     finalMatch = ArrayField(models.CharField(max_length=100), blank=True, default=list)

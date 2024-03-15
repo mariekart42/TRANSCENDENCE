@@ -78,6 +78,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
         if what_type in ['send_game_scene', 'send_init_game', 'send_ball_update', 'send_request_invites', 'send_join_tournament']:
             await self.controlGameRequests(text_data_json, what_type)
         else:
+            print("In else ----\n")
             chat_id = text_data_json["data"]["chat_id"]
             # user_id = text_data_json["data"]["user_id"]
             self.my_group_id = 'group_%s' % chat_id
@@ -119,6 +120,7 @@ class WebsocketConsumer(AsyncWebsocketConsumer, _User, _Message, _Chat, _Game):
 
 
     async def controlGameRequests(self, text_data_json, what_type):
+        print("IN GAME REQUESTS+")
         game_id = text_data_json["data"]["game_id"]
         self.game_group_id = 'group_%s' % game_id
 

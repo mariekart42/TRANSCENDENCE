@@ -379,6 +379,8 @@ class _Game:
     @database_sync_to_async
     def add_to_tourn(self, game_id, user_id):
         tourn_instance = Tournament.objects.order_by('-id').first()
+        print("tourn_instance")
+        print(tourn_instance)
         if tourn_instance is not None:
             if len(tourn_instance.quarterMatch) == 8:
                 tourn_instance = Tournament.objects.create()
@@ -386,6 +388,9 @@ class _Game:
             tourn_instance = Tournament.objects.create()
 
         tourn_instance.quarterMatch.append(user_id)
+        tourn_instance.save()
+        print("tourn_instance.quarterMatch")
+        print(tourn_instance.quarterMatch)
 
     @database_sync_to_async
     def get_host(self, game_id, user_id):
