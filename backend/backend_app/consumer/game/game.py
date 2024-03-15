@@ -384,6 +384,21 @@ class _Game:
         if tourn_instance is not None:
             if len(tourn_instance.quarterMatch) == 8:
                 tourn_instance = Tournament.objects.create()
+            # elif user_id in tourn_instance.quarterMatch:
+            for i in range(len(tourn_instance.quarterMatch)):
+                # print("tourn_instance.quarterMatch[i]")
+                # print(tourn_instance.quarterMatch[i])
+                # print("user_id")
+                # print(user_id)
+                # data_type = type(tourn_instance.quarterMatch[i])
+                # print(data_type)
+                # data_type = type(user_id)
+                # print(data_type)
+
+                if tourn_instance.quarterMatch[i] == int(user_id):
+                    print("user already in tourn")
+                    tourn_instance = Tournament.objects.create()
+                    break
         else:
             tourn_instance = Tournament.objects.create()
 
