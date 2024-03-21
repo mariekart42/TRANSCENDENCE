@@ -7,15 +7,24 @@ urlpatterns = [
     path('', views.goToFrontend),  # happens when user enters backend port
 
     # LOGIN/REGISTER
-    path('user/check_user_credentials/<str:username>/<str:password>/', views.checkUserCredentials),
-    path('user/account/create/<str:username>/<str:password>/<int:age>/', views.createAccount),
+    # 'login'
+    path('login/<str:username>/<str:password>/', views.checkUserCredentials),
+
+    # 'register'
+    path('register/<str:username>/<str:password>/<int:age>/', views.createAccount),
 
     # CHAT
-    path('user/upload/avatar/<str:username>/', views.uploadAvatar),
+    # 'user/avatar'
+    path('user/avatar/<str:username>/', views.uploadAvatar),
 
     # GAME
-    path('user/game/create/<str:username>/<str:invited_username>', views.createGame),
-    path('user/game/invite/<str:username>/<int:game_id>/<str:guest_user_name>/', views.inviteUserToGame),
-    path('user/game/render/invites/<str:username>/', views.renderInvites),
+    # 'game/create'
+    path('game/create/<str:username>/<str:invited_username>', views.createGame),
+
+    # 'game/invite'
+    path('game/invite/<str:username>/<int:game_id>/<str:guest_user_name>/', views.inviteUserToGame),
+
+    # 'game/render/invites'
+    path('game/render/invites/<str:username>/', views.renderInvites),
 
 ]
