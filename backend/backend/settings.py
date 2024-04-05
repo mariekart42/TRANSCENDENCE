@@ -25,6 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-!l1#n)(q==6k0w3#*w92ilmkltpzf9d1ep4*39yiqz*$$z%ve^'
 
+JWT_SECRET = os.environ.get('JWT_SECRET')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 # -> prints (sensitive) data to the console, should not be readable by others
@@ -36,7 +38,7 @@ INSTALLED_APPS = [
     'daphne',  # HAS to be on top
 
     'django.contrib.admin',
-    'django.contrib.auth',  # comes with authentication tools! :))
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
     'channels',
     # my created apps:
     'backend_app',
+    'ft_jwt',
 
     # 'channels_redis'
     ]

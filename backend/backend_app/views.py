@@ -1,14 +1,13 @@
 from django.shortcuts import render
+from django.conf import settings
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from ft_jwt.ft_jwt import FT_JWT
 
 jwt = FT_JWT(settings.JWT_SECRET)
 
-
 def goToFrontend(request):
     return render(request, 'goToFrontend.html')
-
 
 def checkUserCredentials(request, username, password):
     try:
@@ -45,8 +44,11 @@ def createAccount(request, username, password, age):
         return JsonResponse({}, status=500)
 
 @require_POST
+@jwt.token_required
 def uploadAvatar(request, username):
     try:
+        print("REQUEST: ", request.headers)
+
         print('username: ', username)
         user_exist = MyUser.objects.filter(name=username).exists()
         if not user_exist:
