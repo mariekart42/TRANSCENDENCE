@@ -249,6 +249,8 @@ class _Chat:
             if not user_exists:
                 return 'User does not exist'
             user_instance = MyUser.objects.get(id=user_id)
+            if chat_name == user_instance.name:
+                return 'Sorry, you can not be in a chat with yourself :('
             # Filter all private chats that the user is part of
             private_chats = Chat.objects.filter(isPrivate=True, myuser__id=user_id)
             chat_already_exists = private_chats.filter(myuser__name=chat_name)
