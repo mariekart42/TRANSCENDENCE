@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
+from django.conf import settings
+from ft_jwt.ft_jwt import FT_JWT
+
+jwt = FT_JWT(settings.JWT_SECRET)
 
 
 def goToFrontend(request):
@@ -20,7 +24,7 @@ def checkUserCredentials(request, username, password):
         print(f"An error occurred: {str(e)}")
         return JsonResponse({}, status=500)
 
-
+@jwt.token_required
 def createAccount(request, username, password, age):
     try:
         user_exist = MyUser.objects.filter(name=username).exists()
