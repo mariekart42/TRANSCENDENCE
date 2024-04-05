@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+JWT_SECRET = os.environ.get('JWT_SECRET')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # == /Users/mmensing/Desktop/CODE/TRANSCENDENCE/TEST_ENVIRONMENT/backend
@@ -29,7 +31,7 @@ JWT_SECRET = os.environ.get('JWT_SECRET')
 DEBUG = True
 # -> prints (sensitive) data to the console, should not be readable by others
 
-ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend']
+ALLOWED_HOSTS = [os.environ.get('CURRENT_HOST'), 'backend', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [
@@ -113,16 +115,13 @@ if current_host:
 else:
     CSRF_TRUSTED_ORIGINS = []
 
-
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('POSTGRES_ENGINE'),
         'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('POSTGRES_HOST'),
+        'HOST': 'game_chat_db',
         'PORT': os.environ.get('POSTGRES_PORT')
     }
 }

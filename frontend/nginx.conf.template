@@ -11,7 +11,7 @@ http {
 
     server {
         listen 4242;
-        server_name ${CURRENT_HOST};
+        server_name ${CURRENT_HOST} localhost;
 
         location / {
             root /usr/share/nginx/html;
